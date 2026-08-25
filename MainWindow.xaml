@@ -10,7 +10,7 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open..."/>
+                    <MenuItem Header="_Open..." Click="OpenFile"/>
                     <Separator/>
                     <MenuItem Header="_Save" IsEnabled="False"/>
                     <MenuItem Header="Save _As..." IsEnabled="False"/>
@@ -22,7 +22,14 @@
             </Menu>
             <TabControl>
                 <TabItem Header="Untitled">
-                    <Grid Background="#FFE5E5E5"/>
+                    <StackPanel Background="#FFE5E5E5">
+                        <DataGrid Name="encounterTableDisplay" IsReadOnly="True" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Level" Binding="{Binding LevelDisplay}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
                 </TabItem>
             </TabControl>
         </DockPanel>
