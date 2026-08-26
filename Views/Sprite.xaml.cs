@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -43,6 +44,10 @@ namespace CrystalLens.Views
                     sprite.image.HorizontalAlignment = size == 48 ? HorizontalAlignment.Right : HorizontalAlignment.Center;
                 }
                 catch (UriFormatException)
+                {
+                    sprite.image.Source = null;
+                }
+                catch (FileNotFoundException)
                 {
                     sprite.image.Source = null;
                 }

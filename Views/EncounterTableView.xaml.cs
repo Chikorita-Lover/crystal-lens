@@ -36,7 +36,8 @@ namespace CrystalLens.Views
                 Level = encounter.MinLevel == encounter.MaxLevel
                     ? encounter.MinLevel.ToString()
                     : $"{encounter.MinLevel} – {encounter.MaxLevel}";
-                ImagePath = $@"C:\Users\cjgar\Git\celebi\gfx\pokemon\{Name.ToLower()}\front.png";
+                string SpriteName = Name == "UNOWN" ? "unown_a" : Name.ToLower();
+                ImagePath = $@"C:\Users\cjgar\Git\celebi\gfx\pokemon\{SpriteName}\front.png";
             }
         }
     }
