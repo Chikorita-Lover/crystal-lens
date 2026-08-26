@@ -8,6 +8,8 @@ namespace CrystalLens
 {
     public partial class MainWindow : Window
     {
+        private readonly Dictionary<string, TimedEncounterTable> encounterTables = [];
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,7 +38,7 @@ namespace CrystalLens
                     }
                 }
 
-                List<TimedEncounterTable> encounterTables = [];
+                encounterTables.Clear();
                 while (commands.Count > 0)
                 {
                     ASMCommand command = commands.Dequeue();
@@ -47,7 +49,7 @@ namespace CrystalLens
                     if (command.Command == "def_grass_wildmons")
                     {
                         TimedEncounterTable encounterTable = TimedEncounterTable.ReadAssembly(commands);
-                        encounterTables.Add(encounterTable);
+                        encounterTables.Add(command.Get(0), encounterTable);
 
                         command = commands.Dequeue();
                         command.VerifyOrThrow("end_grass_wildmons");
@@ -58,10 +60,24 @@ namespace CrystalLens
                     }
                 }
 
-                int i = new Random().Next(encounterTables.Count);
-                EncounterTableView view = new(encounterTables[i]);
-                canvas.Children.Clear();
+                mapBox.ItemsSource = encounterTables.Keys;
+                mapBox.SelectedIndex = 0;
+                mapBox.IsEnabled = true;
+            }
+        }
+
+        private void MapSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            TimedEncounterTable encounters = encounterTables[(string)mapBox.SelectedItem];
+            if (canvas.Children.Count == 1)
+            {
+                EncounterTableView view = new(encounters);
                 canvas.Children.Add(view);
+            }
+            else
+            {
+                EncounterTableView view = (EncounterTableView)canvas.Children[1];
+                view.SetEncounters(encounters);
             }
         }
     }

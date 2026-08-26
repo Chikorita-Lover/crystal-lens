@@ -8,13 +8,23 @@ namespace CrystalLens.Views
     /// </summary>
     public partial class EncounterTableView : UserControl
     {
-        public TimedEncounterTable EncounterTable { get; }
+        private TimedEncounterTable EncounterTable;
 
         public EncounterTableView(TimedEncounterTable encounterTable)
         {
             InitializeComponent();
+            SetEncounters(encounterTable);
+        }
 
-            EncounterSet encounterSet = encounterTable.Get(DayTime.Day);
+        internal void SetEncounters(TimedEncounterTable encounterTable)
+        {
+            EncounterTable = encounterTable;
+            PopulateDisplay();
+        }
+
+        private void PopulateDisplay()
+        {
+            EncounterSet encounterSet = EncounterTable.Get(DayTime.Day);
             List<EncounterDisplay> displays = [];
             foreach (Encounter encounter in encounterSet.Encounters)
             {

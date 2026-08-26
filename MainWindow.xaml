@@ -22,7 +22,9 @@
             </Menu>
             <TabControl>
                 <TabItem Header="Untitled">
-                    <StackPanel Name="canvas" Background="#FFE5E5E5"/>
+                    <StackPanel Name="canvas" Background="#FFE5E5E5">
+                        <ComboBox Name="mapBox" IsEnabled="False" SelectionChanged="MapSelectionChanged"/>
+                    </StackPanel>
                 </TabItem>
             </TabControl>
         </DockPanel>
