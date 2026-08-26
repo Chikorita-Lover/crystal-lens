@@ -1,4 +1,5 @@
 ﻿using CrystalLens.Models;
+using CrystalLens.Views;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -35,7 +36,7 @@ namespace CrystalLens
                     }
                 }
 
-                List<EncounterTable<DayTime>> encounterTables = [];
+                List<TimedEncounterTable> encounterTables = [];
                 while (commands.Count > 0)
                 {
                     ASMCommand command = commands.Dequeue();
@@ -45,7 +46,7 @@ namespace CrystalLens
                     }
                     if (command.Command == "def_grass_wildmons")
                     {
-                        EncounterTable<DayTime> encounterTable = EncounterTable<DayTime>.ReadAssembly(commands);
+                        TimedEncounterTable encounterTable = TimedEncounterTable.ReadAssembly(commands);
                         encounterTables.Add(encounterTable);
 
                         command = commands.Dequeue();
@@ -57,9 +58,10 @@ namespace CrystalLens
                     }
                 }
 
-                EncounterTable<DayTime> selectedTable = encounterTables[0];
-                EncounterSet encounters = selectedTable.Get(DayTime.Day);
-                encounterTableDisplay.ItemsSource = encounters.Encounters;
+                int i = new Random().Next(encounterTables.Count);
+                EncounterTableView view = new(encounterTables[i]);
+                canvas.Children.Clear();
+                canvas.Children.Add(view);
             }
         }
     }

@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="CrystalLens.Views.EncounterTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CrystalLens.Views"
+             mc:Ignorable="d">
+    <DataGrid Name="data" IsReadOnly="True" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn Header="Image">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <local:Sprite ImagePath="{Binding ImagePath}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+            <DataGridTextColumn Header="Level" Binding="{Binding Level}"/>
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

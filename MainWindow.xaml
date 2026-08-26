@@ -22,14 +22,7 @@
             </Menu>
             <TabControl>
                 <TabItem Header="Untitled">
-                    <StackPanel Background="#FFE5E5E5">
-                        <DataGrid Name="encounterTableDisplay" IsReadOnly="True" AutoGenerateColumns="False">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                                <DataGridTextColumn Header="Level" Binding="{Binding LevelDisplay}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
+                    <StackPanel Name="canvas" Background="#FFE5E5E5"/>
                 </TabItem>
             </TabControl>
         </DockPanel>

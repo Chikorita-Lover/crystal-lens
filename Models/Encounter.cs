@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.Models
 {
-    internal record Encounter(int MinLevel, int MaxLevel, string Name)
+    public record Encounter(int MinLevel, int MaxLevel, string Name)
     {
         public string LevelDisplay
         {
@@ -12,7 +12,7 @@
         public Encounter(int level, string name) : this(level, level, name)
         { }
 
-        public static Encounter ReadAssembly(Queue<ASMCommand> commands)
+        internal static Encounter ReadAssembly(Queue<ASMCommand> commands)
         {
             ASMCommand command = commands.Dequeue();
             command.VerifyOrThrow("db");

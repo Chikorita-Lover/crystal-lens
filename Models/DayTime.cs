@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.Models
 {
-    internal enum DayTime
+    public enum DayTime
     {
         Morn,
         Day,

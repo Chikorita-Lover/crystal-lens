@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.Models
 {
-    internal record EncounterSet(List<Encounter> Encounters, List<int> Probabilities, int EncounterRate)
+    public record EncounterSet(List<Encounter> Encounters, List<int> Probabilities, int EncounterRate)
     {
         public Encounter Get(int index)
         {
