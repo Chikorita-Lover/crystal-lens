@@ -10,10 +10,9 @@ namespace CrystalLens.Views
     {
         private TimedEncounterTable EncounterTable;
 
-        public EncounterTableView(TimedEncounterTable encounterTable)
+        public EncounterTableView()
         {
             InitializeComponent();
-            SetEncounters(encounterTable);
         }
 
         internal void SetEncounters(TimedEncounterTable encounterTable)
