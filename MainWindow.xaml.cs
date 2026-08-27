@@ -1,23 +1,19 @@
 ﻿using CrystalLens.Models;
-using CrystalLens.Views;
+using CrystalLens.ViewModels;
 using Microsoft.Win32;
-using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CrystalLens
 {
     public partial class MainWindow : Window
     {
-        private EncounterTableMap encounterTables;
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void OpenExecuted(object sender, ExecutedRoutedEventArgs e)
+        private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog dialog = new()
             {
@@ -29,24 +25,19 @@ namespace CrystalLens
                 ASMFile file = new(dialog.FileName);
                 file.ReadFile();
                 Queue<ASMCommand> commands = file.GetCommands(file.GetLabels().First());
-                encounterTables = EncounterTableMap.ReadASM(commands);
+                EncounterTableMap encounterTables = EncounterTableMap.ReadASM(commands);
 
-                TabItem tab = new()
-                {
-                    Header = file.Name.Replace("_", "__"),
-                    Content = new EncounterTableMapView(encounterTables)
-                };
-                tabs.Items.Add(tab);
+                ((MainViewModel)DataContext).OpenFiles.Add(new ASMFileViewModel(file, encounterTables));
                 tabs.SelectedIndex = tabs.Items.Count - 1;
             }
         }
 
-        private void CloseExecuted(object sender, ExecutedRoutedEventArgs e)
+        private void Close_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            tabs.Items.RemoveAt(tabs.SelectedIndex);
+            ((MainViewModel)DataContext).OpenFiles.RemoveAt(tabs.SelectedIndex);
         }
 
-        private void CanExecuteClose(object sender, CanExecuteRoutedEventArgs e)
+        private void Close_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = tabs.HasItems;
         }

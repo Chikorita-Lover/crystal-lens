@@ -2,7 +2,7 @@
 
 namespace CrystalLens.Models
 {
-    internal class ASMFile
+    public class ASMFile
     {
         public readonly string Path;
         public string Name

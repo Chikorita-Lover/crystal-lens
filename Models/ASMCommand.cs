@@ -2,7 +2,7 @@
 
 namespace CrystalLens.Models
 {
-    internal record ASMCommand(string Command, string[] Parameters, string Comment)
+    public record ASMCommand(string Command, string[] Parameters, string Comment)
     {
         public ASMCommand(string command, string[] parameters) : this(command, parameters, string.Empty)
         { }
