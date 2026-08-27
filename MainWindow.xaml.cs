@@ -1,8 +1,10 @@
 ﻿using CrystalLens.Models;
 using CrystalLens.Views;
 using Microsoft.Win32;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CrystalLens
 {
@@ -15,7 +17,7 @@ namespace CrystalLens
             InitializeComponent();
         }
 
-        private void OpenFile(object sender, RoutedEventArgs e)
+        private void OpenExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog dialog = new()
             {
@@ -37,6 +39,16 @@ namespace CrystalLens
                 tabs.Items.Add(tab);
                 tabs.SelectedIndex = tabs.Items.Count - 1;
             }
+        }
+
+        private void CloseExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            tabs.Items.RemoveAt(tabs.SelectedIndex);
+        }
+
+        private void CanExecuteClose(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = tabs.HasItems;
         }
     }
 }

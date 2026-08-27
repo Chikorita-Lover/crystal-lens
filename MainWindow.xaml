@@ -6,16 +6,23 @@
         xmlns:local="clr-namespace:CrystalLens"
         mc:Ignorable="d"
         Title="Crystal Lens" Height="450" Width="800">
+    <Window.InputBindings>
+        <KeyBinding Key="W" Modifiers="Ctrl" Command="ApplicationCommands.Close"/>
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenExecuted"/>
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseExecuted" CanExecute="CanExecuteClose"/>
+    </Window.CommandBindings>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open..." Click="OpenFile"/>
+                    <MenuItem Header="_Open..." Command="ApplicationCommands.Open"/>
                     <Separator/>
                     <MenuItem Header="_Save" IsEnabled="False"/>
                     <MenuItem Header="Save _As..." IsEnabled="False"/>
                     <Separator/>
-                    <MenuItem Header="_Close"/>
+                    <MenuItem Header="_Close" Command="ApplicationCommands.Close" InputGestureText="Ctrl+W"/>
                     <Separator/>
                     <MenuItem Header="E_xit"/>
                 </MenuItem>
