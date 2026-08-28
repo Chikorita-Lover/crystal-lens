@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              mc:Ignorable="d">
     <StackPanel>
-        <ComboBox Name="mapBox" SelectionChanged="MapSelectionChanged"/>
-        <local:EncounterTableView x:Name="tableView"/>
+        <ComboBox Name="mapBox" ItemsSource="{Binding MapNames}" SelectedItem="{Binding SelectedMap, Mode=TwoWay}"/>
+        <local:EncounterTableView x:Name="tableView" DataContext="{Binding SelectedEncounters, UpdateSourceTrigger=PropertyChanged}"/>
     </StackPanel>
 </UserControl>

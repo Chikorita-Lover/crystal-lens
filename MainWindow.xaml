@@ -45,7 +45,7 @@
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <views:EncounterTableMapView EncounterTables="{Binding EncounterTables}"/>
+                        <views:EncounterTableMapView DataContext="{Binding EncounterTables}"/>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>

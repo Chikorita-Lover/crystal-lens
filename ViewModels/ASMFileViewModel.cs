@@ -12,13 +12,13 @@ namespace CrystalLens.ViewModels
         {
             get => file.Path;
         }
-        public EncounterTableMap EncounterTables { get; }
+        public EncounterTableMapViewModel EncounterTables { get; }
         private readonly ASMFile file;
 
         public ASMFileViewModel(ASMFile file, EncounterTableMap encounterTables)
         {
             this.file = file;
-            EncounterTables = encounterTables;
+            EncounterTables = new(encounterTables);
         }
     }
 }
