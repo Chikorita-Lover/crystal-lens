@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:CrystalLens.ViewModels"
         xmlns:views="clr-namespace:CrystalLens.Views"
         mc:Ignorable="d"
-        Title="Crystal Lens" Height="450" Width="800">
+        Title="Crystal Lens" Height="545" Width="970">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>

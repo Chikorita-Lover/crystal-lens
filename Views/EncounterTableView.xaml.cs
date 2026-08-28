@@ -25,9 +25,9 @@ namespace CrystalLens.Views
         {
             EncounterSet encounterSet = EncounterTable.Get(DayTime.Day);
             List<EncounterDisplay> displays = [];
-            foreach (Encounter encounter in encounterSet.Encounters)
+            for (int i = 0; i < encounterSet.Encounters.Count; i++)
             {
-                EncounterDisplay display = new(encounter);
+                EncounterDisplay display = new(encounterSet.Get(i), encounterSet.GetProbability(i));
                 displays.Add(display);
             }
             data.ItemsSource = displays;
@@ -37,14 +37,16 @@ namespace CrystalLens.Views
         {
             public string Name { get; }
             public string Level { get; }
+            public int Probability { get; }
             public string ImagePath { get; }
 
-            internal EncounterDisplay(Encounter encounter)
+            internal EncounterDisplay(Encounter encounter, int probability)
             {
                 Name = encounter.Name;
                 Level = encounter.MinLevel == encounter.MaxLevel
                     ? encounter.MinLevel.ToString()
                     : $"{encounter.MinLevel} – {encounter.MaxLevel}";
+                Probability = probability;
                 string SpriteName = Name == "UNOWN" ? "unown_a" : Name.ToLower();
                 ImagePath = $@"C:\Users\cjgar\Git\celebi\gfx\pokemon\{SpriteName}\front.png";
             }
