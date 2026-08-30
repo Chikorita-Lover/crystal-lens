@@ -37,6 +37,10 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Name}"/>
+                            <Button Width="18" Height="18" Background="Transparent" BorderBrush="Transparent" Margin="4,0,0,0"
+                                    Command="{Binding DataContext.CloseTabCommand,RelativeSource={RelativeSource AncestorType={x:Type Window}}}" CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
+                                <Image Source="/Assets/Images/Close.png"/>
+                            </Button>
                             <StackPanel.ToolTip>
                                 <TextBlock Text="{Binding Path}"/>
                             </StackPanel.ToolTip>
@@ -48,6 +52,11 @@
                         <views:EncounterTableMapView DataContext="{Binding EncounterTables}"/>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Padding" Value="6,2,2,2"/>
+                    </Style>
+                </TabControl.ItemContainerStyle>
             </TabControl>
         </DockPanel>
     </Grid>
