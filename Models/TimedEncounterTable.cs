@@ -5,41 +5,70 @@
         public TimedEncounterTable(Dictionary<DayTime, EncounterSet> encounterSets) : base(encounterSets)
         { }
 
-        internal static TimedEncounterTable ReadAssembly(Queue<ASMCommand> commands)
+        public class Serializer : ASMSerializer<TimedEncounterTable>
         {
-            ASMCommand command = commands.Dequeue();
-            command.VerifyOrThrow("db");
-
-            int count = command.Parameters.Length;
-            int[] encounterRates = new int[count];
-            for (int i = 0; i < count; i++)
+            internal override TimedEncounterTable ReadAssembly(Queue<ASMCommand> commands)
             {
-                string parameter = command.Get(i);
-                try
+                ASMCommand command = commands.Dequeue();
+                command.VerifyOrThrow("db");
+
+                int count = command.Parameters.Length;
+                int[] encounterRates = new int[count];
+                for (int i = 0; i < count; i++)
                 {
-                    encounterRates[i] = int.Parse(parameter.Split(" percent")[0]);
+                    string parameter = command.Get(i);
+                    try
+                    {
+                        encounterRates[i] = int.Parse(parameter.Split(" percent")[0]);
+                    }
+                    catch (FormatException e)
+                    {
+                        throw new InvalidOperationException("Invalid encounter rate format: " + command + ": " + e);
+                    }
                 }
-                catch (FormatException e)
+
+                List<int> probabilities = [30, 30, 20, 10, 5, 4, 1];
+                Dictionary<DayTime, EncounterSet> encounterSets = [];
+                for (int i = 0; i < count; i++)
                 {
-                    throw new InvalidOperationException("Invalid encounter rate format: " + command + ": " + e);
+                    List<Encounter> encounters = [];
+                    for (int j = 0; j < probabilities.Count; j++)
+                    {
+                        Encounter encounter = Encounter.ReadAssembly(commands);
+                        encounters.Add(encounter);
+                    }
+                    DayTime time = Enum.GetValues<DayTime>()[i];
+                    encounterSets[time] = new(encounters, probabilities, encounterRates[i]);
+                }
+
+                return new(encounterSets);
+            }
+
+            internal override void WriteAssembly(Queue<ASMCommand> commands, TimedEncounterTable data)
+            {
+                List<string> percents = [];
+                foreach (DayTime time in Enum.GetValues<DayTime>())
+                {
+                    int rate = data.EncounterSets[time].EncounterRate;
+                    percents.Add(PercentFromInt(rate));
+                }
+                commands.Enqueue(new("db", percents.ToArray(), "encounter rates: morn/day/nite"));
+
+                foreach (DayTime time in Enum.GetValues<DayTime>())
+                {
+                    commands.Enqueue(new("", [], time.ToString().ToLower()));
+                    EncounterSet encounters = data.EncounterSets[time];
+                    foreach (Encounter encounter in encounters.Encounters)
+                    {
+                        commands.Enqueue(new("db", [encounter.MinLevel.ToString(), encounter.Name]));
+                    }
                 }
             }
 
-            List<int> probabilities = [30, 30, 20, 10, 5, 4, 1];
-            Dictionary<DayTime, EncounterSet> encounterSets = [];
-            for (int i = 0; i < count; i++)
+            private static string PercentFromInt(int value)
             {
-                List<Encounter> encounters = [];
-                for (int j = 0; j < probabilities.Count; j++)
-                {
-                    Encounter encounter = Encounter.ReadAssembly(commands);
-                    encounters.Add(encounter);
-                }
-                DayTime time = Enum.GetValues<DayTime>()[i];
-                encounterSets[time] = new(encounters, probabilities, encounterRates[i]);
+                return $"{value} percent";
             }
-
-            return new(encounterSets);
         }
     }
 }

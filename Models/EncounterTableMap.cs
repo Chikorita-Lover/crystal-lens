@@ -22,22 +22,38 @@
             return EncounterTables.Keys;
         }
 
-        internal static EncounterTableMap ReadASM(Queue<ASMCommand> commands)
+        public class Serializer : ASMSerializer<EncounterTableMap>
         {
-            Dictionary<string, TimedEncounterTable> encounterTables = [];
-            ASMCommand command;
-            while ((command = commands.Dequeue()) != null && command.Command != "db")
+            internal override EncounterTableMap ReadAssembly(Queue<ASMCommand> commands)
             {
-                command.VerifyOrThrow("def_grass_wildmons");
+                Dictionary<string, TimedEncounterTable> encounterTables = [];
+                ASMCommand command;
+                while ((command = commands.Dequeue()) != null && command.Command != "db")
+                {
+                    command.VerifyOrThrow("def_grass_wildmons");
 
-                TimedEncounterTable encounterTable = TimedEncounterTable.ReadAssembly(commands);
-                encounterTables.Add(command.Get(0), encounterTable);
+                    TimedEncounterTable encounterTable = ASMSerializers.EncounterTable.ReadAssembly(commands);
+                    encounterTables.Add(command.Get(0), encounterTable);
 
-                command = commands.Dequeue();
-                command.VerifyOrThrow("end_grass_wildmons");
+                    command = commands.Dequeue();
+                    command.VerifyOrThrow("end_grass_wildmons");
+                }
+
+                return new EncounterTableMap(encounterTables);
             }
 
-            return new EncounterTableMap(encounterTables);
+            internal override void WriteAssembly(Queue<ASMCommand> commands, EncounterTableMap data)
+            {
+                commands.Enqueue(new("", []));
+                foreach (string name in data.GetNames())
+                {
+                    commands.Enqueue(new("def_grass_wildmons", [name]));
+                    ASMSerializers.EncounterTable.WriteAssembly(commands, data.Get(name));
+                    commands.Enqueue(new("end_grass_wildmons", []));
+                    commands.Enqueue(new());
+                }
+                commands.Enqueue(new("db", ["-1"], "end"));
+            }
         }
     }
 }

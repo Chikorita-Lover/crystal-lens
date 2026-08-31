@@ -4,21 +4,21 @@ namespace CrystalLens.ViewModels
 {
     public class ASMFileViewModel
     {
+        public readonly ASMFile File;
         public string Name
         {
-            get => file.Name;
+            get => File.Name;
         }
         public string Path
         {
-            get => file.Path;
+            get => File.Path;
         }
         public EncounterTableMapViewModel EncounterTables { get; }
-        private readonly ASMFile file;
 
-        public ASMFileViewModel(ASMFile file, EncounterTableMap encounterTables)
+        public ASMFileViewModel(ASMFile file)
         {
-            this.file = file;
-            EncounterTables = new(encounterTables);
+            File = file;
+            EncounterTables = new(file.Get(file.Labels.First()));
         }
     }
 }

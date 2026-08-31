@@ -1,6 +1,7 @@
 ﻿using CrystalLens.Models;
 using CrystalLens.ViewModels;
 using Microsoft.Win32;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,14 +25,25 @@ namespace CrystalLens
 
             if (dialog.ShowDialog() == true)
             {
-                ASMFile file = new(dialog.FileName);
-                file.ReadFile();
-                Queue<ASMCommand> commands = file.GetCommands(file.GetLabels().First());
-                EncounterTableMap encounterTables = EncounterTableMap.ReadASM(commands);
+                ASMFile file = ASMFile.ReadFile(dialog.FileName);
+                EncounterTableMap encounterTables = file.Get(file.Labels.First());
 
-                ViewModel.OpenFiles.Add(new ASMFileViewModel(file, encounterTables));
+                ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
                 tabs.SelectedIndex = tabs.Items.Count - 1;
             }
+        }
+
+        private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ASMFile file = ((ASMFileViewModel)tabs.SelectedItem).File;
+            using StreamWriter output = new(file.Path);
+            file.WriteFile(output);
+            output.Close();
+        }
+
+        private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = tabs.HasItems;
         }
 
         private void Close_Executed(object sender, ExecutedRoutedEventArgs e)

@@ -7,6 +7,12 @@ namespace CrystalLens.Models
         public ASMCommand(string command, string[] parameters) : this(command, parameters, string.Empty)
         { }
 
+        public ASMCommand(string command) : this(command, [])
+        { }
+
+        public ASMCommand() : this(string.Empty)
+        { }
+
         public static ASMCommand FromLine(string line)
         {
             string[] codeCommentSplit = line.Trim().Split(";", 2);
@@ -66,6 +72,14 @@ namespace CrystalLens.Models
                 {
                     builder.Append(',');
                 }
+            }
+            if (!Comment.IsWhiteSpace())
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append(' ');
+                }
+                builder.Append($"; {Comment}");
             }
             return builder.ToString();
         }

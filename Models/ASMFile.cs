@@ -5,45 +5,70 @@ namespace CrystalLens.Models
     public class ASMFile
     {
         public readonly string Path;
-        public string Name
-        {
-            get => Path.Split('\\').Last();
-        }
-        private readonly Dictionary<string, Queue<ASMCommand>> labelToCommands = [];
+        public readonly string Name;
+        private readonly Dictionary<string, EncounterTableMap> labeledData = [];
 
-        public ASMFile(string path)
+        public ICollection<string> Labels => labeledData.Keys;
+
+        private ASMFile(string path)
         {
             Path = path;
+            Name = path.Split('\\').Last();
         }
 
-        public Queue<ASMCommand> GetCommands(string label)
+        public EncounterTableMap Get(string label)
         {
-            return new(labelToCommands[label]);
+            return labeledData[label];
         }
 
-        public ICollection<string> GetLabels()
+        public static ASMFile ReadFile(string path)
         {
-            return labelToCommands.Keys;
-        }
+            ASMFile file = new(path);
 
-        public void ReadFile()
-        {
-            StreamReader sr = new(Path);
+            StreamReader reader = new(path);
             string? line;
             Queue<ASMCommand> commands = [];
-            while ((line = sr.ReadLine()) != null)
+            Dictionary<string, Queue<ASMCommand>> labeledCommands = [];
+            while ((line = reader.ReadLine()) != null)
             {
                 ASMCommand command = ASMCommand.FromLine(line);
                 if (command.Command.EndsWith(':'))
                 {
                     string label = command.Command.Split(':')[0];
                     commands = [];
-                    labelToCommands.Add(label, commands);
+                    labeledCommands.Add(label, commands);
                 }
                 else if (!command.Command.IsWhiteSpace())
                 {
                     commands.Enqueue(command);
                 }
+            }
+
+            foreach (string label in labeledCommands.Keys)
+            {
+                commands = labeledCommands[label];
+                EncounterTableMap data = ASMSerializers.EncounterTableMap.ReadAssembly(commands);
+                file.labeledData.Add(label, data);
+            }
+
+            reader.Close();
+            return file;
+        }
+
+        public void WriteFile(StreamWriter writer)
+        {
+            Queue<ASMCommand> commands = [];
+            commands.Enqueue(new("", [], "Pokémon in grass"));
+            foreach (string label in Labels)
+            {
+                commands.Enqueue(new());
+                commands.Enqueue(new($"{label}:"));
+                ASMSerializers.EncounterTableMap.WriteAssembly(commands, Get(label));
+            }
+            
+            foreach (ASMCommand command in commands)
+            {
+                writer.WriteLine(command);
             }
         }
     }
