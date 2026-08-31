@@ -6,7 +6,17 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              mc:Ignorable="d">
     <Border Height="56" Width="56" Background="White">
-        <Image Name="image" VerticalAlignment="Bottom"/>
+        <Image Name="image" Source="{Binding Source}" Width="{Binding Width}" VerticalAlignment="Bottom">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Width}" Value="48">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
     </Border>
-
 </UserControl>
