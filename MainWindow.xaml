@@ -13,6 +13,8 @@
     </Window.DataContext>
     <Window.InputBindings>
         <KeyBinding Key="W" Modifiers="Ctrl" Command="ApplicationCommands.Close"/>
+        <KeyBinding Key="Tab" Modifiers="Ctrl" Command="{Binding NextTabCommand}"/>
+        <KeyBinding Key="Tab" Modifiers="Ctrl+Shift" Command="{Binding PreviousTabCommand}"/>
     </Window.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="Open_Executed"/>
@@ -32,7 +34,7 @@
                     <MenuItem Header="E_xit"/>
                 </MenuItem>
             </Menu>
-            <TabControl Name="tabs" ItemsSource="{Binding OpenFiles}">
+            <TabControl Name="tabs" ItemsSource="{Binding OpenFiles}" SelectedIndex="{Binding SelectedFile,Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">

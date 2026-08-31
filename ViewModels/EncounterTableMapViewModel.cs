@@ -1,13 +1,9 @@
 ﻿using CrystalLens.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterTableMapViewModel : INotifyPropertyChanged
+    public class EncounterTableMapViewModel : ObservableViewModel
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public EncounterTableMap EncounterTables { get; set; }
         public string SelectedMap
         {
@@ -36,11 +32,6 @@ namespace CrystalLens.ViewModels
         {
             EncounterTables = encounterTables;
             SelectedMap = encounterTables.GetNames().First();
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
