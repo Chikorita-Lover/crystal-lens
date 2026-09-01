@@ -4,27 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CrystalLens.Views"
-             xmlns:vm="clr-namespace:CrystalLens.ViewModels"
              mc:Ignorable="d">
-    <DataGrid Name="data" ItemsSource="{Binding Encounters}" AutoGenerateColumns="False"
-              CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
-              HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC" AlternatingRowBackground="#F2F2F2">
-        <DataGrid.CellStyle>
-            <Style TargetType="DataGridCell">
-                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-            </Style>
-        </DataGrid.CellStyle>
-        <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Image" IsReadOnly="True">
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <local:Sprite DataContext="{Binding Sprite}"/>
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Name" Width="96" Binding="{Binding Name}"/>
-            <DataGridTextColumn Header="Level" Binding="{Binding Level}"/>
-            <DataGridTextColumn Header="Rate" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True"/>
-        </DataGrid.Columns>
-    </DataGrid>
+    <local:EncounterSetView DataContext="{Binding EncounterSet}"/>
 </UserControl>

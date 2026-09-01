@@ -3,44 +3,27 @@ using System.Collections.ObjectModel;
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterTableViewModel
+    public class EncounterTableViewModel : ObservableViewModel
     {
         public TimedEncounterTable EncounterTable
         {
-            get;
-            set
-            {
-                field = value;
-                PopulateEncounters();
-            }
+            get; set { field = value; PopulateEncounterSets(); }
         }
-        public ObservableCollection<EncounterViewModel> Encounters { get; } = [];
+        public EncounterSetViewModel EncounterSet => EncounterSets[1];
+        public ObservableCollection<EncounterSetViewModel> EncounterSets { get; } = [];
 
         internal EncounterTableViewModel(TimedEncounterTable encounterTable)
         {
             EncounterTable = encounterTable;
         }
 
-        private void PopulateEncounters()
+        private void PopulateEncounterSets()
         {
-            Encounters.Clear();
-            if (EncounterTable != null)
+            EncounterSets.Clear();
+            foreach (EncounterSet encounterSet in EncounterTable.EncounterSets.Values)
             {
-                EncounterSet encounterSet = EncounterTable.Get(DayTime.Day);
-                for (int i = 0; i < encounterSet.Encounters.Count; i++)
-                {
-                    EncounterViewModel encounter = new(encounterSet.Get(i), encounterSet.GetProbability(i));
-                    Encounters.Add(encounter);
-                    encounter.PropertyChanged += Encounter_PropertyChanged;
-                }
+                EncounterSets.Add(new(encounterSet));
             }
-        }
-
-        private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            EncounterViewModel viewModel = (EncounterViewModel)sender;
-            int index = Encounters.IndexOf(viewModel);
-            EncounterTable.EncounterSets[DayTime.Day].Encounters[index] = viewModel.ToModel();
         }
     }
 }
