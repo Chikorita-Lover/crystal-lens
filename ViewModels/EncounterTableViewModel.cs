@@ -31,8 +31,16 @@ namespace CrystalLens.ViewModels
                 {
                     EncounterViewModel encounter = new(encounterSet.Get(i), encounterSet.GetProbability(i));
                     Encounters.Add(encounter);
+                    encounter.PropertyChanged += Encounter_PropertyChanged;
                 }
             }
+        }
+
+        private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            EncounterViewModel viewModel = (EncounterViewModel)sender;
+            int index = Encounters.IndexOf(viewModel);
+            EncounterTable.EncounterSets[DayTime.Day].Encounters[index] = viewModel.ToModel();
         }
     }
 }

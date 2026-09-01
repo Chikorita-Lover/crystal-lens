@@ -14,7 +14,10 @@ namespace CrystalLens.ViewModels
         {
             get; private set { field = value; OnPropertyChanged(); }
         }
-        public int Width { get; private set; }
+        public int Width
+        {
+            get; private set { field = value; OnPropertyChanged(); }
+        }
 
         public SpriteViewModel()
         { }
