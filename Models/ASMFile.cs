@@ -27,6 +27,7 @@ namespace CrystalLens.Models
             string? line;
             Queue<ASMCommand> commands = [];
             Dictionary<string, Queue<ASMCommand>> labeledCommands = [];
+            labeledCommands.Add(string.Empty, commands);
             while ((line = reader.ReadLine()) != null)
             {
                 ASMCommand command = ASMCommand.FromLine(line);
@@ -45,6 +46,11 @@ namespace CrystalLens.Models
             foreach (string label in labeledCommands.Keys)
             {
                 commands = labeledCommands[label];
+                if (commands.Count == 0)
+                {
+                    continue;
+                }
+
                 ASMDataType? type = DetermineDataType(commands);
                 if (type == null)
                 {
@@ -74,11 +80,13 @@ namespace CrystalLens.Models
         public void WriteFile(StreamWriter writer)
         {
             Queue<ASMCommand> commands = [];
-            commands.Enqueue(new("", [], "Pokémon"));
             foreach (string label in Labels)
             {
-                commands.Enqueue(new());
-                commands.Enqueue(new($"{label}:"));
+                if (!label.IsWhiteSpace())
+                {
+                    commands.Enqueue(new());
+                    commands.Enqueue(new($"{label}:"));
+                }
                 IASMData data = Get(label);
                 data.GetSerializer().WriteAssembly(commands, data);
             }

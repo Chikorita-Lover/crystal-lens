@@ -4,6 +4,8 @@ namespace CrystalLens.Models
 {
     public record ASMCommand(string Command, string[] Parameters, string Comment)
     {
+        public int Count => Parameters.Length;
+
         public ASMCommand(string command, string[] parameters) : this(command, parameters, string.Empty)
         { }
 
