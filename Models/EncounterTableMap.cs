@@ -5,14 +5,14 @@
     /// </summary>
     public class EncounterTableMap : IASMData
     {
-        public Dictionary<string, TimedEncounterTable> EncounterTables;
+        public Dictionary<string, EncounterTable> EncounterTables;
 
-        public EncounterTableMap(Dictionary<string, TimedEncounterTable> encounterTables)
+        public EncounterTableMap(Dictionary<string, EncounterTable> encounterTables)
         {
             EncounterTables = encounterTables;
         }
 
-        public TimedEncounterTable Get(string name)
+        public EncounterTable Get(string name)
         {
             return EncounterTables[name];
         }
@@ -31,13 +31,13 @@
         {
             internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
             {
-                Dictionary<string, TimedEncounterTable> encounterTables = [];
+                Dictionary<string, EncounterTable> encounterTables = [];
                 ASMCommand command;
                 while ((command = commands.Dequeue()) != null && command.Command != "db")
                 {
                     command.VerifyOrThrow("def_grass_wildmons");
 
-                    TimedEncounterTable encounterTable = (TimedEncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands);
+                    EncounterTable encounterTable = (EncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands);
                     encounterTables.Add(command.Get(0), encounterTable);
 
                     command = commands.Dequeue();

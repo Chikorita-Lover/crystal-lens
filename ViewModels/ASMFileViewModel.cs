@@ -31,7 +31,7 @@ namespace CrystalLens.ViewModels
             {
                 return new EncounterSetMapViewModel(encounterSetMap);
             }
-            if (data is TimedEncounterTable encounterTable)
+            if (data is EncounterTable encounterTable)
             {
                 return new EncounterTableViewModel(encounterTable);
             }

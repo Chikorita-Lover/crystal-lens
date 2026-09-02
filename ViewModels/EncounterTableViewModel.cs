@@ -5,14 +5,14 @@ namespace CrystalLens.ViewModels
 {
     public class EncounterTableViewModel : ObservableViewModel
     {
-        public TimedEncounterTable EncounterTable
+        public EncounterTable EncounterTable
         {
             get; set { field = value; PopulateEncounterSets(); }
         }
         public EncounterSetViewModel EncounterSet => EncounterSets[1];
         public ObservableCollection<EncounterSetViewModel> EncounterSets { get; } = [];
 
-        internal EncounterTableViewModel(TimedEncounterTable encounterTable)
+        internal EncounterTableViewModel(EncounterTable encounterTable)
         {
             EncounterTable = encounterTable;
         }
