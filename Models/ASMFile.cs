@@ -4,8 +4,7 @@ namespace CrystalLens.Models
 {
     public class ASMFile
     {
-        public readonly string Path;
-        public readonly string Name;
+        public string Path { get; set; }
         private readonly Dictionary<string, IASMData> labeledData = [];
 
         public ICollection<string> Labels => labeledData.Keys;
@@ -13,7 +12,6 @@ namespace CrystalLens.Models
         private ASMFile(string path)
         {
             Path = path;
-            Name = path.Split('\\').Last();
         }
 
         public IASMData Get(string label)
@@ -84,7 +82,7 @@ namespace CrystalLens.Models
                 IASMData data = Get(label);
                 data.GetSerializer().WriteAssembly(commands, data);
             }
-            
+
             foreach (ASMCommand command in commands)
             {
                 writer.WriteLine(command);

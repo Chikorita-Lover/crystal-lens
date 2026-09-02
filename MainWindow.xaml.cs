@@ -45,6 +45,24 @@ namespace CrystalLens
             e.CanExecute = tabs.HasItems;
         }
 
+        private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ASMFileViewModel file = (ASMFileViewModel)tabs.SelectedItem;
+            SaveFileDialog dialog = new()
+            {
+                InitialDirectory = Path.GetDirectoryName(file.Path),
+                FileName = Path.GetFileNameWithoutExtension(file.Path),
+                DefaultExt = "asm",
+                Filter = "ASM Files|*.asm|All Files|*.*"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                file.Path = dialog.FileName;
+                Save_Executed(sender, e);
+            }
+        }
+
         private void Close_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             ViewModel.OpenFiles.RemoveAt(tabs.SelectedIndex);

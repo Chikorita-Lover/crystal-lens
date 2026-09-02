@@ -2,22 +2,30 @@
 
 namespace CrystalLens.ViewModels
 {
-    public class ASMFileViewModel
+    public class ASMFileViewModel : ObservableViewModel
     {
         public readonly ASMFile File;
-        public string Name
-        {
-            get => File.Name;
-        }
         public string Path
         {
-            get => File.Path;
+            get;
+            set
+            {
+                field = value;
+                File.Path = value;
+                Name = System.IO.Path.GetFileName(value);
+                OnPropertyChanged();
+            }
+        }
+        public string Name
+        {
+            get; set { field = value; OnPropertyChanged(); }
         }
         public object Data { get; }
 
         public ASMFileViewModel(ASMFile file)
         {
             File = file;
+            Path = file.Path;
             Data = CreateDataViewModel(file.Get(file.Labels.First()));
         }
 
