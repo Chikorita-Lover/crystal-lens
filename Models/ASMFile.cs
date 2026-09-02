@@ -6,7 +6,7 @@ namespace CrystalLens.Models
     {
         public readonly string Path;
         public readonly string Name;
-        private readonly Dictionary<string, EncounterTableMap> labeledData = [];
+        private readonly Dictionary<string, IASMData> labeledData = [];
 
         public ICollection<string> Labels => labeledData.Keys;
 
@@ -16,7 +16,7 @@ namespace CrystalLens.Models
             Name = path.Split('\\').Last();
         }
 
-        public EncounterTableMap Get(string label)
+        public IASMData Get(string label)
         {
             return labeledData[label];
         }
@@ -47,7 +47,12 @@ namespace CrystalLens.Models
             foreach (string label in labeledCommands.Keys)
             {
                 commands = labeledCommands[label];
-                EncounterTableMap data = ASMSerializers.EncounterTableMap.ReadAssembly(commands);
+                ASMDataType? type = DetermineDataType(commands);
+                if (type == null)
+                {
+                    throw new FileFormatException($"ASM file \"{path}\" contains unsupported data format");
+                }
+                IASMData data = type.Serializer.ReadAssembly(commands);
                 file.labeledData.Add(label, data);
             }
 
@@ -55,15 +60,29 @@ namespace CrystalLens.Models
             return file;
         }
 
+        private static ASMDataType? DetermineDataType(Queue<ASMCommand> commands)
+        {
+            foreach (ASMDataType type in ASMDataType.Values)
+            {
+                Queue<ASMCommand> copy = new(commands);
+                if (type.CommandPredicate.Invoke(copy))
+                {
+                    return type;
+                }
+            }
+            return null;
+        }
+
         public void WriteFile(StreamWriter writer)
         {
             Queue<ASMCommand> commands = [];
-            commands.Enqueue(new("", [], "Pokémon in grass"));
+            commands.Enqueue(new("", [], "Pokémon"));
             foreach (string label in Labels)
             {
                 commands.Enqueue(new());
                 commands.Enqueue(new($"{label}:"));
-                ASMSerializers.EncounterTableMap.WriteAssembly(commands, Get(label));
+                IASMData data = Get(label);
+                data.GetSerializer().WriteAssembly(commands, data);
             }
             
             foreach (ASMCommand command in commands)

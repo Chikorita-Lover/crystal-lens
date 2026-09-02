@@ -52,9 +52,17 @@
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <views:EncounterTableMapView DataContext="{Binding EncounterTables}"/>
+                        <ContentPresenter Content="{Binding Data}"/>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
+                <TabControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:EncounterTableMapViewModel}">
+                        <views:EncounterTableMapView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:EncounterSetMapViewModel}">
+                        <views:EncounterSetMapView/>
+                    </DataTemplate>
+                </TabControl.Resources>
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="TabItem">
                         <Setter Property="Padding" Value="6,2,2,2"/>

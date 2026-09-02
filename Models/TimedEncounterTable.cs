@@ -1,13 +1,18 @@
 ﻿namespace CrystalLens.Models
 {
-    public record TimedEncounterTable : EncounterTable<DayTime>
+    public record TimedEncounterTable : EncounterTable<DayTime>, IASMData
     {
         public TimedEncounterTable(Dictionary<DayTime, EncounterSet> encounterSets) : base(encounterSets)
         { }
 
-        public class Serializer : ASMSerializer<TimedEncounterTable>
+        public ASMSerializer GetSerializer()
         {
-            internal override TimedEncounterTable ReadAssembly(Queue<ASMCommand> commands)
+            return ASMSerializers.EncounterTable;
+        }
+
+        public class Serializer : ASMSerializer
+        {
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
             {
                 ASMCommand command = commands.Dequeue();
                 command.VerifyOrThrow("db");
@@ -41,15 +46,17 @@
                     encounterSets[time] = new(encounters, probabilities, encounterRates[i]);
                 }
 
-                return new(encounterSets);
+                return new TimedEncounterTable(encounterSets);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, TimedEncounterTable data)
+            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
             {
+                TimedEncounterTable encounterTable = (TimedEncounterTable)data;
+
                 List<string> percents = [];
                 foreach (DayTime time in Enum.GetValues<DayTime>())
                 {
-                    int rate = data.EncounterSets[time].EncounterRate;
+                    int rate = encounterTable.EncounterSets[time].EncounterRate;
                     percents.Add(PercentFromInt(rate));
                 }
                 commands.Enqueue(new("db", percents.ToArray(), "encounter rates: morn/day/nite"));
@@ -57,7 +64,7 @@
                 foreach (DayTime time in Enum.GetValues<DayTime>())
                 {
                     commands.Enqueue(new("", [], time.ToString().ToLower()));
-                    EncounterSet encounters = data.EncounterSets[time];
+                    EncounterSet encounters = encounterTable.EncounterSets[time];
                     foreach (Encounter encounter in encounters.Encounters)
                     {
                         commands.Enqueue(new("db", [encounter.MinLevel.ToString(), encounter.Name]));

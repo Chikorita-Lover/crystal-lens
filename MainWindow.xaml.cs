@@ -26,7 +26,6 @@ namespace CrystalLens
             if (dialog.ShowDialog() == true)
             {
                 ASMFile file = ASMFile.ReadFile(dialog.FileName);
-                EncounterTableMap encounterTables = file.Get(file.Labels.First());
 
                 ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
                 tabs.SelectedIndex = tabs.Items.Count - 1;

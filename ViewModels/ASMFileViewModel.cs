@@ -13,12 +13,33 @@ namespace CrystalLens.ViewModels
         {
             get => File.Path;
         }
-        public EncounterTableMapViewModel EncounterTables { get; }
+        public object Data { get; }
 
         public ASMFileViewModel(ASMFile file)
         {
             File = file;
-            EncounterTables = new(file.Get(file.Labels.First()));
+            Data = CreateDataViewModel(file.Get(file.Labels.First()));
+        }
+
+        private static object CreateDataViewModel(IASMData data)
+        {
+            if (data is EncounterTableMap encounterTableMap)
+            {
+                return new EncounterTableMapViewModel(encounterTableMap);
+            }
+            if (data is EncounterSetMap encounterSetMap)
+            {
+                return new EncounterSetMapViewModel(encounterSetMap);
+            }
+            if (data is TimedEncounterTable encounterTable)
+            {
+                return new EncounterTableViewModel(encounterTable);
+            }
+            if (data is EncounterSet encounterSet)
+            {
+                return new EncounterSetViewModel(encounterSet);
+            }
+            return null;
         }
     }
 }

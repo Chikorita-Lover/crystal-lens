@@ -3,7 +3,7 @@
     /// <summary>
     /// Specialized class for dictionary of location name to EncounterTable
     /// </summary>
-    public class EncounterTableMap
+    public class EncounterTableMap : IASMData
     {
         public Dictionary<string, TimedEncounterTable> EncounterTables;
 
@@ -22,9 +22,14 @@
             return EncounterTables.Keys;
         }
 
-        public class Serializer : ASMSerializer<EncounterTableMap>
+        public ASMSerializer GetSerializer()
         {
-            internal override EncounterTableMap ReadAssembly(Queue<ASMCommand> commands)
+            return ASMSerializers.EncounterTableMap;
+        }
+
+        public class Serializer : ASMSerializer
+        {
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
             {
                 Dictionary<string, TimedEncounterTable> encounterTables = [];
                 ASMCommand command;
@@ -32,7 +37,7 @@
                 {
                     command.VerifyOrThrow("def_grass_wildmons");
 
-                    TimedEncounterTable encounterTable = ASMSerializers.EncounterTable.ReadAssembly(commands);
+                    TimedEncounterTable encounterTable = (TimedEncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands);
                     encounterTables.Add(command.Get(0), encounterTable);
 
                     command = commands.Dequeue();
@@ -42,13 +47,15 @@
                 return new EncounterTableMap(encounterTables);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, EncounterTableMap data)
+            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
             {
+                EncounterTableMap encounterTables = (EncounterTableMap)data;
+
                 commands.Enqueue(new("", []));
-                foreach (string name in data.GetNames())
+                foreach (string name in encounterTables.GetNames())
                 {
                     commands.Enqueue(new("def_grass_wildmons", [name]));
-                    ASMSerializers.EncounterTable.WriteAssembly(commands, data.Get(name));
+                    ASMSerializers.EncounterTable.WriteAssembly(commands, encounterTables.Get(name));
                     commands.Enqueue(new("end_grass_wildmons", []));
                     commands.Enqueue(new());
                 }
