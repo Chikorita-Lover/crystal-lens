@@ -50,9 +50,9 @@
             HP,
             Attack,
             Defense,
+            Speed,
             SpclAtk,
-            SpclDef,
-            Speed
+            SpclDef
         }
 
         public class Serializer : ASMSerializer
