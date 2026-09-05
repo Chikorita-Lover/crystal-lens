@@ -47,6 +47,10 @@ namespace CrystalLens.ViewModels
             {
                 return new EncounterSetViewModel(encounterSet);
             }
+            if (data is PokemonStats pokemonStats)
+            {
+                return new PokemonStatsViewModel(pokemonStats);
+            }
             return null;
         }
     }

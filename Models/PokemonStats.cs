@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.Models
 {
-    class PokemonStats : IASMData
+    public class PokemonStats : IASMData
     {
         public string Name { get; set; }
         public Dictionary<Stat, byte> BaseStats { get; }

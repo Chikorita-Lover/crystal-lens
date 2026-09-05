@@ -1,0 +1,135 @@
+﻿<UserControl x:Class="CrystalLens.Views.PokemonStatsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CrystalLens.Views"
+             xmlns:vm="clr-namespace:CrystalLens.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="TextBox" TargetType="TextBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="NumericBox" BasedOn="{StaticResource TextBox}" TargetType="TextBox">
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="Width" Value="26"/>
+        </Style>
+        <Style x:Key="AlphanumericBox" BasedOn="{StaticResource TextBox}" TargetType="TextBox"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <GroupBox Header="Appearance">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <local:Sprite DataContext="{Binding FrontSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                    <local:Sprite DataContext="{Binding BackSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Profile">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" Content="Name"/>
+                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                        <Label Grid.Column="0" Grid.Row="1" Content="Type"/>
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                            <TextBox Text="{Binding Type1}" Style="{StaticResource AlphanumericBox}" Width="100" Margin="0,0,6,0"/>
+                            <TextBox Text="{Binding Type2}" Style="{StaticResource AlphanumericBox}" Width="100"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" Content="Catch rate"/>
+                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding CatchRate}" Style="{StaticResource NumericBox}"/>
+                        <Label Grid.Column="0" Grid.Row="1" Content="Base EXP yield"/>
+                        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding BaseExp}" Style="{StaticResource NumericBox}"/>
+                        <Label Grid.Column="0" Grid.Row="2" Content="Wild hold items"/>
+                        <StackPanel Grid.Column="1" Grid.Row="2">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Text="{Binding Item1}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                                <Label Content="(23%)"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Text="{Binding Item2}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                                <Label Content="(2%)"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Separator/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" Content="Gender ratio"/>
+                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding GenderRatio}" Style="{StaticResource AlphanumericBox}" Width="150"/>
+                        <Label Grid.Column="0" Grid.Row="1" Content="Egg cycles"/>
+                        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding EggCycles}" Style="{StaticResource NumericBox}"/>
+                        <Label Grid.Column="0" Grid.Row="2" Content="Growth rate"/>
+                        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding GrowthRate}" Style="{StaticResource AlphanumericBox}" Width="160"/>
+                        <Label Grid.Column="0" Grid.Row="3" Content="Egg Groups"/>
+                        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
+                            <TextBox Text="{Binding EggGroup1}" Style="{StaticResource AlphanumericBox}" Width="150" Margin="0,0,6,0"/>
+                            <TextBox Text="{Binding EggGroup2}" Style="{StaticResource AlphanumericBox}" Width="150"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <GroupBox Header="Base stats">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding BaseStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding Stat}" Width="120"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBox Text="{Binding Value,Mode=TwoWay}" Style="{StaticResource NumericBox}"/>
+                                        <ProgressBar Value="{Binding Value}" Maximum="255" Width="255" Height="4"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Total" Width="120"/>
+                        <TextBox Text="{Binding BaseStatTotal,Mode=OneWay}" Style="{StaticResource NumericBox}" IsReadOnly="True"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="TM/HM/Tutor moves">
+                <ListBox ItemsSource="{Binding TMMoves}" Height="204"/>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

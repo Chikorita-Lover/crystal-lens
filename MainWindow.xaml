@@ -64,6 +64,9 @@
                     <DataTemplate DataType="{x:Type vm:EncounterSetMapViewModel}">
                         <views:EncounterSetMapView/>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:PokemonStatsViewModel}">
+                        <views:PokemonStatsView/>
+                    </DataTemplate>
                 </TabControl.Resources>
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="TabItem">
