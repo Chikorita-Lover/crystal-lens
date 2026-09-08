@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Windows;
-using System.Windows.Media.Imaging;
+﻿using CrystalLens.Models;
 
 namespace CrystalLens.ViewModels
 {
@@ -8,37 +6,18 @@ namespace CrystalLens.ViewModels
     {
         public string Path
         {
-            get; set { field = value; UpdateBitmap(); }
-        }
-        public BitmapSource Source
-        {
-            get; private set { field = value; OnPropertyChanged(); }
+            get; set { field = value; OnPropertyChanged(); }
         }
         public int Width
         {
-            get; private set { field = value; OnPropertyChanged(); }
+            get; set { field = value; OnPropertyChanged(); }
+        }
+        public SpriteAnimation? Animation
+        {
+            get; set { field = value; OnPropertyChanged(); }
         }
 
         public SpriteViewModel()
         { }
-
-        private void UpdateBitmap()
-        {
-            try
-            {
-                BitmapImage image = new(new Uri(Path));
-                Width = image.PixelWidth;
-                Int32Rect rect = new(0, 0, Width, Width);
-                Source = new CroppedBitmap(image, rect);
-            }
-            catch (UriFormatException)
-            {
-                Source = null;
-            }
-            catch (FileNotFoundException)
-            {
-                Source = null;
-            }
-        }
     }
 }

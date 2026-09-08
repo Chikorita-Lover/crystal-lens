@@ -14,7 +14,11 @@
             commands => { ASMCommand command = commands.Peek(); return command.Command == "db" && command.Count == 1; },
             ASMSerializers.PokemonStats
             );
-        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, PokemonStats];
+        public static readonly ASMDataType SpriteAnimation = new(
+            commands => { ASMCommand command = commands.Peek(); return command.Command == "frame" || command.Command == "setrepeat"; },
+            ASMSerializers.SpriteAnimation
+            );
+        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, PokemonStats, SpriteAnimation];
 
         public readonly Predicate<Queue<ASMCommand>> CommandPredicate;
         public readonly ASMSerializer Serializer;

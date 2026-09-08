@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              mc:Ignorable="d">
     <Border Height="56" Width="56" Background="White">
-        <Image Name="image" Source="{Binding Source}" Width="{Binding Width}" VerticalAlignment="Bottom">
+        <Image Name="image" Width="{Binding Width}" VerticalAlignment="Bottom">
             <Image.Style>
                 <Style TargetType="Image">
                     <Setter Property="HorizontalAlignment" Value="Center"/>

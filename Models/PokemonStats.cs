@@ -1,4 +1,6 @@
-﻿namespace CrystalLens.Models
+﻿using System.IO;
+
+namespace CrystalLens.Models
 {
     public class PokemonStats : IASMData
     {
@@ -17,6 +19,7 @@
         public string EggGroup1 { get; set; }
         public string EggGroup2 { get; set; }
         public List<string> TMMoves { get; }
+        public SpriteAnimation Animation;
 
         public PokemonStats(string name, Dictionary<Stat, byte> baseStats, string type1,
             string type2, byte catchRate, byte baseExp, string item1, string item2,
@@ -38,6 +41,9 @@
             EggGroup1 = eggGroup1;
             EggGroup2 = eggGroup2;
             TMMoves = tmMoves;
+
+            ASMFile file = ASMFile.ReadFile(Path.Combine(@"C:\Users\cjgar\Git\celebi", Path.GetDirectoryName(spritePath), "anim.asm"));
+            Animation = (SpriteAnimation)file.Get(string.Empty);
         }
 
         public ASMSerializer GetSerializer()

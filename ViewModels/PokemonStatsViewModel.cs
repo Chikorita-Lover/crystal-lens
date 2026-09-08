@@ -41,6 +41,7 @@ namespace CrystalLens.ViewModels
             EggGroup1 = model.EggGroup1;
             EggGroup2 = model.EggGroup2;
             FrontSprite.Path = Path.Combine(@"C:\Users\cjgar\Git\celebi", model.SpritePath.Replace(".dimensions", ".png"));
+            FrontSprite.Animation = model.Animation;
             BackSprite.Path = FrontSprite.Path.Replace("front", "back");
             TMMoves = new(model.TMMoves);
 

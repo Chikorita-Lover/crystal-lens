@@ -49,6 +49,11 @@ namespace CrystalLens.Models
             return int.Parse(Get(index));
         }
 
+        public byte GetByte(int index)
+        {
+            return byte.Parse(Get(index));
+        }
+
         public bool IsComment()
         {
             return Command.IsWhiteSpace();
