@@ -4,24 +4,72 @@ using System.IO;
 
 namespace CrystalLens.ViewModels
 {
-    public class PokemonStatsViewModel : IChangeTracking
+    public class PokemonStatsViewModel : ObservableViewModel, IChangeTracking
     {
         private readonly ChangeTracker tracker = new();
         public PokemonStats Model { get; }
-        public string Name { get; set; }
-        public string Type1 { get; set; }
-        public string Type2 { get; set; }
-        public byte CatchRate { get; set; }
-        public byte BaseExp { get; set; }
-        public string Item1 { get; set; }
-        public string Item2 { get; set; }
-        public string GenderRatio { get; set; }
-        public byte EggCycles { get; set; }
-        public string GrowthRate { get; set; }
-        public string EggGroup1 { get; set; }
-        public string EggGroup2 { get; set; }
+        public string Name
+        {
+            get => Model.Name;
+            set { Model.Name = value; OnPropertyChanged(); }
+        }
+        public string Type1
+        {
+            get => Model.Type1;
+            set { Model.Type1 = value; OnPropertyChanged(); }
+        }
+        public string Type2
+        {
+            get => Model.Type2;
+            set { Model.Type2 = value; OnPropertyChanged(); }
+        }
+        public byte CatchRate
+        {
+            get => Model.CatchRate;
+            set { Model.CatchRate = value; OnPropertyChanged(); }
+        }
+        public byte BaseExp
+        {
+            get => Model.BaseExp;
+            set { Model.BaseExp = value; OnPropertyChanged(); }
+        }
+        public string Item1
+        {
+            get => Model.Item1;
+            set { Model.Item1 = value; OnPropertyChanged(); }
+        }
+        public string Item2
+        {
+            get => Model.Item2;
+            set { Model.Item2 = value; OnPropertyChanged(); }
+        }
+        public string GenderRatio
+        {
+            get => Model.GenderRatio;
+            set { Model.GenderRatio = value; OnPropertyChanged(); }
+        }
+        public byte EggCycles
+        {
+            get => Model.EggCycles;
+            set { Model.EggCycles = value; OnPropertyChanged(); }
+        }
+        public string GrowthRate
+        {
+            get => Model.GrowthRate;
+            set { Model.GrowthRate = value; OnPropertyChanged(); }
+        }
+        public string EggGroup1
+        {
+            get => Model.EggGroup1;
+            set { Model.EggGroup1 = value; OnPropertyChanged(); }
+        }
+        public string EggGroup2
+        {
+            get => Model.EggGroup2;
+            set { Model.EggGroup2 = value; OnPropertyChanged(); }
+        }
         public ObservableCollection<StatEntry> BaseStats { get; }
-        public int BaseStatTotal { get; private set; }
+        public int BaseStatTotal => BaseStats.Sum(stat => stat.Value);
         public ObservableCollection<string> TMMoves { get; }
         public SpriteViewModel FrontSprite { get; } = new();
         public SpriteViewModel BackSprite { get; } = new();
@@ -31,22 +79,12 @@ namespace CrystalLens.ViewModels
         public PokemonStatsViewModel(PokemonStats model)
         {
             Model = model;
-            Name = model.Name;
-            Type1 = model.Type1;
-            Type2 = model.Type2;
-            CatchRate = model.CatchRate;
-            BaseExp = model.BaseExp;
-            Item1 = model.Item1;
-            Item2 = model.Item2;
-            GenderRatio = model.GenderRatio;
-            EggCycles = model.EggCycles;
-            GrowthRate = model.GrowthRate;
-            EggGroup1 = model.EggGroup1;
-            EggGroup2 = model.EggGroup2;
             FrontSprite.Path = Path.Combine(@"C:\Users\cjgar\Git\celebi", model.SpritePath.Replace(".dimensions", ".png"));
             FrontSprite.Animation = model.Animation;
             BackSprite.Path = FrontSprite.Path.Replace("front", "back");
             TMMoves = new(model.TMMoves);
+
+            PropertyChanged += PokemonStatsViewModel_PropertyChanged;
 
             BaseStats = [];
             foreach (PokemonStats.Stat stat in model.BaseStats.Keys)
@@ -55,17 +93,18 @@ namespace CrystalLens.ViewModels
                 BaseStats.Add(entry);
                 entry.PropertyChanged += StatEntry_PropertyChanged;
             }
-            UpdateBaseStatTotal();
         }
 
-        private void UpdateBaseStatTotal()
+        private void PokemonStatsViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            BaseStatTotal = BaseStats.Sum(stat => stat.Value);
+            tracker.MarkAsUnsaved();
         }
 
         private void StatEntry_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            UpdateBaseStatTotal();
+            StatEntry entry = (StatEntry)sender;
+            Model.BaseStats[entry.Stat] = entry.Value;
+            OnPropertyChanged(nameof(BaseStatTotal));
         }
 
         public class StatEntry : ObservableViewModel
