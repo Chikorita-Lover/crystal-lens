@@ -12,20 +12,13 @@ namespace CrystalLens.ViewModels
             get;
             set { field = value; OnPropertyChanged(); }
         }
-        public ICommand CloseTabCommand { get; }
         public ICommand NextTabCommand { get; }
         public ICommand PreviousTabCommand { get; }
 
         public MainViewModel()
         {
-            CloseTabCommand = new RelayCommand(CloseTab_Execute);
             NextTabCommand = new RelayCommand(NextTab_Execute);
             PreviousTabCommand = new RelayCommand(PreviousTab_Execute);
-        }
-
-        private void CloseTab_Execute(object parameter)
-        {
-            OpenFiles.Remove((ASMFileViewModel)parameter);
         }
 
         private void NextTab_Execute(object parameter)

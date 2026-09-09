@@ -43,8 +43,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Name}"/>
                             <Button Width="18" Height="18" Background="Transparent" BorderBrush="Transparent" Margin="4,0,0,0"
-                                    Command="{Binding DataContext.CloseTabCommand,RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                    CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
+                                    Command="ApplicationCommands.Close" CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image">

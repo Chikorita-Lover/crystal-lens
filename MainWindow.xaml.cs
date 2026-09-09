@@ -16,6 +16,15 @@ namespace CrystalLens
             InitializeComponent();
         }
 
+        private void SaveFile(ASMFileViewModel viewModel)
+        {
+            ((IChangeTracking)viewModel).Tracker.MarkAsSaved();
+            ASMFile file = viewModel.File;
+            using StreamWriter output = new(file.Path);
+            file.WriteFile(output);
+            output.Close();
+        }
+
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog dialog = new()
@@ -34,12 +43,8 @@ namespace CrystalLens
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ASMFileViewModel fileVM = (ASMFileViewModel)tabs.SelectedItem;
-            ((IChangeTracking)fileVM).Tracker.MarkAsSaved();
-            ASMFile file = fileVM.File;
-            using StreamWriter output = new(file.Path);
-            file.WriteFile(output);
-            output.Close();
+            ASMFileViewModel file = (ASMFileViewModel)tabs.SelectedItem;
+            SaveFile(file);
         }
 
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -61,13 +66,28 @@ namespace CrystalLens
             if (dialog.ShowDialog() == true)
             {
                 file.Path = dialog.FileName;
-                Save_Executed(sender, e);
+                SaveFile(file);
             }
         }
 
         private void Close_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ViewModel.OpenFiles.RemoveAt(tabs.SelectedIndex);
+            ASMFileViewModel file = e.Parameter as ASMFileViewModel ?? (ASMFileViewModel)tabs.SelectedItem;
+            MessageBoxResult? result = null;
+            if (file.HasUnsavedChanges)
+            {
+                string text = $"{file.Name} has unsaved changes. Would you like to save?";
+                result = MessageBox.Show(text, "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    SaveFile(file);
+                }
+            }
+            if (result != MessageBoxResult.Cancel)
+            {
+                ViewModel.OpenFiles.Remove(file);
+            }
         }
 
         private void Close_CanExecute(object sender, CanExecuteRoutedEventArgs e)
