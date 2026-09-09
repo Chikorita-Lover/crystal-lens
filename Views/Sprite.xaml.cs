@@ -81,6 +81,10 @@ namespace CrystalLens.Views
             {
                 animation = CreateAnimationTimeline(ViewModel.Animation);
             }
+            else if (e.PropertyName == nameof(SpriteViewModel.Path))
+            {
+                UpdateBitmap(Frame);
+            }
         }
 
         private static ByteAnimationUsingKeyFrames CreateAnimationTimeline(SpriteAnimation animation)
