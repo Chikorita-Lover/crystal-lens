@@ -4,8 +4,9 @@ using System.IO;
 
 namespace CrystalLens.ViewModels
 {
-    public class PokemonStatsViewModel
+    public class PokemonStatsViewModel : IChangeTracking
     {
+        private readonly ChangeTracker tracker = new();
         public PokemonStats Model { get; }
         public string Name { get; set; }
         public string Type1 { get; set; }
@@ -24,6 +25,8 @@ namespace CrystalLens.ViewModels
         public ObservableCollection<string> TMMoves { get; }
         public SpriteViewModel FrontSprite { get; } = new();
         public SpriteViewModel BackSprite { get; } = new();
+
+        ChangeTracker IChangeTracking.Tracker => tracker;
 
         public PokemonStatsViewModel(PokemonStats model)
         {

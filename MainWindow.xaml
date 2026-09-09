@@ -43,8 +43,25 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Name}"/>
                             <Button Width="18" Height="18" Background="Transparent" BorderBrush="Transparent" Margin="4,0,0,0"
-                                    Command="{Binding DataContext.CloseTabCommand,RelativeSource={RelativeSource AncestorType={x:Type Window}}}" CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
-                                <Image Source="/Assets/Images/Close.png"/>
+                                    Command="{Binding DataContext.CloseTabCommand,RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                    CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
+                                <Image>
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                    <Setter Property="Source" Value="/Assets/Images/Unsaved.png"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="False">
+                                                    <Setter Property="Source" Value="/Assets/Images/Close.png"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                                    <Setter Property="Source" Value="/Assets/Images/Close.png"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
                             </Button>
                             <StackPanel.ToolTip>
                                 <TextBlock Text="{Binding Path}"/>

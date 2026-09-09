@@ -34,7 +34,9 @@ namespace CrystalLens
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ASMFile file = ((ASMFileViewModel)tabs.SelectedItem).File;
+            ASMFileViewModel fileVM = (ASMFileViewModel)tabs.SelectedItem;
+            ((IChangeTracking)fileVM).Tracker.MarkAsSaved();
+            ASMFile file = fileVM.File;
             using StreamWriter output = new(file.Path);
             file.WriteFile(output);
             output.Close();

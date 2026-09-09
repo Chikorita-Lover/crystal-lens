@@ -2,9 +2,10 @@
 
 namespace CrystalLens.ViewModels
 {
-    public class ASMFileViewModel : ObservableViewModel
+    public class ASMFileViewModel : ObservableViewModel, IChangeTracking
     {
         public readonly ASMFile File;
+        private readonly ChangeTracker tracker = new();
         public string Path
         {
             get;
@@ -21,12 +22,25 @@ namespace CrystalLens.ViewModels
             get; set { field = value; OnPropertyChanged(); }
         }
         public object Data { get; }
+        public bool HasUnsavedChanges
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
+
+        ChangeTracker IChangeTracking.Tracker => tracker;
 
         public ASMFileViewModel(ASMFile file)
         {
             File = file;
             Path = file.Path;
             Data = CreateDataViewModel(file.Get(file.Labels.First()));
+            tracker.TryAddChildOf(Data);
+            tracker.StatusChanged += Tracker_StatusChanged;
+        }
+
+        private void Tracker_StatusChanged(object? sender, EventArgs e)
+        {
+            HasUnsavedChanges = tracker.HasUnsavedChanges;
         }
 
         private static object CreateDataViewModel(IASMData data)

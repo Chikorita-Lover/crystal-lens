@@ -2,8 +2,9 @@
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterSetMapViewModel : ObservableViewModel
+    public class EncounterSetMapViewModel : ObservableViewModel, IChangeTracking
     {
+        private readonly ChangeTracker tracker = new();
         public EncounterSetMap EncounterSets { get; set; }
         public string SelectedMap
         {
@@ -12,6 +13,8 @@ namespace CrystalLens.ViewModels
             {
                 field = value;
                 SelectedEncounters = new(EncounterSets.Get(value));
+                tracker.ClearChildren();
+                tracker.TryAddChildOf(SelectedEncounters);
             }
         }
         public ICollection<string> MapNames
@@ -27,6 +30,8 @@ namespace CrystalLens.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        ChangeTracker IChangeTracking.Tracker => tracker;
 
         internal EncounterSetMapViewModel(EncounterSetMap encounterSets)
         {
