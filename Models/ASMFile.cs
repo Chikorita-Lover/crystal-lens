@@ -67,6 +67,20 @@ namespace CrystalLens.Models
             return file;
         }
 
+        public static bool TryReadFile(string path, out ASMFile data)
+        {
+            try
+            {
+                data = ReadFile(path);
+                return true;
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+            {
+                data = new(path);
+                return false;
+            }
+        }
+
         private static ASMDataType? DetermineDataType(Queue<ASMCommand> commands)
         {
             foreach (ASMDataType type in ASMDataType.Values)

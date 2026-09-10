@@ -42,8 +42,11 @@ namespace CrystalLens.Models
             EggGroup2 = eggGroup2;
             TMMoves = tmMoves;
 
-            ASMFile file = ASMFile.ReadFile(Path.Combine(@"C:\Users\cjgar\Git\celebi", Path.GetDirectoryName(spritePath), "anim.asm"));
-            Animation = (SpriteAnimation)file.Get(string.Empty);
+            ASMFile file;
+            if (ASMFile.TryReadFile(Path.Combine(@"C:\Users\cjgar\Git\celebi", Path.GetDirectoryName(spritePath), "anim.asm"), out file))
+            {
+                Animation = (SpriteAnimation)file.Get(string.Empty);
+            }
         }
 
         public ASMSerializer GetSerializer()
