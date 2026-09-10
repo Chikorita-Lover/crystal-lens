@@ -33,9 +33,12 @@ namespace CrystalLens.Models
                 ASMCommand command = ASMCommand.FromLine(line);
                 if (command.Command.EndsWith(':'))
                 {
-                    string label = command.Command.Split(':')[0];
-                    commands = [];
-                    labeledCommands.Add(label, commands);
+                    if (!command.Command.Contains('.')) // TEMP
+                    {
+                        string label = command.Command.Split(':')[0];
+                        commands = [];
+                        labeledCommands.Add(label, commands);
+                    }
                 }
                 else if (!command.Command.IsWhiteSpace())
                 {

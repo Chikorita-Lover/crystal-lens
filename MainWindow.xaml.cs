@@ -3,17 +3,28 @@ using CrystalLens.ViewModels;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CrystalLens
 {
     public partial class MainWindow : Window
     {
+        public static readonly RoutedCommand OpenProjectCommand = new();
+
         private MainViewModel ViewModel => (MainViewModel)DataContext;
 
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OpenFile(string path)
+        {
+            ASMFile file = ASMFile.ReadFile(path);
+
+            ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
+            tabs.SelectedIndex = tabs.Items.Count - 1;
         }
 
         private void SaveFile(ASMFileViewModel viewModel)
@@ -34,10 +45,17 @@ namespace CrystalLens
 
             if (dialog.ShowDialog() == true)
             {
-                ASMFile file = ASMFile.ReadFile(dialog.FileName);
+                OpenFile(dialog.FileName);
+            }
+        }
 
-                ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
-                tabs.SelectedIndex = tabs.Items.Count - 1;
+        private void OpenProject_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            OpenFolderDialog dialog = new();
+
+            if (dialog.ShowDialog() == true)
+            {
+                ViewModel.OpenProject = new(ASMProject.OpenProject(dialog.FolderName));
             }
         }
 
@@ -93,6 +111,12 @@ namespace CrystalLens
         private void Close_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = tabs.HasItems;
+        }
+
+        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
+            OpenFile(fileEntry.Path);
         }
     }
 }

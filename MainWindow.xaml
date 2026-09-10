@@ -12,6 +12,7 @@
         <vm:MainViewModel/>
     </Window.DataContext>
     <Window.InputBindings>
+        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="{x:Static local:MainWindow.OpenProjectCommand}"/>
         <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="ApplicationCommands.SaveAs"/>
         <KeyBinding Key="W" Modifiers="Ctrl" Command="ApplicationCommands.Close"/>
         <KeyBinding Key="Tab" Modifiers="Ctrl" Command="{Binding NextTabCommand}"/>
@@ -19,6 +20,7 @@
     </Window.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="Open_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.OpenProjectCommand}" Executed="OpenProject_Executed"/>
         <CommandBinding Command="ApplicationCommands.Save" Executed="Save_Executed" CanExecute="Save_CanExecute"/>
         <CommandBinding Command="ApplicationCommands.SaveAs" Executed="SaveAs_Executed" CanExecute="Save_CanExecute"/>
         <CommandBinding Command="ApplicationCommands.Close" Executed="Close_Executed" CanExecute="Close_CanExecute"/>
@@ -28,6 +30,7 @@
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open..." Command="ApplicationCommands.Open"/>
+                    <MenuItem Header="Open Project..." Command="{x:Static local:MainWindow.OpenProjectCommand}" InputGestureText="Ctrl+Shift+O"/>
                     <Separator/>
                     <MenuItem Header="_Save" Command="ApplicationCommands.Save"/>
                     <MenuItem Header="Save _As..." Command="ApplicationCommands.SaveAs" InputGestureText="Ctrl+Shift+S"/>
@@ -37,6 +40,29 @@
                     <MenuItem Header="E_xit"/>
                 </MenuItem>
             </Menu>
+            <Grid DockPanel.Dock="Left" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Project Explorer"/>
+                <ListView Grid.Row="1" ItemsSource="{Binding OpenProject.FileEntries}" Width="250" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" Margin="0,0,6,0"/>
+                                <TextBlock Text="{Binding ShortPath}" Opacity="0.5"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                            <Setter Property="ToolTip" Value="{Binding Path}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </Grid>
             <TabControl Name="tabs" ItemsSource="{Binding OpenFiles}" SelectedIndex="{Binding SelectedFile,Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>

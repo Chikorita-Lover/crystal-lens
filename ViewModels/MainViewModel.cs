@@ -1,4 +1,5 @@
 ﻿using CrystalLens.Commands;
+using CrystalLens.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -6,6 +7,10 @@ namespace CrystalLens.ViewModels
 {
     public class MainViewModel : ObservableViewModel
     {
+        public ASMProjectViewModel? OpenProject
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
         public ObservableCollection<ASMFileViewModel> OpenFiles { get; } = [];
         public int SelectedFile
         {
