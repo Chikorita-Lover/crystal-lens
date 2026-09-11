@@ -4,6 +4,7 @@ namespace CrystalLens.Models
 {
     public class PokemonStats : IASMData
     {
+        private readonly ASMFile _file;
         public string Name { get; set; }
         public Dictionary<Stat, byte> BaseStats { get; }
         public string Type1 { get; set; }
@@ -21,11 +22,14 @@ namespace CrystalLens.Models
         public List<string> TMMoves { get; }
         public SpriteAnimation Animation;
 
-        public PokemonStats(string name, Dictionary<Stat, byte> baseStats, string type1,
+        ASMFile IASMData.File => _file;
+
+        public PokemonStats(ASMFile file, string name, Dictionary<Stat, byte> baseStats, string type1,
             string type2, byte catchRate, byte baseExp, string item1, string item2,
             string genderRatio, byte eggCycles, string spritePath, string growthRate,
             string eggGroup1, string eggGroup2, List<string> tmMoves)
         {
+            _file = file;
             Name = name;
             BaseStats = baseStats;
             Type1 = type1;
@@ -42,10 +46,12 @@ namespace CrystalLens.Models
             EggGroup2 = eggGroup2;
             TMMoves = tmMoves;
 
-            ASMFile file;
-            if (ASMFile.TryReadFile(Path.Combine(@"C:\Users\cjgar\Git\celebi", Path.GetDirectoryName(spritePath), "anim.asm"), out file))
+            if (file.Project != null)
             {
-                Animation = (SpriteAnimation)file.Get(string.Empty);
+                if (ASMFile.TryReadFile(file.Project, Path.Combine(file.Project.Path, Path.GetDirectoryName(spritePath), "anim.asm"), out file))
+                {
+                    Animation = (SpriteAnimation)file.Get(string.Empty);
+                }
             }
         }
 
@@ -66,7 +72,7 @@ namespace CrystalLens.Models
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 ASMCommand command;
                 command = commands.Dequeue();
@@ -132,7 +138,7 @@ namespace CrystalLens.Models
                 command.VerifyOrThrow("tmhm");
                 List<string> tmMoves = ReadTMsFromCommand(command);
 
-                return new PokemonStats(name, baseStats, type1, type2, catchRate, baseExp, item1, item2, genderRatio, eggCycles, spritePath, growthRate, eggGroup1, eggGroup2, tmMoves);
+                return new PokemonStats(file, name, baseStats, type1, type2, catchRate, baseExp, item1, item2, genderRatio, eggCycles, spritePath, growthRate, eggGroup1, eggGroup2, tmMoves);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

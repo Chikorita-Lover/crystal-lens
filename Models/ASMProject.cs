@@ -15,22 +15,20 @@ namespace CrystalLens.Models
 
         public static ASMProject OpenProject(string path)
         {
-            ASMProject project = new(path)
-            {
-                ProjectFiles = new(GetFilesInDirectory(System.IO.Path.Combine(path, "data")))
-            };
+            ASMProject project = new(path);
+            project.ProjectFiles = new(project.LoadFilesFromDirectory(System.IO.Path.Combine(path, "data")));
 
             return project;
         }
 
-        private static List<ASMFile> GetFilesInDirectory(string path)
+        private List<ASMFile> LoadFilesFromDirectory(string path)
         {
             List<ASMFile> openFiles = [];
 
             string[] directories = Directory.GetDirectories(path);
             foreach (string directory in directories)
             {
-                openFiles.AddRange(GetFilesInDirectory(directory));
+                openFiles.AddRange(LoadFilesFromDirectory(directory));
             }
 
             string[] files = Directory.GetFiles(path, "*.asm");
@@ -38,7 +36,7 @@ namespace CrystalLens.Models
             {
                 try
                 {
-                    ASMFile file = ASMFile.ReadFile(filePath);
+                    ASMFile file = ASMFile.ReadFile(filePath, this);
                     openFiles.Add(file);
                 }
                 catch (FileFormatException)

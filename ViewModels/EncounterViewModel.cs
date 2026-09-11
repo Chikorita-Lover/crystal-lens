@@ -6,7 +6,7 @@ namespace CrystalLens.ViewModels
     {
         public string Name
         {
-            get; set { field = value; UpdateSprite(); OnPropertyChanged(); }
+            get; set { field = value; OnPropertyChanged(); }
         }
         public int Level
         {
@@ -25,12 +25,6 @@ namespace CrystalLens.ViewModels
         internal Encounter ToModel()
         {
             return new(Level, Name);
-        }
-
-        private void UpdateSprite()
-        {
-            string spriteName = Name == "UNOWN" ? "unown_a" : Name.ToLower();
-            Sprite.Path = $@"C:\Users\cjgar\Git\celebi\gfx\pokemon\{spriteName}\front.png";
         }
     }
 }

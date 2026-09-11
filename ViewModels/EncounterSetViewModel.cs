@@ -1,5 +1,6 @@
 ﻿using CrystalLens.Models;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace CrystalLens.ViewModels
 {
@@ -36,10 +37,16 @@ namespace CrystalLens.ViewModels
 
         private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            EncounterViewModel viewModel = (EncounterViewModel)sender;
-            int index = Encounters.IndexOf(viewModel);
-            EncounterSet.Encounters[index] = viewModel.ToModel();
+            EncounterViewModel encounter = (EncounterViewModel)sender;
+            int index = Encounters.IndexOf(encounter);
+            EncounterSet.Encounters[index] = encounter.ToModel();
             tracker.MarkAsUnsaved();
+
+            ASMProject? project = ((IASMData)EncounterSet).File.Project;
+            if (project != null)
+            {
+                encounter.Sprite.Path = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Name.ToLower()}/front.png");
+            }
         }
     }
 }

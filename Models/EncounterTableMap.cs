@@ -5,10 +5,14 @@
     /// </summary>
     public class EncounterTableMap : IASMData
     {
+        private readonly ASMFile _file;
         public Dictionary<string, EncounterTable> EncounterTables;
 
-        public EncounterTableMap(Dictionary<string, EncounterTable> encounterTables)
+        ASMFile IASMData.File => _file;
+
+        public EncounterTableMap(ASMFile file, Dictionary<string, EncounterTable> encounterTables)
         {
+            _file = file;
             EncounterTables = encounterTables;
         }
 
@@ -29,7 +33,7 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 Dictionary<string, EncounterTable> encounterTables = [];
                 ASMCommand command;
@@ -37,14 +41,14 @@
                 {
                     command.VerifyOrThrow("def_grass_wildmons");
 
-                    EncounterTable encounterTable = (EncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands);
+                    EncounterTable encounterTable = (EncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands, file);
                     encounterTables.Add(command.Get(0), encounterTable);
 
                     command = commands.Dequeue();
                     command.VerifyOrThrow("end_grass_wildmons");
                 }
 
-                return new EncounterTableMap(encounterTables);
+                return new EncounterTableMap(file, encounterTables);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

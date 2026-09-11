@@ -2,7 +2,7 @@
 {
     public abstract class ASMSerializer
     {
-        internal abstract IASMData ReadAssembly(Queue<ASMCommand> commands);
+        internal abstract IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file);
 
         internal abstract void WriteAssembly(Queue<ASMCommand> commands, IASMData data);
     }

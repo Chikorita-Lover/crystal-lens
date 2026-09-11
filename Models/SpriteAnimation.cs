@@ -2,18 +2,22 @@
 {
     public class SpriteAnimation : IASMData
     {
-        private readonly List<Command> commands;
+        private readonly List<Command> _commands;
+        private readonly ASMFile _file;
 
-        public int CommandCount => commands.Count;
+        public int CommandCount => _commands.Count;
 
-        public SpriteAnimation(List<Command> commands)
+        ASMFile IASMData.File => _file;
+
+        public SpriteAnimation(ASMFile file, List<Command> commands)
         {
-            this.commands = commands;
+            _file = file;
+            _commands = commands;
         }
 
         public Command Get(int index)
         {
-            return commands[index];
+            return _commands[index];
         }
 
         public ASMSerializer GetSerializer()
@@ -37,7 +41,7 @@
         {
             private static readonly string endanimCommand = "endanim";
 
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 List<Command> animCommands = [];
                 ASMCommand command;
@@ -52,7 +56,7 @@
                     };
                     animCommands.Add(animCommand);
                 }
-                return new SpriteAnimation(animCommands);
+                return new SpriteAnimation(file, animCommands);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

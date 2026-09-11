@@ -1,7 +1,22 @@
 ﻿namespace CrystalLens.Models
 {
-    public record EncounterSet(List<Encounter> Encounters, List<int> Probabilities, int EncounterRate) : IASMData
+    public class EncounterSet : IASMData
     {
+        private readonly ASMFile _file;
+        public List<Encounter> Encounters;
+        public List<int> Probabilities;
+        public int EncounterRate;
+
+        ASMFile IASMData.File => _file;
+
+        public EncounterSet(ASMFile file, List<Encounter> encounters, List<int> probabilities, int encounterRate)
+        {
+            _file = file;
+            Encounters = encounters;
+            Probabilities = probabilities;
+            EncounterRate = encounterRate;
+        }
+
         public Encounter Get(int index)
         {
             return Encounters[index];
@@ -19,7 +34,7 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 ASMCommand command = commands.Dequeue();
                 command.VerifyOrThrow("db");
@@ -45,7 +60,7 @@
                     encounters.Add(encounter);
                 }
 
-                return new EncounterSet(encounters, probabilities, encounterRate);
+                return new EncounterSet(file, encounters, probabilities, encounterRate);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

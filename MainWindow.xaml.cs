@@ -19,12 +19,14 @@ namespace CrystalLens
             InitializeComponent();
         }
 
-        private void OpenFile(string path)
+        private ASMFile OpenFile(string path, ASMProject? project)
         {
-            ASMFile file = ASMFile.ReadFile(path);
+            ASMFile file = ASMFile.ReadFile(path, project);
 
             ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
             tabs.SelectedIndex = tabs.Items.Count - 1;
+
+            return file;
         }
 
         private void SaveFile(ASMFileViewModel viewModel)
@@ -45,7 +47,7 @@ namespace CrystalLens
 
             if (dialog.ShowDialog() == true)
             {
-                OpenFile(dialog.FileName);
+                OpenFile(dialog.FileName, null);
             }
         }
 
@@ -116,7 +118,7 @@ namespace CrystalLens
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
-            OpenFile(fileEntry.Path);
+            ASMFile file = OpenFile(fileEntry.Path, ViewModel.OpenProject.Model);
         }
     }
 }

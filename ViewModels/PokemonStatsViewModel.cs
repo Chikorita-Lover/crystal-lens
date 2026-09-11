@@ -79,10 +79,15 @@ namespace CrystalLens.ViewModels
         public PokemonStatsViewModel(PokemonStats model)
         {
             Model = model;
-            FrontSprite.Path = Path.Combine(@"C:\Users\cjgar\Git\celebi", model.SpritePath.Replace(".dimensions", ".png"));
-            FrontSprite.Animation = model.Animation;
-            BackSprite.Path = FrontSprite.Path.Replace("front", "back");
             TMMoves = new(model.TMMoves);
+
+            ASMProject? project = ((IASMData)model).File.Project;
+            if (project != null)
+            {
+                FrontSprite.Path = Path.Combine(project.Path, model.SpritePath.Replace(".dimensions", ".png"));
+                FrontSprite.Animation = model.Animation;
+                BackSprite.Path = FrontSprite.Path.Replace("front", "back");
+            }
 
             PropertyChanged += PokemonStatsViewModel_PropertyChanged;
 

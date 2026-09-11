@@ -1,7 +1,18 @@
 ﻿namespace CrystalLens.Models
 {
-    public record EncounterTable(Dictionary<DayTime, EncounterSet> EncounterSets) : IASMData
+    public class EncounterTable : IASMData
     {
+        private readonly ASMFile _file;
+        public Dictionary<DayTime, EncounterSet> EncounterSets;
+
+        ASMFile IASMData.File => _file;
+
+        public EncounterTable(ASMFile file, Dictionary<DayTime, EncounterSet> encounterSets)
+        {
+            _file = file;
+            EncounterSets = encounterSets;
+        }
+
         public EncounterSet Get(DayTime time)
         {
             return EncounterSets[time];
@@ -19,7 +30,7 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 ASMCommand command = commands.Dequeue();
                 command.VerifyOrThrow("db");
@@ -50,10 +61,10 @@
                         encounters.Add(encounter);
                     }
                     DayTime time = Enum.GetValues<DayTime>()[i];
-                    encounterSets[time] = new(encounters, probabilities, encounterRates[i]);
+                    encounterSets[time] = new(file, encounters, probabilities, encounterRates[i]);
                 }
 
-                return new EncounterTable(encounterSets);
+                return new EncounterTable(file, encounterSets);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

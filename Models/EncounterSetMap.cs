@@ -2,10 +2,14 @@
 {
     public class EncounterSetMap : IASMData
     {
+        private readonly ASMFile _file;
         public Dictionary<string, EncounterSet> EncounterSets;
 
-        public EncounterSetMap(Dictionary<string, EncounterSet> encounterSets)
+        ASMFile IASMData.File => _file;
+
+        public EncounterSetMap(ASMFile file, Dictionary<string, EncounterSet> encounterSets)
         {
+            _file = file;
             EncounterSets = encounterSets;
         }
 
@@ -29,7 +33,7 @@
             private static readonly string defCommand = "def_water_wildmons";
             private static readonly string endCommand = "end_water_wildmons";
 
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands)
+            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
             {
                 Dictionary<string, EncounterSet> encounterSets = [];
                 ASMCommand command;
@@ -37,14 +41,14 @@
                 {
                     command.VerifyOrThrow(defCommand);
 
-                    EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(commands);
+                    EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(commands, file);
                     encounterSets.Add(command.Get(0), encounterSet);
 
                     command = commands.Dequeue();
                     command.VerifyOrThrow(endCommand);
                 }
 
-                return new EncounterSetMap(encounterSets);
+                return new EncounterSetMap(file, encounterSets);
             }
 
             internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)

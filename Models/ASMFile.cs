@@ -4,13 +4,15 @@ namespace CrystalLens.Models
 {
     public class ASMFile
     {
+        public ASMProject? Project { get; }
         public string Path { get; set; }
         private readonly Dictionary<string, IASMData> labeledData = [];
 
         public ICollection<string> Labels => labeledData.Keys;
 
-        private ASMFile(string path)
+        private ASMFile(ASMProject? project, string path)
         {
+            Project = project;
             Path = path;
         }
 
@@ -19,9 +21,9 @@ namespace CrystalLens.Models
             return labeledData[label];
         }
 
-        public static ASMFile ReadFile(string path)
+        public static ASMFile ReadFile(string path, ASMProject? project)
         {
-            ASMFile file = new(path);
+            ASMFile file = new(project, path);
 
             StreamReader reader = new(path);
             string? line;
@@ -59,7 +61,7 @@ namespace CrystalLens.Models
                 {
                     throw new FileFormatException($"ASM file \"{path}\" contains unsupported data format");
                 }
-                IASMData data = type.Serializer.ReadAssembly(commands);
+                IASMData data = type.Serializer.ReadAssembly(commands, file);
                 file.labeledData.Add(label, data);
             }
 
@@ -67,16 +69,16 @@ namespace CrystalLens.Models
             return file;
         }
 
-        public static bool TryReadFile(string path, out ASMFile data)
+        public static bool TryReadFile(ASMProject? project, string path, out ASMFile data)
         {
             try
             {
-                data = ReadFile(path);
+                data = ReadFile(path, project);
                 return true;
             }
             catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
             {
-                data = new(path);
+                data = new(project, path);
                 return false;
             }
         }

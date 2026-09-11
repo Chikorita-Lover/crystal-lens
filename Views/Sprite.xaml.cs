@@ -44,7 +44,7 @@ namespace CrystalLens.Views
                 Int32Rect rect = new(0, frame * width, width, width);
                 image.Source = new CroppedBitmap(bitmap, rect);
             }
-            catch (Exception ex) when (ex is UriFormatException or FileNotFoundException or DirectoryNotFoundException)
+            catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)
             {
                 image.Source = null;
             }
