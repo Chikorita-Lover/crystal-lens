@@ -1,5 +1,4 @@
 ﻿using CrystalLens.Commands;
-using CrystalLens.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -16,6 +15,10 @@ namespace CrystalLens.ViewModels
         {
             get;
             set { field = value; OnPropertyChanged(); }
+        }
+        public bool LoadingProject
+        {
+            get; set { field = value; OnPropertyChanged(); }
         }
         public ICommand NextTabCommand { get; }
         public ICommand PreviousTabCommand { get; }

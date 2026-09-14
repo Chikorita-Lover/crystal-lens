@@ -51,13 +51,23 @@ namespace CrystalLens
             }
         }
 
-        private void OpenProject_Executed(object sender, ExecutedRoutedEventArgs e)
+        private async void OpenProject_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFolderDialog dialog = new();
 
             if (dialog.ShowDialog() == true)
             {
-                ViewModel.OpenProject = new(ASMProject.OpenProject(dialog.FolderName));
+                ViewModel.LoadingProject = true;
+
+                Task<ASMProject> task = Task.Run(() =>
+                {
+                    return ASMProject.OpenProject(dialog.FolderName);
+                });
+
+                ASMProject project = await task;
+
+                ViewModel.LoadingProject = false;
+                ViewModel.OpenProject = new(project);
             }
         }
 
