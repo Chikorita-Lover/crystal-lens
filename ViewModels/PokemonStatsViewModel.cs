@@ -73,6 +73,11 @@ namespace CrystalLens.ViewModels
         public ObservableCollection<string> TMMoves { get; }
         public SpriteViewModel FrontSprite { get; } = new();
         public SpriteViewModel BackSprite { get; } = new();
+        public ObservableCollection<string> PokemonConstants { get; } = [];
+        public ObservableCollection<string> TypeConstants { get; } = [];
+        public ObservableCollection<string> ItemConstants { get; } = [];
+        public ObservableCollection<string> GrowthRateConstants { get; } = [];
+        public ObservableCollection<string> EggGroupConstants { get; } = [];
 
         ChangeTracker IChangeTracking.Tracker => tracker;
 
@@ -97,6 +102,24 @@ namespace CrystalLens.ViewModels
                 StatEntry entry = new(stat, model.BaseStats[stat]);
                 BaseStats.Add(entry);
                 entry.PropertyChanged += StatEntry_PropertyChanged;
+            }
+
+            ReadConstantsOf(ASMConstantGroup.Species, PokemonConstants);
+            ReadConstantsOf(ASMConstantGroup.Type, TypeConstants);
+            ReadConstantsOf(ASMConstantGroup.Item, ItemConstants);
+            ReadConstantsOf(ASMConstantGroup.GrowthRate, GrowthRateConstants);
+            ReadConstantsOf(ASMConstantGroup.EggGroup, EggGroupConstants);
+        }
+
+        private void ReadConstantsOf(ASMConstantGroup group, ObservableCollection<string> collection)
+        {
+            if (IASMData.HasProject(Model)) {
+                Dictionary<string, byte> constants = IASMData.GetProject(Model).Constants[group];
+
+                foreach (string key in constants.Keys)
+                {
+                    collection.Add(key);
+                }
             }
         }
 

@@ -5,9 +5,10 @@ namespace CrystalLens.Models
 {
     public class ASMProject
     {
+        public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public string Path { get; }
         public ObservableCollection<ASMFile> ProjectFiles { get; private set; } = [];
-        
+
         private ASMProject(string path)
         {
             Path = path;
@@ -17,6 +18,7 @@ namespace CrystalLens.Models
         {
             ASMProject project = new(path);
             project.ProjectFiles = new(project.LoadFilesFromDirectory(System.IO.Path.Combine(path, "data")));
+            project.LoadFilesFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
 
             return project;
         }
@@ -36,6 +38,7 @@ namespace CrystalLens.Models
             {
                 try
                 {
+                    TryReadConstants(filePath);
                     ASMFile file = ASMFile.ReadFile(filePath, this);
                     openFiles.Add(file);
                 }
@@ -48,6 +51,32 @@ namespace CrystalLens.Models
             }
 
             return openFiles;
+        }
+
+        private void TryReadConstants(string path)
+        {
+            List<Dictionary<string, byte>> constants;
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            switch (fileName)
+            {
+                case "item_constants":
+                    constants = ASMFile.ReadGroupedConstants(path);
+                    Constants.Add(ASMConstantGroup.Item, constants[0]);
+                    break;
+                case "pokemon_constants":
+                    constants = ASMFile.ReadGroupedConstants(path);
+                    Constants.Add(ASMConstantGroup.Species, constants[0]);
+                    break;
+                case "pokemon_data_constants":
+                    constants = ASMFile.ReadGroupedConstants(path);
+                    Constants.Add(ASMConstantGroup.GrowthRate, constants[0]);
+                    Constants.Add(ASMConstantGroup.EggGroup, constants[1]);
+                    break;
+                case "type_constants":
+                    constants = ASMFile.ReadGroupedConstants(path);
+                    Constants.Add(ASMConstantGroup.Type, constants[0]);
+                    break;
+            }
         }
     }
 }

@@ -17,6 +17,11 @@
             <Setter Property="Width" Value="26"/>
         </Style>
         <Style x:Key="AlphanumericBox" BasedOn="{StaticResource TextBox}" TargetType="TextBox"/>
+        <Style x:Key="ConstBox" TargetType="ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="IsEditable" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -42,12 +47,12 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Column="0" Grid.Row="0" Content="Name"/>
-                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                        <Label Grid.Column="0" Grid.Row="0" Content="Species"/>
+                        <ComboBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" ItemsSource="{Binding PokemonConstants}" Style="{StaticResource ConstBox}" Width="120"/>
                         <Label Grid.Column="0" Grid.Row="1" Content="Type"/>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                            <TextBox Text="{Binding Type1}" Style="{StaticResource AlphanumericBox}" Width="100" Margin="0,0,6,0"/>
-                            <TextBox Text="{Binding Type2}" Style="{StaticResource AlphanumericBox}" Width="100"/>
+                            <ComboBox Text="{Binding Type1}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}" Width="100" Margin="0,0,6,0"/>
+                            <ComboBox Text="{Binding Type2}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}" Width="100"/>
                         </StackPanel>
                     </Grid>
                     <Separator/>
@@ -68,11 +73,11 @@
                         <Label Grid.Column="0" Grid.Row="2" Content="Wild hold items"/>
                         <StackPanel Grid.Column="1" Grid.Row="2">
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Text="{Binding Item1}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                                <ComboBox Text="{Binding Item1}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}" Width="120"/>
                                 <Label Content="(23%)"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Text="{Binding Item2}" Style="{StaticResource AlphanumericBox}" Width="120"/>
+                                <ComboBox Text="{Binding Item2}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}" Width="120"/>
                                 <Label Content="(2%)"/>
                             </StackPanel>
                         </StackPanel>
@@ -94,11 +99,11 @@
                         <Label Grid.Column="0" Grid.Row="1" Content="Egg cycles"/>
                         <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding EggCycles}" Style="{StaticResource NumericBox}"/>
                         <Label Grid.Column="0" Grid.Row="2" Content="Growth rate"/>
-                        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding GrowthRate}" Style="{StaticResource AlphanumericBox}" Width="160"/>
+                        <ComboBox Grid.Column="1" Grid.Row="2" Text="{Binding GrowthRate}" ItemsSource="{Binding GrowthRateConstants}" Style="{StaticResource ConstBox}" Width="180"/>
                         <Label Grid.Column="0" Grid.Row="3" Content="Egg Groups"/>
                         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
-                            <TextBox Text="{Binding EggGroup1}" Style="{StaticResource AlphanumericBox}" Width="150" Margin="0,0,6,0"/>
-                            <TextBox Text="{Binding EggGroup2}" Style="{StaticResource AlphanumericBox}" Width="150"/>
+                            <ComboBox Text="{Binding EggGroup1}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}" Width="150" Margin="0,0,6,0"/>
+                            <ComboBox Text="{Binding EggGroup2}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}" Width="150"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

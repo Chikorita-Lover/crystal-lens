@@ -69,6 +69,61 @@ namespace CrystalLens.Models
             return file;
         }
 
+        public static List<Dictionary<string, byte>> ReadGroupedConstants(string path)
+        {
+            List<Dictionary<string, byte>> constants = [];
+            Dictionary<string, byte> constantGroup = [];
+            constants.Add(constantGroup);
+            byte constValue = 0;
+
+            StreamReader reader = new(path);
+            string? line;
+            ASMCommand command;
+            byte previousValue;
+            bool inMacroDef = false;
+            while ((line = reader.ReadLine()) != null)
+            {
+                command = ASMCommand.FromLine(line);
+                previousValue = constValue;
+                switch (command.Command)
+                {
+                    case "const" when !inMacroDef:
+                        constantGroup.Add(command.Get(0), constValue++);
+                        break;
+                    case "const_def" when !inMacroDef:
+                        constValue = command.Count == 0 ? (byte)0 : command.GetByte(0);
+                        if (constValue < previousValue)
+                        {
+                            constantGroup = [];
+                            constants.Add(constantGroup);
+                        }
+                        break;
+                    case "const_next" when !inMacroDef:
+                        constValue += command.GetByte(0);
+                        break;
+                    case "const_skip" when !inMacroDef:
+                        constValue++;
+                        break;
+
+                    case "MACRO": // TEMP
+                        inMacroDef = true;
+                        break;
+                    case "ENDM": // TEMP
+                        inMacroDef = false;
+                        break;
+                    case "add_tm": // TEMP
+                        constantGroup.Add($"TM_{command.Get(0)}", constValue++);
+                        break;
+                    case "add_hm": // TEMP
+                        constantGroup.Add($"HM_{command.Get(0)}", constValue++);
+                        break;
+                }
+            }
+
+            reader.Close();
+            return constants;
+        }
+
         public static bool TryReadFile(ASMProject? project, string path, out ASMFile data)
         {
             try
