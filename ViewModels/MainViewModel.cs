@@ -11,8 +11,8 @@ namespace CrystalLens.ViewModels
         {
             get; set { field = value; UpdateWindowTitle(); OnPropertyChanged(); }
         }
-        public ObservableCollection<ASMFileViewModel> OpenFiles { get; } = [];
-        public int SelectedFile
+        public ObservableCollection<DataTabViewModel> OpenTabs { get; } = [];
+        public int SelectedTabIndex
         {
             get;
             set { field = value; UpdateWindowTitle();  OnPropertyChanged(); }
@@ -39,9 +39,9 @@ namespace CrystalLens.ViewModels
         private void UpdateWindowTitle()
         {
             StringBuilder sb = new();
-            if (SelectedFile >= 0 && SelectedFile < OpenFiles.Count)
+            if (SelectedTabIndex >= 0 && SelectedTabIndex < OpenTabs.Count)
             {
-                sb.Append($"{OpenFiles[SelectedFile].Name} - ");
+                sb.Append($"{OpenTabs[SelectedTabIndex].Name} - ");
             }
             if (OpenProject != null)
             {
@@ -53,12 +53,12 @@ namespace CrystalLens.ViewModels
 
         private void NextTab_Execute(object parameter)
         {
-            SelectedFile = (SelectedFile + 1) % OpenFiles.Count;
+            SelectedTabIndex = (SelectedTabIndex + 1) % OpenTabs.Count;
         }
 
         private void PreviousTab_Execute(object parameter)
         {
-            SelectedFile = (SelectedFile - 1) % OpenFiles.Count;
+            SelectedTabIndex = (SelectedTabIndex - 1) % OpenTabs.Count;
         }
     }
 }

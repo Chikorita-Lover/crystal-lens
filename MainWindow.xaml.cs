@@ -23,7 +23,7 @@ namespace CrystalLens
         {
             ASMFile file = ASMFile.ReadFile(path, project);
 
-            ViewModel.OpenFiles.Add(new ASMFileViewModel(file));
+            ViewModel.OpenTabs.Add(new ASMFileViewModel(file));
             tabs.SelectedIndex = tabs.Items.Count - 1;
 
             return file;
@@ -116,7 +116,7 @@ namespace CrystalLens
             }
             if (result != MessageBoxResult.Cancel)
             {
-                ViewModel.OpenFiles.Remove(file);
+                ViewModel.OpenTabs.Remove(file);
             }
         }
 

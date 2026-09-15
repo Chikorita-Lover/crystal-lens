@@ -93,7 +93,7 @@
                     </StackPanel.Style>
                 </StackPanel>
             </Grid>
-            <TabControl Name="tabs" ItemsSource="{Binding OpenFiles}" SelectedIndex="{Binding SelectedFile,Mode=TwoWay}">
+            <TabControl Name="tabs" ItemsSource="{Binding OpenTabs}" SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">

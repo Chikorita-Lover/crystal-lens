@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.ViewModels
 {
-    internal class ChangeTracker
+    public class ChangeTracker
     {
         private ChangeTracker? parent;
         private readonly List<ChangeTracker> children = [];
