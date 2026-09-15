@@ -7,11 +7,13 @@ namespace CrystalLens.Models
     {
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public string Path { get; }
+        public readonly string Name;
         public ObservableCollection<ASMFile> ProjectFiles { get; private set; } = [];
 
         private ASMProject(string path)
         {
             Path = path;
+            Name = System.IO.Path.GetFileName(path);
         }
 
         public static ASMProject OpenProject(string path)
