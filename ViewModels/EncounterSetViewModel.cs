@@ -28,10 +28,20 @@ namespace CrystalLens.ViewModels
                 for (int i = 0; i < EncounterSet.Encounters.Count; i++)
                 {
                     EncounterViewModel encounter = new(EncounterSet.Get(i), EncounterSet.GetProbability(i));
+                    UpdateEncounterSprite(encounter);
                     Encounters.Add(encounter);
                     tracker.TryAddChildOf(encounter);
                     encounter.PropertyChanged += Encounter_PropertyChanged;
                 }
+            }
+        }
+
+        private void UpdateEncounterSprite(EncounterViewModel encounter)
+        {
+            ASMProject? project = IASMData.GetProject(EncounterSet);
+            if (project != null)
+            {
+                encounter.Sprite.Path = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Name.ToLower()}/front.png");
             }
         }
 
@@ -42,11 +52,7 @@ namespace CrystalLens.ViewModels
             EncounterSet.Encounters[index] = encounter.ToModel();
             tracker.MarkAsUnsaved();
 
-            ASMProject? project = ((IASMData)EncounterSet).File.Project;
-            if (project != null)
-            {
-                encounter.Sprite.Path = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Name.ToLower()}/front.png");
-            }
+            UpdateEncounterSprite(encounter);
         }
     }
 }

@@ -37,16 +37,19 @@ namespace CrystalLens.Views
 
         private void UpdateBitmap(byte frame)
         {
-            try
+            if (ViewModel != null)
             {
-                BitmapImage bitmap = new(new Uri(ViewModel.Path));
-                int width = ViewModel.Width = bitmap.PixelWidth;
-                Int32Rect rect = new(0, frame * width, width, width);
-                image.Source = new CroppedBitmap(bitmap, rect);
-            }
-            catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)
-            {
-                image.Source = null;
+                try
+                {
+                    BitmapImage bitmap = new(new Uri(ViewModel.Path));
+                    int width = ViewModel.Width = bitmap.PixelWidth;
+                    Int32Rect rect = new(0, frame * width, width, width);
+                    image.Source = new CroppedBitmap(bitmap, rect);
+                }
+                catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)
+                {
+                    image.Source = null;
+                }
             }
         }
 
@@ -61,15 +64,18 @@ namespace CrystalLens.Views
             {
                 ((SpriteViewModel)e.OldValue).PropertyChanged -= ViewModel_PropertyChanged;
             }
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-            Frame = 0;
-            UpdateBitmap(0);
-            if (ViewModel.Animation != null)
+            if (ViewModel != null)
             {
-                animation = CreateAnimationTimeline(ViewModel.Animation);
-                if (ViewModel.PlayAnimationOnLoad)
+                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+                Frame = 0;
+                UpdateBitmap(Frame);
+                if (ViewModel.Animation != null)
                 {
-                    PlayAnimation();
+                    animation = CreateAnimationTimeline(ViewModel.Animation);
+                    if (ViewModel.PlayAnimationOnLoad)
+                    {
+                        PlayAnimation();
+                    }
                 }
             }
         }
