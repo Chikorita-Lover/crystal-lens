@@ -23,7 +23,9 @@ namespace CrystalLens.ViewModels
             {
                 if (file.Get(file.Labels.First()) is PokemonStats stats)
                 {
-                    Entries.Add(new(stats));
+                    PokemonStatsViewModel entry = new(stats);
+                    entry.FrontSprite.PlayAnimationOnLoad = false;
+                    Entries.Add(entry);
                 }
             }
         }

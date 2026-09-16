@@ -16,6 +16,7 @@ namespace CrystalLens.ViewModels
         {
             get; set { field = value; OnPropertyChanged(); }
         }
+        public bool PlayAnimationOnLoad { get; set; }
 
         public SpriteViewModel()
         { }

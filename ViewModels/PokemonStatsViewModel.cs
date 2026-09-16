@@ -91,6 +91,7 @@ namespace CrystalLens.ViewModels
             {
                 FrontSprite.Path = Path.Combine(project.Path, model.SpritePath.Replace(".dimensions", ".png"));
                 FrontSprite.Animation = model.Animation;
+                FrontSprite.PlayAnimationOnLoad = true;
                 BackSprite.Path = FrontSprite.Path.Replace("front", "back");
             }
 

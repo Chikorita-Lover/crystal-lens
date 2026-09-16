@@ -67,7 +67,10 @@ namespace CrystalLens.Views
             if (ViewModel.Animation != null)
             {
                 animation = CreateAnimationTimeline(ViewModel.Animation);
-                PlayAnimation();
+                if (ViewModel.PlayAnimationOnLoad)
+                {
+                    PlayAnimation();
+                }
             }
         }
 
