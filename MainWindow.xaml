@@ -4,10 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CrystalLens"
+        xmlns:converters="clr-namespace:CrystalLens.Converters"
         xmlns:vm="clr-namespace:CrystalLens.ViewModels"
         xmlns:views="clr-namespace:CrystalLens.Views"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="545" Width="970">
+    <Window.Resources>
+        <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
+    </Window.Resources>
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -38,6 +42,9 @@
                     <MenuItem Header="_Close" Command="ApplicationCommands.Close" InputGestureText="Ctrl+W"/>
                     <Separator/>
                     <MenuItem Header="E_xit"/>
+                </MenuItem>
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="Pokémon Search..." Click="PokemonSearch_Click" IsEnabled="{Binding OpenProject,Converter={StaticResource ObjectNotNullConverter}}"/>
                 </MenuItem>
             </Menu>
             <Grid DockPanel.Dock="Left" HorizontalAlignment="Stretch">
@@ -136,6 +143,9 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PokemonStatsViewModel}">
                         <views:PokemonStatsView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:PokemonSearchViewModel}">
+                        <views:PokemonSearchView/>
                     </DataTemplate>
                 </TabControl.Resources>
                 <TabControl.ItemContainerStyle>

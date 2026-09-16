@@ -124,5 +124,11 @@ namespace CrystalLens
             ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
             ASMFile file = OpenFile(fileEntry.Path, ViewModel.OpenProject.Model);
         }
+
+        private void PokemonSearch_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OpenTabs.Add(new PokemonSearchViewModel(ViewModel.OpenProject.Model));
+            tabs.SelectedIndex = tabs.Items.Count - 1;
+        }
     }
 }
