@@ -29,15 +29,6 @@ namespace CrystalLens
             return file;
         }
 
-        private void SaveFile(ASMFileViewModel viewModel)
-        {
-            ((IChangeTracking)viewModel).Tracker.MarkAsSaved();
-            ASMFile file = viewModel.File;
-            using StreamWriter output = new(file.Path);
-            file.WriteFile(output);
-            output.Close();
-        }
-
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog dialog = new()
@@ -73,50 +64,53 @@ namespace CrystalLens
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ASMFileViewModel file = (ASMFileViewModel)tabs.SelectedItem;
-            SaveFile(file);
+            DataTabViewModel file = (DataTabViewModel)tabs.SelectedItem;
+            file.Save();
         }
 
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = tabs.HasItems;
+            e.CanExecute = tabs.HasItems && tabs.SelectedItem is ASMFileViewModel;
         }
 
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ASMFileViewModel file = (ASMFileViewModel)tabs.SelectedItem;
-            SaveFileDialog dialog = new()
+            DataTabViewModel tab = (DataTabViewModel)tabs.SelectedItem;
+            if (tab is ASMFileViewModel file)
             {
-                InitialDirectory = Path.GetDirectoryName(file.Path),
-                FileName = Path.GetFileNameWithoutExtension(file.Path),
-                DefaultExt = "asm",
-                Filter = "ASM Files|*.asm|All Files|*.*"
-            };
+                SaveFileDialog dialog = new()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.Path),
+                    FileName = Path.GetFileNameWithoutExtension(file.Path),
+                    DefaultExt = "asm",
+                    Filter = "ASM Files|*.asm|All Files|*.*"
+                };
 
-            if (dialog.ShowDialog() == true)
-            {
-                file.Path = dialog.FileName;
-                SaveFile(file);
+                if (dialog.ShowDialog() == true)
+                {
+                    file.Path = dialog.FileName;
+                    file.Save();
+                }
             }
         }
 
         private void Close_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ASMFileViewModel file = e.Parameter as ASMFileViewModel ?? (ASMFileViewModel)tabs.SelectedItem;
+            DataTabViewModel tab = e.Parameter as DataTabViewModel ?? (DataTabViewModel)tabs.SelectedItem;
             MessageBoxResult? result = null;
-            if (file.HasUnsavedChanges)
+            if (tab.HasUnsavedChanges)
             {
-                string text = $"{file.Name} has unsaved changes. Would you like to save?";
+                string text = $"{tab.Name} has unsaved changes. Would you like to save?";
                 result = MessageBox.Show(text, "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
-                
+
                 if (result == MessageBoxResult.Yes)
                 {
-                    SaveFile(file);
+                    tab.Save();
                 }
             }
             if (result != MessageBoxResult.Cancel)
             {
-                ViewModel.OpenTabs.Remove(file);
+                ViewModel.OpenTabs.Remove(tab);
             }
         }
 

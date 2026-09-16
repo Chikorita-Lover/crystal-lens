@@ -4,7 +4,11 @@
     {
         protected readonly ChangeTracker tracker = new();
         
-        public string Name
+        public virtual string Name
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
+        public bool HasUnsavedChanges
         {
             get; set { field = value; OnPropertyChanged(); }
         }
@@ -13,5 +17,10 @@
 
         protected DataTabViewModel()
         { }
+
+        public virtual void Save()
+        {
+            tracker.MarkAsSaved();
+        }
     }
 }

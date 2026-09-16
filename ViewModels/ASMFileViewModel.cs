@@ -1,4 +1,5 @@
 ﻿using CrystalLens.Models;
+using System.IO;
 
 namespace CrystalLens.ViewModels
 {
@@ -17,10 +18,6 @@ namespace CrystalLens.ViewModels
             }
         }
         public object Data { get; }
-        public bool HasUnsavedChanges
-        {
-            get; set { field = value; OnPropertyChanged(); }
-        }
 
         public ASMFileViewModel(ASMFile file)
         {
@@ -29,6 +26,14 @@ namespace CrystalLens.ViewModels
             Data = CreateDataViewModel(file.Get(file.Labels.First()));
             tracker.TryAddChildOf(Data);
             tracker.StatusChanged += Tracker_StatusChanged;
+        }
+
+        public override void Save()
+        {
+            base.Save();
+            using StreamWriter output = new(Path);
+            File.WriteFile(output);
+            output.Close();
         }
 
         private void Tracker_StatusChanged(object? sender, EventArgs e)
