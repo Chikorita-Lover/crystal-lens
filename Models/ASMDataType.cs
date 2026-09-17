@@ -3,29 +3,29 @@
     public class ASMDataType
     {
         public static readonly ASMDataType GrassEncounters = new(
-            commands => commands.Peek().Command == "def_grass_wildmons",
+            path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm"),
             ASMSerializers.EncounterTableMap
             );
         public static readonly ASMDataType WaterEncounters = new(
-            commands => commands.Peek().Command == "def_water_wildmons",
+            path => path.StartsWith(@"data\wild\") && path.EndsWith("_water.asm") && !path.Contains("swarm_"),
             ASMSerializers.EncounterSetMap
             );
         public static readonly ASMDataType PokemonStats = new(
-            commands => { ASMCommand command = commands.Peek(); return command.Command == "db" && command.Count == 1; },
+            path => path.StartsWith(@"data\pokemon\base_stats\"),
             ASMSerializers.PokemonStats
             );
         public static readonly ASMDataType SpriteAnimation = new(
-            commands => { ASMCommand command = commands.Peek(); return command.Command == "frame" || command.Command == "setrepeat"; },
+            path => path.StartsWith(@"gfx\pokemon\"),
             ASMSerializers.SpriteAnimation
             );
         public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, PokemonStats, SpriteAnimation];
 
-        public readonly Predicate<Queue<ASMCommand>> CommandPredicate;
+        public readonly Predicate<string> PathPredicate;
         public readonly ASMSerializer Serializer;
 
-        public ASMDataType(Predicate<Queue<ASMCommand>> commandPredicate, ASMSerializer serializer)
+        public ASMDataType(Predicate<string> pathPredicate, ASMSerializer serializer)
         {
-            CommandPredicate = commandPredicate;
+            PathPredicate = pathPredicate;
             Serializer = serializer;
         }
     }

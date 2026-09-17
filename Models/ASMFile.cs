@@ -6,6 +6,7 @@ namespace CrystalLens.Models
     {
         public ASMProject? Project { get; }
         public string Path { get; set; }
+        public string? RelativePath => Project != null ? System.IO.Path.GetRelativePath(Project.Path, Path) : null;
         private readonly Dictionary<string, IASMData> labeledData = [];
 
         public ICollection<string> Labels => labeledData.Keys;
@@ -56,11 +57,8 @@ namespace CrystalLens.Models
                     continue;
                 }
 
-                ASMDataType? type = DetermineDataType(commands);
-                if (type == null)
-                {
-                    throw new FileFormatException($"ASM file \"{path}\" contains unsupported data format");
-                }
+                ASMDataType type = InferDataType(file)
+                    ?? throw new FileFormatException($"Cannot infer the data type of the provided file.");
                 IASMData data = type.Serializer.ReadAssembly(commands, file);
                 file.labeledData.Add(label, data);
             }
@@ -138,14 +136,16 @@ namespace CrystalLens.Models
             }
         }
 
-        private static ASMDataType? DetermineDataType(Queue<ASMCommand> commands)
+        private static ASMDataType? InferDataType(ASMFile file)
         {
-            foreach (ASMDataType type in ASMDataType.Values)
+            if (file.Project != null)
             {
-                Queue<ASMCommand> copy = new(commands);
-                if (type.CommandPredicate.Invoke(copy))
+                foreach (ASMDataType type in ASMDataType.Values)
                 {
-                    return type;
+                    if (type.PathPredicate.Invoke(file.RelativePath))
+                    {
+                        return type;
+                    }
                 }
             }
             return null;
