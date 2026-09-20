@@ -3,7 +3,7 @@
     public class ASMDataType
     {
         public static readonly ASMDataType GrassEncounters = new(
-            path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm"),
+            path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm") && !path.Contains("swarm_"),
             ASMSerializers.EncounterTableMap
             );
         public static readonly ASMDataType WaterEncounters = new(
