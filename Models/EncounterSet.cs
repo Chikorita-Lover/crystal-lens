@@ -4,12 +4,12 @@
     {
         private readonly ASMFile _file;
         public List<Encounter> Encounters;
-        public List<int> Probabilities;
+        public List<byte> Probabilities;
         public int EncounterRate;
 
         ASMFile IASMData.File => _file;
 
-        public EncounterSet(ASMFile file, List<Encounter> encounters, List<int> probabilities, int encounterRate)
+        public EncounterSet(ASMFile file, List<Encounter> encounters, List<byte> probabilities, byte encounterRate)
         {
             _file = file;
             Encounters = encounters;
@@ -22,7 +22,7 @@
             return Encounters[index];
         }
 
-        public int GetProbability(int index)
+        public byte GetProbability(int index)
         {
             return Probabilities[index];
         }
@@ -34,30 +34,20 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
-                ASMCommand command = commands.Dequeue();
-                command.VerifyOrThrow("db");
+                byte encounterRate;
 
-                int count = command.Parameters.Length;
-                int encounterRate;
+                string parameter = reader.Read();
+                encounterRate = byte.Parse(parameter.Split(" percent")[0]);
 
-                string parameter = command.Get(0);
-                try
-                {
-                    encounterRate = int.Parse(parameter.Split(" percent")[0]);
-                }
-                catch (FormatException e)
-                {
-                    throw new InvalidOperationException("Invalid encounter rate format: " + command + ": " + e);
-                }
-
-                List<int> probabilities = [60, 30, 10];
+                List<byte> probabilities = [60, 30, 10];
                 List<Encounter> encounters = [];
-                for (int j = 0; j < probabilities.Count; j++)
+                for (byte b = 0; b < probabilities.Count; b++)
                 {
-                    Encounter encounter = Encounter.ReadAssembly(commands);
-                    encounters.Add(encounter);
+                    byte level = reader.ReadByte();
+                    string name = reader.Read();
+                    encounters.Add(new(level, name));
                 }
 
                 return new EncounterSet(file, encounters, probabilities, encounterRate);

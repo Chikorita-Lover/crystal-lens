@@ -2,6 +2,10 @@
 {
     public class SpriteAnimation : IASMData
     {
+        public const byte EndAnimCommand = 0xff;
+        public const byte SetRepeatCommand = EndAnimCommand - 1;
+        public const byte DoRepeatCommand = SetRepeatCommand - 1;
+
         private readonly List<Command> _commands;
         private readonly ASMFile _file;
 
@@ -39,20 +43,17 @@
 
         public class Serializer : ASMSerializer
         {
-            private static readonly string endanimCommand = "endanim";
-
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
                 List<Command> animCommands = [];
-                ASMCommand command;
-                while ((command = commands.Dequeue()).Command != endanimCommand)
+                byte value;
+                while ((value = reader.ReadByte()) != 0xff)
                 {
-                    Command animCommand = command.Command switch
+                    Command animCommand = value switch
                     {
-                        "frame" => new Frame(command.GetByte(0), command.GetByte(1)),
-                        "setrepeat" => new SetRepeat(command.GetByte(0)),
-                        "dorepeat" => new DoRepeat(command.GetByte(0)),
-                        _ => throw new InvalidOperationException()
+                        SetRepeatCommand => new SetRepeat(reader.ReadByte()),
+                        DoRepeatCommand => new DoRepeat(reader.ReadByte()),
+                        _ => new Frame(value, reader.ReadByte())
                     };
                     animCommands.Add(animCommand);
                 }

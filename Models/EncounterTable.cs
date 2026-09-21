@@ -30,38 +30,29 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
-                ASMCommand command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-
-                int count = command.Parameters.Length;
-                int[] encounterRates = new int[count];
-                for (int i = 0; i < count; i++)
+                byte[] encounterRates = new byte[3];
+                byte b;
+                for (b = 0; b < encounterRates.Length; b++)
                 {
-                    string parameter = command.Get(i);
-                    try
-                    {
-                        encounterRates[i] = int.Parse(parameter.Split(" percent")[0]);
-                    }
-                    catch (FormatException e)
-                    {
-                        throw new InvalidOperationException("Invalid encounter rate format: " + command + ": " + e);
-                    }
+                    string parameter = reader.Read();
+                    encounterRates[b] = byte.Parse(parameter.Split(" percent")[0]);
                 }
 
-                List<int> probabilities = [30, 30, 20, 10, 5, 4, 1];
+                List<byte> probabilities = [30, 30, 20, 10, 5, 4, 1];
                 Dictionary<DayTime, EncounterSet> encounterSets = [];
-                for (int i = 0; i < count; i++)
+                for (b = 0; b < encounterRates.Length; b++)
                 {
                     List<Encounter> encounters = [];
-                    for (int j = 0; j < probabilities.Count; j++)
+                    foreach (byte probability in probabilities)
                     {
-                        Encounter encounter = Encounter.ReadAssembly(commands);
-                        encounters.Add(encounter);
+                        byte level = reader.ReadByte();
+                        string name = reader.Read();
+                        encounters.Add(new(level, name));
                     }
-                    DayTime time = Enum.GetValues<DayTime>()[i];
-                    encounterSets[time] = new(file, encounters, probabilities, encounterRates[i]);
+                    DayTime time = Enum.GetValues<DayTime>()[b];
+                    encounterSets[time] = new(file, encounters, probabilities, encounterRates[b]);
                 }
 
                 return new EncounterTable(file, encounterSets);

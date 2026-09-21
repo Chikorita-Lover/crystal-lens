@@ -72,71 +72,28 @@ namespace CrystalLens.Models
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
                 ASMCommand command;
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                string name = command.Get(0);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                Dictionary<Stat, byte> baseStats = ReadStatsFromCommand(command);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                string type1 = command.Get(0);
-                string type2 = command.Get(1);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                byte catchRate = byte.Parse(command.Get(0));
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                byte baseExp = byte.Parse(command.Get(0));
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                string item1 = command.Get(0);
-                string item2 = command.Get(1);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                string genderRatio = command.Get(0);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                // unknown 1
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                byte eggCycles = byte.Parse(command.Get(0));
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                // unknown 2
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("INCBIN");
-                string spritePath = command.Get(0).Replace("\"", "");
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("dw");
-                // gen 1 pics
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("db");
-                string growthRate = command.Get(0);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("dn");
-                string eggGroup1 = command.Get(0);
-                string eggGroup2 = command.Get(1);
-
-                command = commands.Dequeue();
-                command.VerifyOrThrow("tmhm");
-                List<string> tmMoves = ReadTMsFromCommand(command);
+                string name = reader.Read();
+                Dictionary<Stat, byte> baseStats = ReadBaseStats(reader);
+                string type1 = reader.Read();
+                string type2 = reader.Read();
+                byte catchRate = reader.ReadByte();
+                byte baseExp = reader.ReadByte();
+                string item1 = reader.Read();
+                string item2 = reader.Read();
+                string genderRatio = reader.Read();
+                reader.Read(); // unknown 1
+                byte eggCycles = reader.ReadByte();
+                reader.Read(); // unknown 2
+                string spritePath = reader.Read().Replace("\"", ""); // INCBIN
+                reader.Read(); // beta front pic
+                reader.Read(); // beta back pic
+                string growthRate = reader.Read();
+                string eggGroup1 = reader.Read(); // \1 (dn)
+                string eggGroup2 = reader.Read(); // \2 (dn)
+                List<string> tmMoves = ReadTMHMs(reader);
 
                 return new PokemonStats(file, name, baseStats, type1, type2, catchRate, baseExp, item1, item2, genderRatio, eggCycles, spritePath, growthRate, eggGroup1, eggGroup2, tmMoves);
             }
@@ -168,25 +125,26 @@ namespace CrystalLens.Models
                 commands.Enqueue(new("", [], "end"));
             }
 
-            private static Dictionary<Stat, byte> ReadStatsFromCommand(ASMCommand command)
+            private static Dictionary<Stat, byte> ReadBaseStats(ASMReader reader)
             {
                 Dictionary<Stat, byte> baseStats = [];
                 Stat[] stats = Enum.GetValues<Stat>();
                 for (int i = 0; i < stats.Length; i++)
                 {
-                    baseStats.Add(stats[i], byte.Parse(command.Get(i)));
+                    baseStats.Add(stats[i], reader.ReadByte());
                 }
                 return baseStats;
             }
 
-            private static List<string> ReadTMsFromCommand(ASMCommand command)
+            private static List<string> ReadTMHMs(ASMReader reader)
             {
-                List<string> tms = [];
-                for (int i = 0; i < command.Count; i++)
+                List<string> tmhms = [];
+                string? value;
+                while ((value = reader.Read()) != null)
                 {
-                    tms.Add(command.Get(i));
+                    tmhms.Add(value);
                 }
-                return tms;
+                return tmhms;
             }
         }
     }

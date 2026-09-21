@@ -30,22 +30,17 @@
 
         public class Serializer : ASMSerializer
         {
-            private static readonly string defCommand = "def_water_wildmons";
-            private static readonly string endCommand = "end_water_wildmons";
+            private const string DefCommand = "def_water_wildmons";
+            private const string EndCommand = "end_water_wildmons";
 
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
+                string value;
                 Dictionary<string, EncounterSet> encounterSets = [];
-                ASMCommand command;
-                while ((command = commands.Dequeue()) != null && command.Command != "db")
+                while ((value = reader.Read()) != "-1")
                 {
-                    command.VerifyOrThrow(defCommand);
-
-                    EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(commands, file);
-                    encounterSets.Add(command.Get(0), encounterSet);
-
-                    command = commands.Dequeue();
-                    command.VerifyOrThrow(endCommand);
+                    EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(reader, file);
+                    encounterSets.Add(value, encounterSet);
                 }
 
                 return new EncounterSetMap(file, encounterSets);
@@ -57,9 +52,9 @@
                 commands.Enqueue(new());
                 foreach (string name in encounterSets.GetNames())
                 {
-                    commands.Enqueue(new(defCommand, [name]));
+                    commands.Enqueue(new(DefCommand, [name]));
                     ASMSerializers.EncounterSet.WriteAssembly(commands, encounterSets.Get(name));
-                    commands.Enqueue(new(endCommand, []));
+                    commands.Enqueue(new(EndCommand, []));
                     commands.Enqueue(new());
                 }
                 commands.Enqueue(new("db", ["-1"], "end"));

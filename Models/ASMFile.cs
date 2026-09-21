@@ -28,11 +28,15 @@ namespace CrystalLens.Models
 
             StreamReader reader = new(path);
             string? line;
+            int lineNumber = 0;
             Queue<ASMCommand> commands = [];
             Dictionary<string, Queue<ASMCommand>> labeledCommands = [];
+            Dictionary<string, int> labelsToLines = [];
             labeledCommands.Add(string.Empty, commands);
+            labelsToLines.Add(string.Empty, 0);
             while ((line = reader.ReadLine()) != null)
             {
+                lineNumber++;
                 ASMCommand command = ASMCommand.FromLine(line);
                 if (command.Command.EndsWith(':'))
                 {
@@ -41,6 +45,7 @@ namespace CrystalLens.Models
                         string label = command.Command.Split(':')[0];
                         commands = [];
                         labeledCommands.Add(label, commands);
+                        labelsToLines.Add(label, lineNumber);
                     }
                 }
                 else if (!command.Command.IsWhiteSpace())
@@ -49,6 +54,9 @@ namespace CrystalLens.Models
                 }
             }
 
+            reader.Close();
+
+            ASMReader asmReader = new(path);
             foreach (string label in labeledCommands.Keys)
             {
                 commands = labeledCommands[label];
@@ -57,13 +65,16 @@ namespace CrystalLens.Models
                     continue;
                 }
 
+                asmReader.AdvanceToLine(labelsToLines[label]);
+
                 ASMDataType type = InferDataType(file)
                     ?? throw new FileFormatException($"Cannot infer the data type of the provided file.");
-                IASMData data = type.Serializer.ReadAssembly(commands, file);
+
+                IASMData data = type.Serializer.ReadAssembly(asmReader, file);
+
                 file.labeledData.Add(label, data);
             }
-
-            reader.Close();
+            asmReader.Close();
             return file;
         }
 

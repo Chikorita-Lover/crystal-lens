@@ -33,19 +33,17 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(Queue<ASMCommand> commands, ASMFile file)
+            private const string DefCommand = "def_grass_wildmons";
+            private const string EndCommand = "end_grass_wildmons";
+
+            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
+                string value;
                 Dictionary<string, EncounterTable> encounterTables = [];
-                ASMCommand command;
-                while ((command = commands.Dequeue()) != null && command.Command != "db")
+                while ((value = reader.Read()) != "-1")
                 {
-                    command.VerifyOrThrow("def_grass_wildmons");
-
-                    EncounterTable encounterTable = (EncounterTable)ASMSerializers.EncounterTable.ReadAssembly(commands, file);
-                    encounterTables.Add(command.Get(0), encounterTable);
-
-                    command = commands.Dequeue();
-                    command.VerifyOrThrow("end_grass_wildmons");
+                    EncounterTable encounterTable = (EncounterTable)ASMSerializers.EncounterTable.ReadAssembly(reader, file);
+                    encounterTables.Add(value, encounterTable);
                 }
 
                 return new EncounterTableMap(file, encounterTables);
@@ -58,9 +56,9 @@
                 commands.Enqueue(new("", []));
                 foreach (string name in encounterTables.GetNames())
                 {
-                    commands.Enqueue(new("def_grass_wildmons", [name]));
+                    commands.Enqueue(new(DefCommand, [name]));
                     ASMSerializers.EncounterTable.WriteAssembly(commands, encounterTables.Get(name));
-                    commands.Enqueue(new("end_grass_wildmons", []));
+                    commands.Enqueue(new(EndCommand, []));
                     commands.Enqueue(new());
                 }
                 commands.Enqueue(new("db", ["-1"], "end"));
