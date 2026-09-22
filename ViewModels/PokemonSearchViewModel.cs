@@ -5,6 +5,7 @@ namespace CrystalLens.ViewModels
 {
     public class PokemonSearchViewModel : DataTabViewModel
     {
+        internal readonly List<string> ShownFields = [];
         private readonly ASMProject _project;
 
         public override string Name => "Pokémon Search";
@@ -15,6 +16,7 @@ namespace CrystalLens.ViewModels
         {
             _project = project;
             Options = options;
+            ShownFields.AddRange(options.Fields.SelectMany(field => field.IsShown ? field.Type.PropertyNames : []));
 
             PopulateEntries();
         }

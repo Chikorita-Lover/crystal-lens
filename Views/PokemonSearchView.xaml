@@ -6,22 +6,19 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <DataGrid ItemsSource="{Binding Entries}" AutoGenerateColumns="False" IsReadOnly="True"
+    <DataGrid ItemsSource="{Binding Entries}" IsReadOnly="True"
               CanUserResizeColumns="False" CanUserResizeRows="False"
-              HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC">
+              HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC"
+              AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Image" CanUserSort="False">
+            <DataGridTemplateColumn Header="Image" CanUserSort="False" DisplayIndex="0">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <local:Sprite DataContext="{Binding FrontSprite}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Species" Binding="{Binding Name}"/>
-            <DataGridTextColumn Header="BST" Binding="{Binding BaseStatTotal}"/>
-            <DataGridTextColumn Header="Catch rate" Binding="{Binding CatchRate}"/>
-            <DataGridTextColumn Header="Base EXP yield" Binding="{Binding BaseExp}"/>
-            <DataGridTextColumn Header="Egg cycles" Binding="{Binding EggCycles}"/>
+            <DataGridTextColumn Header="Species" Binding="{Binding Name}" DisplayIndex="1"/>
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

@@ -30,17 +30,17 @@ namespace CrystalLens.ViewModels
 
         private static List<FieldType> GenerateFieldTypes()
         {
-            List<FieldType> fields = [];
-            fields.Add(new("Base stat total", stats => stats.BaseStatTotal));
-            fields.Add(new("Type", stats => (stats.Type1, stats.Type2)));
-            fields.Add(new("Catch rate", stats => stats.CatchRate));
-            fields.Add(new("Base EXP yield", stats => stats.BaseExp));
-            fields.Add(new("Wild hold items", stats => (stats.Item1, stats.Item2)));
-            fields.Add(new("Gender ratio", stats => stats.GenderRatio));
-            fields.Add(new("Egg cycles", stats => stats.EggCycles));
-            fields.Add(new("Growth rate", stats => stats.GrowthRate));
-            fields.Add(new("Egg Groups", stats => (stats.EggGroup1, stats.EggGroup2)));
-            return fields;
+            List<FieldType> types = [];
+            types.Add(new("Base stat total", [nameof(PokemonStatsViewModel.BaseStatTotal)]));
+            types.Add(new("Type", [nameof(PokemonStatsViewModel.Type1), nameof(PokemonStatsViewModel.Type2)]));
+            types.Add(new("Catch rate", [nameof(PokemonStatsViewModel.CatchRate)]));
+            types.Add(new("Base EXP yield", [nameof(PokemonStatsViewModel.BaseExp)]));
+            types.Add(new("Wild hold items", [nameof(PokemonStatsViewModel.Item1), nameof(PokemonStatsViewModel.Item2)]));
+            types.Add(new("Gender ratio", [nameof(PokemonStatsViewModel.GenderRatio)]));
+            types.Add(new("Egg cycles", [nameof(PokemonStatsViewModel.EggCycles)]));
+            types.Add(new("Growth rate", [nameof(PokemonStatsViewModel.GrowthRate)]));
+            types.Add(new("Egg Groups", [nameof(PokemonStatsViewModel.EggGroup1), nameof(PokemonStatsViewModel.EggGroup2)]));
+            return types;
         }
 
         private static List<Key> GenerateFilterKeys()
@@ -54,7 +54,7 @@ namespace CrystalLens.ViewModels
             return keys;
         }
 
-        internal record FieldType(string Name, Func<PokemonStats, object> ValueFunction)
+        internal record FieldType(string Name, string[] PropertyNames)
         { }
 
         internal class Field
