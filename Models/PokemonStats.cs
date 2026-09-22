@@ -20,6 +20,7 @@ namespace CrystalLens.Models
         public string EggGroup1 { get; set; }
         public string EggGroup2 { get; set; }
         public List<string> TMMoves { get; }
+        public int BaseStatTotal => BaseStats.Sum(p => p.Value);
         public SpriteAnimation Animation;
 
         ASMFile IASMData.File => _file;

@@ -8,11 +8,13 @@ namespace CrystalLens.ViewModels
         private readonly ASMProject _project;
 
         public override string Name => "Pokémon Search";
+        internal PokemonSearchOptions Options { get; }
         public ObservableCollection<PokemonStatsViewModel> Entries { get; } = [];
 
-        public PokemonSearchViewModel(ASMProject project)
+        internal PokemonSearchViewModel(ASMProject project, PokemonSearchOptions options)
         {
             _project = project;
+            Options = options;
 
             PopulateEntries();
         }

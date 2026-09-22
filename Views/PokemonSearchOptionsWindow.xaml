@@ -1,0 +1,53 @@
+﻿<Window x:Class="CrystalLens.Views.PokemonSearchOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CrystalLens.Views"
+        xmlns:vm="clr-namespace:CrystalLens.ViewModels"
+        mc:Ignorable="d"
+        Title="Pokémon Search" Width="250" Height="250"
+        ResizeMode="NoResize"
+        WindowStyle="ThreeDBorderWindow">
+    <Window.DataContext>
+        <vm:PokemonSearchOptions/>
+    </Window.DataContext>
+    <StackPanel>
+        <CheckBox Name="filterBox">
+            Filter results:
+        </CheckBox>
+        <Grid IsEnabled="{Binding IsChecked,ElementName=filterBox}" Margin="20,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0">Key:</TextBlock>
+            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding FilterKeys}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Grid.Row="1" Grid.Column="0">Value:</TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True"/>
+        </Grid>
+        <GroupBox Header="Fields">
+            <ListBox ItemsSource="{Binding Fields}" Height="100">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Type.Name}" IsChecked="{Binding IsShown}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Width="75" Click="OK_Click"/>
+            <Button Content="Cancel" Width="75" Click="Cancel_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -1,5 +1,6 @@
 ﻿using CrystalLens.Models;
 using CrystalLens.ViewModels;
+using CrystalLens.Views;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -127,8 +128,15 @@ namespace CrystalLens
 
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.OpenTabs.Add(new PokemonSearchViewModel(ViewModel.OpenProject.Model));
-            tabs.SelectedIndex = tabs.Items.Count - 1;
+            PokemonSearchOptionsWindow optionsWindow = new()
+            {
+                Owner = this
+            };
+            if (optionsWindow.ShowDialog() == true)
+            {
+                ViewModel.OpenTabs.Add(new PokemonSearchViewModel(ViewModel.OpenProject.Model, optionsWindow.ViewModel));
+                tabs.SelectedIndex = tabs.Items.Count - 1;
+            }
         }
     }
 }
