@@ -4,14 +4,14 @@ namespace CrystalLens.Models
 {
     public class ASMFile
     {
-        public ASMProject? Project { get; }
+        public ASMProject Project { get; }
         public string Path { get; set; }
-        public string? RelativePath => Project != null ? System.IO.Path.GetRelativePath(Project.Path, Path) : null;
+        public string RelativePath => System.IO.Path.GetRelativePath(Project.Path, Path);
         private readonly Dictionary<string, IASMData> labeledData = [];
 
         public ICollection<string> Labels => labeledData.Keys;
 
-        private ASMFile(ASMProject? project, string path)
+        private ASMFile(ASMProject project, string path)
         {
             Project = project;
             Path = path;
@@ -22,7 +22,7 @@ namespace CrystalLens.Models
             return labeledData[label];
         }
 
-        public static ASMFile ReadFile(string path, ASMProject? project)
+        public static ASMFile ReadFile(string path, ASMProject project)
         {
             ASMFile file = new(project, path);
 
@@ -133,7 +133,7 @@ namespace CrystalLens.Models
             return constants;
         }
 
-        public static bool TryReadFile(ASMProject? project, string path, out ASMFile data)
+        public static bool TryReadFile(ASMProject project, string path, out ASMFile data)
         {
             try
             {
@@ -149,14 +149,11 @@ namespace CrystalLens.Models
 
         private static ASMDataType? InferDataType(ASMFile file)
         {
-            if (file.Project != null)
+            foreach (ASMDataType type in ASMDataType.Values)
             {
-                foreach (ASMDataType type in ASMDataType.Values)
+                if (type.PathPredicate.Invoke(file.RelativePath))
                 {
-                    if (type.PathPredicate.Invoke(file.RelativePath))
-                    {
-                        return type;
-                    }
+                    return type;
                 }
             }
             return null;

@@ -20,7 +20,7 @@ namespace CrystalLens
             InitializeComponent();
         }
 
-        private ASMFile OpenFile(string path, ASMProject? project)
+        private ASMFile OpenFile(string path, ASMProject project)
         {
             ASMFile file = ASMFile.ReadFile(path, project);
 
@@ -28,19 +28,6 @@ namespace CrystalLens
             tabs.SelectedIndex = tabs.Items.Count - 1;
 
             return file;
-        }
-
-        private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new()
-            {
-                Filter = "ASM Files|*.asm|All Files|*.*"
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                OpenFile(dialog.FileName, null);
-            }
         }
 
         private async void OpenProject_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -123,7 +110,7 @@ namespace CrystalLens
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
-            ASMFile file = OpenFile(fileEntry.Path, ViewModel.OpenProject.Model);
+            OpenFile(fileEntry.Path, ViewModel.OpenProject.Model);
         }
 
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)

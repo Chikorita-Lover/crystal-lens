@@ -86,14 +86,11 @@ namespace CrystalLens.ViewModels
             Model = model;
             TMMoves = new(model.TMMoves);
 
-            ASMProject? project = ((IASMData)model).File.Project;
-            if (project != null)
-            {
-                FrontSprite.Path = Path.Combine(project.Path, model.SpritePath.Replace(".dimensions", ".png"));
-                FrontSprite.Animation = model.Animation;
-                FrontSprite.PlayAnimationOnLoad = true;
-                BackSprite.Path = FrontSprite.Path.Replace("front", "back");
-            }
+            ASMProject project = ((IASMData)model).File.Project;
+            FrontSprite.Path = Path.Combine(project.Path, model.SpritePath.Replace(".dimensions", ".png"));
+            FrontSprite.Animation = model.Animation;
+            FrontSprite.PlayAnimationOnLoad = true;
+            BackSprite.Path = FrontSprite.Path.Replace("front", "back");
 
             PropertyChanged += PokemonStatsViewModel_PropertyChanged;
 
@@ -114,13 +111,11 @@ namespace CrystalLens.ViewModels
 
         private void ReadConstantsOf(ASMConstantGroup group, ObservableCollection<string> collection)
         {
-            if (IASMData.HasProject(Model)) {
-                Dictionary<string, byte> constants = IASMData.GetProject(Model).Constants[group];
+            Dictionary<string, byte> constants = IASMData.GetProject(Model).Constants[group];
 
-                foreach (string key in constants.Keys)
-                {
-                    collection.Add(key);
-                }
+            foreach (string key in constants.Keys)
+            {
+                collection.Add(key);
             }
         }
 

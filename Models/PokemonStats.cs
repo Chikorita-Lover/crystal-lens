@@ -47,12 +47,9 @@ namespace CrystalLens.Models
             EggGroup2 = eggGroup2;
             TMMoves = tmMoves;
 
-            if (file.Project != null)
+            if (ASMFile.TryReadFile(file.Project, Path.Combine(file.Project.Path, Path.GetDirectoryName(spritePath), "anim.asm"), out file))
             {
-                if (ASMFile.TryReadFile(file.Project, Path.Combine(file.Project.Path, Path.GetDirectoryName(spritePath), "anim.asm"), out file))
-                {
-                    Animation = (SpriteAnimation)file.Get(string.Empty);
-                }
+                Animation = (SpriteAnimation)file.Get(string.Empty);
             }
         }
 
