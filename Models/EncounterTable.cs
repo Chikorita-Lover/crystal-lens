@@ -58,7 +58,7 @@
                 return new EncounterTable(file, encounterSets);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterTable encounterTable = (EncounterTable)data;
 
@@ -68,15 +68,15 @@
                     int rate = encounterTable.EncounterSets[time].EncounterRate;
                     percents.Add(PercentFromInt(rate));
                 }
-                commands.Enqueue(new("db", percents.ToArray(), "encounter rates: morn/day/nite"));
+                writer.DeclareBytes([.. percents], "encounter rates: morn/day/nite");
 
                 foreach (DayTime time in Enum.GetValues<DayTime>())
                 {
-                    commands.Enqueue(new("", [], time.ToString().ToLower()));
+                    writer.Comment(time.ToString().ToLower());
                     EncounterSet encounters = encounterTable.EncounterSets[time];
                     foreach (Encounter encounter in encounters.Encounters)
                     {
-                        commands.Enqueue(new("db", [encounter.MinLevel.ToString(), encounter.Name]));
+                        writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
                     }
                 }
             }

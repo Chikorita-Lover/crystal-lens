@@ -6,7 +6,14 @@ namespace CrystalLens.Models
     {
         public int Count => Parameters.Length;
 
+        public ASMCommand(string command, object[] parameters, string comment)
+            : this(command, [.. parameters.Select(o => o.ToString() ?? "0")], comment)
+        { }
+
         public ASMCommand(string command, string[] parameters) : this(command, parameters, string.Empty)
+        { }
+
+        public ASMCommand(string command, object[] parameters) : this(command, parameters, string.Empty)
         { }
 
         public ASMCommand(string command) : this(command, [])

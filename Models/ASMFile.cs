@@ -159,23 +159,17 @@ namespace CrystalLens.Models
             return null;
         }
 
-        public void WriteFile(StreamWriter writer)
+        public void WriteFile(ASMWriter writer)
         {
-            Queue<ASMCommand> commands = [];
             foreach (string label in Labels)
             {
                 if (!label.IsWhiteSpace())
                 {
-                    commands.Enqueue(new());
-                    commands.Enqueue(new($"{label}:"));
+                    writer.NewLine();
+                    writer.Label(label);
                 }
                 IASMData data = Get(label);
-                data.GetSerializer().WriteAssembly(commands, data);
-            }
-
-            foreach (ASMCommand command in commands)
-            {
-                writer.WriteLine(command);
+                data.GetSerializer().WriteAssembly(writer, data);
             }
         }
     }

@@ -96,31 +96,31 @@ namespace CrystalLens.Models
                 return new PokemonStats(file, name, baseStats, type1, type2, catchRate, baseExp, item1, item2, genderRatio, eggCycles, spritePath, growthRate, eggGroup1, eggGroup2, tmMoves);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 PokemonStats pokemon = (PokemonStats)data;
-                commands.Enqueue(new("db", [pokemon.Name]));
-                commands.Enqueue(new());
-                commands.Enqueue(new("db", [.. pokemon.BaseStats.Values.Select(value => value.ToString())]));
-                commands.Enqueue(new("", [], "  hp  atk  def  spd  sat  sdf"));
-                commands.Enqueue(new());
-                commands.Enqueue(new("db", [pokemon.Type1, pokemon.Type2], "type"));
-                commands.Enqueue(new("db", [pokemon.CatchRate.ToString()], "catch rate"));
-                commands.Enqueue(new("db", [pokemon.BaseExp.ToString()], "base exp"));
-                commands.Enqueue(new("db", [pokemon.Item1, pokemon.Item2], "items"));
-                commands.Enqueue(new("db", [pokemon.GenderRatio], "gender ratio"));
-                commands.Enqueue(new("db", [100.ToString()], "unknown 1"));
-                commands.Enqueue(new("db", [pokemon.EggCycles.ToString()], "step cycles to hatch"));
-                commands.Enqueue(new("db", [5.ToString()], "unknown 2"));
-                commands.Enqueue(new("INCBIN", [$"\"{pokemon.SpritePath}\""]));
-                commands.Enqueue(new("dw", ["NULL", "NULL"], "unused (beta front/back pics)"));
-                commands.Enqueue(new("db", [pokemon.GrowthRate], "growth rate"));
-                commands.Enqueue(new("dn", [pokemon.EggGroup1, pokemon.EggGroup2], "egg groups"));
+                writer.DeclareBytes([pokemon.Name]);
+                writer.NewLine();
+                writer.DeclareBytes([.. pokemon.BaseStats.Values]);
+                writer.Comment("  hp  atk  def  spd  sat  sdf");
+                writer.NewLine();
+                writer.DeclareBytes([pokemon.Type1, pokemon.Type2], "type");
+                writer.DeclareBytes([pokemon.CatchRate], "catch rate");
+                writer.DeclareBytes([pokemon.BaseExp], "base exp");
+                writer.DeclareBytes([pokemon.Item1, pokemon.Item2], "items");
+                writer.DeclareBytes([pokemon.GenderRatio], "gender ratio");
+                writer.DeclareBytes([100], "unknown 1");
+                writer.DeclareBytes([pokemon.EggCycles], "step cycles to hatch");
+                writer.DeclareBytes([5], "unknown 2");
+                writer.WriteCommand(new("INCBIN", [$"\"{pokemon.SpritePath}\""]));
+                writer.DeclareWords(["NULL", "NULL"], "unused (beta front/back pics)");
+                writer.DeclareBytes([pokemon.GrowthRate], "growth rate");
+                writer.DeclareNybbles([pokemon.EggGroup1, pokemon.EggGroup2], "egg groups");
 
-                commands.Enqueue(new());
-                commands.Enqueue(new("", [], "tm/hm learnset"));
-                commands.Enqueue(new("tmhm", pokemon.TMMoves.ToArray()));
-                commands.Enqueue(new("", [], "end"));
+                writer.NewLine();
+                writer.Comment("tm/hm learnset");
+                writer.WriteCommand(new("tmhm", [.. pokemon.TMMoves]));
+                writer.Comment("end");
             }
 
             private static Dictionary<Stat, byte> ReadBaseStats(ASMReader reader)

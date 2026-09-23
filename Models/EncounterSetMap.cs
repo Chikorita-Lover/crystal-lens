@@ -46,18 +46,18 @@
                 return new EncounterSetMap(file, encounterSets);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterSetMap encounterSets = (EncounterSetMap)data;
-                commands.Enqueue(new());
+                writer.NewLine();
                 foreach (string name in encounterSets.GetNames())
                 {
-                    commands.Enqueue(new(DefCommand, [name]));
-                    ASMSerializers.EncounterSet.WriteAssembly(commands, encounterSets.Get(name));
-                    commands.Enqueue(new(EndCommand, []));
-                    commands.Enqueue(new());
+                    writer.WriteCommand(new(DefCommand, [name]));
+                    ASMSerializers.EncounterSet.WriteAssembly(writer, encounterSets.Get(name));
+                    writer.WriteCommand(new(EndCommand));
+                    writer.NewLine();
                 }
-                commands.Enqueue(new("db", ["-1"], "end"));
+                writer.DeclareBytes([-1], "end");
             }
         }
     }

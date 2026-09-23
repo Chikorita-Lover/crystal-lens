@@ -53,16 +53,16 @@
                 return new EncounterSet(file, encounters, probabilities, encounterRate);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterSet encounterSet = (EncounterSet)data;
 
                 string rate = PercentFromInt(encounterSet.EncounterRate);
-                commands.Enqueue(new("db", [rate], "encounter rate"));
+                writer.DeclareBytes([rate], "encounter rate");
 
                 foreach (Encounter encounter in encounterSet.Encounters)
                 {
-                    commands.Enqueue(new("db", [encounter.MinLevel.ToString(), encounter.Name]));
+                    writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
                 }
             }
 

@@ -4,6 +4,6 @@
     {
         internal abstract IASMData ReadAssembly(ASMReader reader, ASMFile file);
 
-        internal abstract void WriteAssembly(Queue<ASMCommand> commands, IASMData data);
+        internal abstract void WriteAssembly(ASMWriter writer, IASMData data);
     }
 }

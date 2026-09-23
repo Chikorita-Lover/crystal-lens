@@ -49,19 +49,19 @@
                 return new EncounterTableMap(file, encounterTables);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterTableMap encounterTables = (EncounterTableMap)data;
 
-                commands.Enqueue(new("", []));
+                writer.NewLine();
                 foreach (string name in encounterTables.GetNames())
                 {
-                    commands.Enqueue(new(DefCommand, [name]));
-                    ASMSerializers.EncounterTable.WriteAssembly(commands, encounterTables.Get(name));
-                    commands.Enqueue(new(EndCommand, []));
-                    commands.Enqueue(new());
+                    writer.WriteCommand(new(DefCommand, [name]));
+                    ASMSerializers.EncounterTable.WriteAssembly(writer, encounterTables.Get(name));
+                    writer.WriteCommand(new(EndCommand));
+                    writer.NewLine();
                 }
-                commands.Enqueue(new("db", ["-1"], "end"));
+                writer.DeclareBytes([-1], "end");
             }
         }
     }

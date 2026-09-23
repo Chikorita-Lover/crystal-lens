@@ -32,7 +32,7 @@ namespace CrystalLens.ViewModels
         {
             base.Save();
             using StreamWriter output = new(Path);
-            File.WriteFile(output);
+            File.WriteFile(new(output));
             output.Close();
         }
 

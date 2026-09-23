@@ -60,7 +60,7 @@
                 return new SpriteAnimation(file, animCommands);
             }
 
-            internal override void WriteAssembly(Queue<ASMCommand> commands, IASMData data)
+            internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 throw new NotImplementedException();
             }
