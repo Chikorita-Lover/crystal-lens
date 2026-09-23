@@ -5,6 +5,7 @@ namespace CrystalLens.Models
 {
     public class ASMProject
     {
+        public static readonly Dictionary<string, byte> GenderRatioDefinitions = GenerateGenderRatioDefinitions();
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public string Path { get; }
         public readonly string Name;
@@ -79,6 +80,19 @@ namespace CrystalLens.Models
                     Constants.Add(ASMConstantGroup.Type, constants[0]);
                     break;
             }
+        }
+
+        private static Dictionary<string, byte> GenerateGenderRatioDefinitions()
+        {
+            Dictionary<string, byte> defs = [];
+            defs.Add("GENDER_F0", 0);
+            defs.Add("GENDER_F12_5", 32);
+            defs.Add("GENDER_F25", 63);
+            defs.Add("GENDER_F50", 127);
+            defs.Add("GENDER_F75", 191);
+            defs.Add("GENDER_F100", 254);
+            defs.Add("GENDER_UNKNOWN", 255);
+            return defs;
         }
     }
 }

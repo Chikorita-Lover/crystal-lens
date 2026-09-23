@@ -1,7 +1,11 @@
-﻿namespace CrystalLens.ViewModels
+﻿using CrystalLens.Models;
+using System.Collections.ObjectModel;
+
+namespace CrystalLens.ViewModels
 {
     internal class PokemonSearchOptions : ObservableViewModel
     {
+        private readonly ASMProjectViewModel _project;
         public static List<FieldType> FieldTypes { get; } = GenerateFieldTypes();
         public static List<Key> FilterKeys { get; } = GenerateFilterKeys();
         public List<Field> Fields { get; } = [];
@@ -11,15 +15,28 @@
         }
         public Key FilterKey
         {
-            get; set { field = value; OnPropertyChanged(); }
+            get;
+            set
+            {
+                field = value;
+                FilterValues.Clear();
+                foreach (object o in FilterKey.ValueGetter.Invoke(_project))
+                {
+                    FilterValues.Add(o.ToString() ?? string.Empty);
+                }
+                FilterValue = FilterValues.First();
+                OnPropertyChanged();
+            }
         }
         public string FilterValue
         {
             get; set { field = value; OnPropertyChanged(); }
         }
+        public ObservableCollection<string> FilterValues { get; } = [];
 
-        internal PokemonSearchOptions()
+        internal PokemonSearchOptions(ASMProjectViewModel project)
         {
+            _project = project;
             FilterKey = FilterKeys.First();
             foreach (FieldType type in FieldTypes)
             {
@@ -45,11 +62,11 @@
         private static List<Key> GenerateFilterKeys()
         {
             List<Key> keys = [];
-            keys.Add(new("Type", vm => [vm.Type1, vm.Type2]));
-            keys.Add(new("Wild hold item", vm => [vm.Item1, vm.Item2]));
-            keys.Add(new("Gender ratio", vm => [vm.GenderRatio]));
-            keys.Add(new("Growth rate", vm => [vm.GrowthRate]));
-            keys.Add(new("Egg Group", vm => [vm.EggGroup1, vm.EggGroup2]));
+            keys.Add(new("Type", vm => [vm.Type1, vm.Type2], vm => vm.Model.Constants[ASMConstantGroup.Type].Keys));
+            keys.Add(new("Wild hold item", vm => [vm.Item1, vm.Item2], vm => vm.Model.Constants[ASMConstantGroup.Item].Keys));
+            keys.Add(new("Gender ratio", vm => [vm.GenderRatio], vm => ASMProject.GenderRatioDefinitions.Keys));
+            keys.Add(new("Growth rate", vm => [vm.GrowthRate], vm => vm.Model.Constants[ASMConstantGroup.GrowthRate].Keys));
+            keys.Add(new("Egg Group", vm => [vm.EggGroup1, vm.EggGroup2], vm => vm.Model.Constants[ASMConstantGroup.EggGroup].Keys));
             return keys;
         }
 
@@ -67,7 +84,6 @@
             }
         }
 
-        internal record Key(string Name, Func<PokemonStatsViewModel, object[]> ValueFunction)
-        { }
+        internal record Key(string Name, Func<PokemonStatsViewModel, object[]> Selector, Func<ASMProjectViewModel, IEnumerable<object>> ValueGetter);
     }
 }

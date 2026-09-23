@@ -117,7 +117,8 @@ namespace CrystalLens
         {
             PokemonSearchOptionsWindow optionsWindow = new()
             {
-                Owner = this
+                Owner = this,
+                DataContext = new PokemonSearchOptions(ViewModel.OpenProject)
             };
             if (optionsWindow.ShowDialog() == true)
             {

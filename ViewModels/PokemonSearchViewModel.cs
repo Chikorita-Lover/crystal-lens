@@ -28,7 +28,7 @@ namespace CrystalLens.ViewModels
                 if (file.Get(file.Labels.First()) is PokemonStats stats)
                 {
                     PokemonStatsViewModel entry = new(stats);
-                    if (!options.IsFiltered || options.FilterKey.ValueFunction.Invoke(entry).Any(o => o.ToString() == options.FilterValue))
+                    if (!options.IsFiltered || options.FilterKey.Selector.Invoke(entry).Any(o => o.ToString() == options.FilterValue))
                     {
                         entry.FrontSprite.PlayAnimationOnLoad = false;
                         Entries.Add(entry);

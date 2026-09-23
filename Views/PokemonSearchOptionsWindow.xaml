@@ -4,14 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CrystalLens.Views"
-        xmlns:vm="clr-namespace:CrystalLens.ViewModels"
         mc:Ignorable="d"
         Title="Pokémon Search" Width="250" Height="250"
         ResizeMode="NoResize"
         WindowStyle="ThreeDBorderWindow">
-    <Window.DataContext>
-        <vm:PokemonSearchOptions/>
-    </Window.DataContext>
     <StackPanel>
         <CheckBox IsChecked="{Binding IsFiltered}">
             Filter results:
@@ -34,7 +30,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <TextBlock Grid.Row="1" Grid.Column="0">Value:</TextBlock>
-            <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True" Text="{Binding FilterValue}"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True" ItemsSource="{Binding FilterValues}" Text="{Binding FilterValue}"/>
         </Grid>
         <GroupBox Header="Fields">
             <ListBox ItemsSource="{Binding Fields}" Height="100">
