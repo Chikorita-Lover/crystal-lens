@@ -13,10 +13,10 @@
         <vm:PokemonSearchOptions/>
     </Window.DataContext>
     <StackPanel>
-        <CheckBox Name="filterBox">
+        <CheckBox IsChecked="{Binding IsFiltered}">
             Filter results:
         </CheckBox>
-        <Grid IsEnabled="{Binding IsChecked,ElementName=filterBox}" Margin="20,0,0,0">
+        <Grid IsEnabled="{Binding IsFiltered}" Margin="20,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -26,7 +26,7 @@
                 <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0">Key:</TextBlock>
-            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding FilterKeys}">
+            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding FilterKeys}" SelectedItem="{Binding FilterKey}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
@@ -34,7 +34,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <TextBlock Grid.Row="1" Grid.Column="0">Value:</TextBlock>
-            <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True" Text="{Binding FilterValue}"/>
         </Grid>
         <GroupBox Header="Fields">
             <ListBox ItemsSource="{Binding Fields}" Height="100">

@@ -1,6 +1,4 @@
-﻿using CrystalLens.Models;
-
-namespace CrystalLens.ViewModels
+﻿namespace CrystalLens.ViewModels
 {
     internal class PokemonSearchOptions : ObservableViewModel
     {
@@ -22,6 +20,7 @@ namespace CrystalLens.ViewModels
 
         internal PokemonSearchOptions()
         {
+            FilterKey = FilterKeys.First();
             foreach (FieldType type in FieldTypes)
             {
                 Fields.Add(new(type));
@@ -46,11 +45,11 @@ namespace CrystalLens.ViewModels
         private static List<Key> GenerateFilterKeys()
         {
             List<Key> keys = [];
-            keys.Add(new("Type", p => p.Stats.Type1 == p.Value || p.Stats.Type2 == p.Value));
-            keys.Add(new("Wild hold item", p => p.Stats.Item1 == p.Value || p.Stats.Item2 == p.Value));
-            keys.Add(new("Gender ratio", p => p.Stats.GenderRatio == p.Value));
-            keys.Add(new("Growth rate", p => p.Stats.GrowthRate == p.Value));
-            keys.Add(new("Egg Group", p => p.Stats.EggGroup1 == p.Value || p.Stats.EggGroup2 == p.Value));
+            keys.Add(new("Type", vm => [vm.Type1, vm.Type2]));
+            keys.Add(new("Wild hold item", vm => [vm.Item1, vm.Item2]));
+            keys.Add(new("Gender ratio", vm => [vm.GenderRatio]));
+            keys.Add(new("Growth rate", vm => [vm.GrowthRate]));
+            keys.Add(new("Egg Group", vm => [vm.EggGroup1, vm.EggGroup2]));
             return keys;
         }
 
@@ -68,7 +67,7 @@ namespace CrystalLens.ViewModels
             }
         }
 
-        internal record Key(string Name, Predicate<(PokemonStats Stats, string Value)> MatchPredicate)
+        internal record Key(string Name, Func<PokemonStatsViewModel, object[]> ValueFunction)
         { }
     }
 }

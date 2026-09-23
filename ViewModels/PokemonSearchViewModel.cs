@@ -18,18 +18,21 @@ namespace CrystalLens.ViewModels
             Options = options;
             ShownFields.AddRange(options.Fields.SelectMany(field => field.IsShown ? field.Type.PropertyNames : []));
 
-            PopulateEntries();
+            PopulateEntries(options);
         }
 
-        private void PopulateEntries()
+        private void PopulateEntries(PokemonSearchOptions options)
         {
             foreach (ASMFile file in _project.ProjectFiles)
             {
                 if (file.Get(file.Labels.First()) is PokemonStats stats)
                 {
                     PokemonStatsViewModel entry = new(stats);
-                    entry.FrontSprite.PlayAnimationOnLoad = false;
-                    Entries.Add(entry);
+                    if (!options.IsFiltered || options.FilterKey.ValueFunction.Invoke(entry).Any(o => o.ToString() == options.FilterValue))
+                    {
+                        entry.FrontSprite.PlayAnimationOnLoad = false;
+                        Entries.Add(entry);
+                    }
                 }
             }
         }
