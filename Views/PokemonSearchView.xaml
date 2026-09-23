@@ -10,6 +10,11 @@
               CanUserResizeColumns="False" CanUserResizeRows="False"
               HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC"
               AutoGeneratingColumn="DataGrid_AutoGeneratingColumn">
+        <DataGrid.RowStyle>
+            <Style TargetType="DataGridRow">
+                <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+            </Style>
+        </DataGrid.RowStyle>
         <DataGrid.Columns>
             <DataGridTemplateColumn Header="Image" CanUserSort="False" DisplayIndex="0">
                 <DataGridTemplateColumn.CellTemplate>

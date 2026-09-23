@@ -13,7 +13,7 @@ namespace CrystalLens
     {
         public static readonly RoutedCommand OpenProjectCommand = new();
 
-        private MainViewModel ViewModel => (MainViewModel)DataContext;
+        internal MainViewModel ViewModel => (MainViewModel)DataContext;
 
         public MainWindow()
         {
@@ -23,10 +23,7 @@ namespace CrystalLens
         private ASMFile OpenFile(string path, ASMProject project)
         {
             ASMFile file = ASMFile.ReadFile(path, project);
-
-            ViewModel.OpenTabs.Add(new ASMFileViewModel(file));
-            tabs.SelectedIndex = tabs.Items.Count - 1;
-
+            ViewModel.OpenTab(new ASMFileViewModel(file));
             return file;
         }
 

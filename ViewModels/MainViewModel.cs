@@ -36,6 +36,12 @@ namespace CrystalLens.ViewModels
             UpdateWindowTitle();
         }
 
+        internal void OpenTab(DataTabViewModel tab)
+        {
+            OpenTabs.Add(tab);
+            SelectedTabIndex = OpenTabs.Count - 1;
+        }
+
         private void UpdateWindowTitle()
         {
             StringBuilder sb = new();
