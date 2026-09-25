@@ -32,17 +32,9 @@
         {
             internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
-                byte[] encounterRates = new byte[3];
-                byte b;
-                for (b = 0; b < encounterRates.Length; b++)
-                {
-                    string parameter = reader.Read();
-                    encounterRates[b] = byte.Parse(parameter.Split(" percent")[0]);
-                }
-
                 List<byte> probabilities = [30, 30, 20, 10, 5, 4, 1];
                 Dictionary<DayTime, EncounterSet> encounterSets = [];
-                for (b = 0; b < encounterRates.Length; b++)
+                for (int i = 0; i < 3; i++)
                 {
                     List<Encounter> encounters = [];
                     foreach (byte probability in probabilities)
@@ -51,8 +43,8 @@
                         string name = reader.Read();
                         encounters.Add(new(level, name));
                     }
-                    DayTime time = Enum.GetValues<DayTime>()[b];
-                    encounterSets[time] = new(file, encounters, probabilities, encounterRates[b]);
+                    DayTime time = Enum.GetValues<DayTime>()[i];
+                    encounterSets[time] = new(file, encounters, probabilities);
                 }
 
                 return new EncounterTable(file, encounterSets);
@@ -61,14 +53,6 @@
             internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterTable encounterTable = (EncounterTable)data;
-
-                List<string> percents = [];
-                foreach (DayTime time in Enum.GetValues<DayTime>())
-                {
-                    int rate = encounterTable.EncounterSets[time].EncounterRate;
-                    percents.Add(PercentFromInt(rate));
-                }
-                writer.DeclareBytes([.. percents], "encounter rates: morn/day/nite");
 
                 foreach (DayTime time in Enum.GetValues<DayTime>())
                 {

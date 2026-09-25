@@ -47,7 +47,7 @@ namespace CrystalLens.Models
         public byte ReadByte()
         {
             string? value = Read();
-            return byte.Parse(value ?? "0");
+            return (byte)(int.Parse(value ?? "0") % 256);
         }
 
         private void RunCommand(ASMCommand command)

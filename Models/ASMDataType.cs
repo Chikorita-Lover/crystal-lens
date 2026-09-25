@@ -1,4 +1,6 @@
-﻿namespace CrystalLens.Models
+﻿using System.IO;
+
+namespace CrystalLens.Models
 {
     public class ASMDataType
     {
@@ -10,6 +12,10 @@
             path => path.StartsWith(@"data\wild\") && path.EndsWith("_water.asm") && !path.Contains("swarm_"),
             ASMSerializers.EncounterSetMap
             );
+        public static readonly ASMDataType ContestEncounters = new(
+            path => path.StartsWith(@"data\wild\") && Path.GetFileNameWithoutExtension(path).Contains("contest"),
+            ASMSerializers.DynamicEncounterSet
+            );
         public static readonly ASMDataType PokemonStats = new(
             path => path.StartsWith(@"data\pokemon\base_stats\"),
             ASMSerializers.PokemonStats
@@ -18,7 +24,7 @@
             path => path.StartsWith(@"gfx\pokemon\"),
             ASMSerializers.SpriteAnimation
             );
-        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, PokemonStats, SpriteAnimation];
+        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, ContestEncounters, PokemonStats, SpriteAnimation];
 
         public readonly Predicate<string> PathPredicate;
         public readonly ASMSerializer Serializer;

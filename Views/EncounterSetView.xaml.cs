@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using CrystalLens.ViewModels;
+using System.Windows.Controls;
 
 namespace CrystalLens.Views
 {
@@ -7,9 +8,16 @@ namespace CrystalLens.Views
     /// </summary>
     public partial class EncounterSetView : UserControl
     {
+        private EncounterSetViewModel ViewModel => (EncounterSetViewModel)DataContext;
+
         public EncounterSetView()
         {
             InitializeComponent();
+        }
+
+        private void AddButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ViewModel.AddEncounter();
         }
     }
 }

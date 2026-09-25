@@ -4,36 +4,54 @@ using System.IO;
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterSetViewModel : ObservableViewModel, IChangeTracking
+    public class EncounterSetViewModel : IChangeTracking
     {
         private readonly ChangeTracker tracker = new();
-        public EncounterSet EncounterSet
+        public EncounterSet Model
         {
             get; set { field = value; PopulateEncounters(); }
         }
+        public bool IsDynamic => Model.IsDynamic;
         public ObservableCollection<EncounterViewModel> Encounters { get; } = [];
 
         ChangeTracker IChangeTracking.Tracker => tracker;
 
         internal EncounterSetViewModel(EncounterSet encounterSet)
         {
-            EncounterSet = encounterSet;
+            Model = encounterSet;
         }
 
         private void PopulateEncounters()
         {
             Encounters.Clear();
-            if (EncounterSet != null)
+            for (int i = 0; i < Model.Encounters.Count; i++)
             {
-                for (int i = 0; i < EncounterSet.Encounters.Count; i++)
-                {
-                    EncounterViewModel encounter = new(EncounterSet.Get(i), EncounterSet.GetProbability(i));
-                    UpdateEncounterSprite(encounter);
-                    Encounters.Add(encounter);
-                    tracker.TryAddChildOf(encounter);
-                    encounter.PropertyChanged += Encounter_PropertyChanged;
-                }
+                AddEncounterViewModel(new(Model.Get(i), Model.GetProbability(i)));
             }
+        }
+
+        internal void AddEncounter(Encounter encounter, byte probability)
+        {
+            if (IsDynamic)
+            {
+                Model.Encounters.Add(encounter);
+                Model.Probabilities.Add(probability);
+                AddEncounterViewModel(new(encounter, probability));
+            }
+        }
+
+        internal void AddEncounter()
+        {
+            string species = IASMData.GetProject(Model).Constants[ASMConstantGroup.Species].Keys.First();
+            AddEncounter(new(5, species), 0);
+        }
+
+        private void AddEncounterViewModel(EncounterViewModel encounter)
+        {
+            UpdateEncounterSprite(encounter);
+            Encounters.Add(encounter);
+            tracker.TryAddChildOf(encounter);
+            encounter.PropertyChanged += Encounter_PropertyChanged;
         }
 
         private void UpdateEncounterSprite(EncounterViewModel encounter)
@@ -46,7 +64,7 @@ namespace CrystalLens.ViewModels
         {
             EncounterViewModel encounter = (EncounterViewModel)sender;
             int index = Encounters.IndexOf(encounter);
-            EncounterSet.Encounters[index] = encounter.ToModel();
+            Model.Encounters[index] = encounter.ToModel();
             tracker.MarkAsUnsaved();
 
             UpdateEncounterSprite(encounter);

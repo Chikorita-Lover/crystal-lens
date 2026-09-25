@@ -6,20 +6,39 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              xmlns:vm="clr-namespace:CrystalLens.ViewModels"
              mc:Ignorable="d">
-    <DataGrid Name="data" ItemsSource="{Binding Encounters}" AutoGenerateColumns="False"
-              CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
-              HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC" AlternatingRowBackground="#F2F2F2">
-        <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Image" IsReadOnly="True">
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <local:Sprite DataContext="{Binding Sprite}"/>
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Name}"/>
-            <DataGridTextColumn Header="Level" Width="*" Binding="{Binding Level}"/>
-            <DataGridTextColumn Header="Rate" Width="*" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True"/>
-        </DataGrid.Columns>
-    </DataGrid>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button IsEnabled="{Binding IsDynamic}" Padding="6" Click="AddButton_Click">
+                <Path Data="M 4 0 V 8 M 0 4 H 8" Stroke="Black"/>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDynamic}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsDynamic}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+        <DataGrid ItemsSource="{Binding Encounters}" AutoGenerateColumns="False"
+  CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+  HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC" AlternatingRowBackground="#F2F2F2" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Image" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:Sprite DataContext="{Binding Sprite}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Level" Width="*" Binding="{Binding Level}"/>
+                <DataGridTextColumn Header="Rate" Width="*" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </UserControl>

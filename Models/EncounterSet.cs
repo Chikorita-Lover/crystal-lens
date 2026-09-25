@@ -3,18 +3,18 @@
     public class EncounterSet : IASMData
     {
         private readonly ASMFile _file;
+        public readonly bool IsDynamic;
         public List<Encounter> Encounters;
         public List<byte> Probabilities;
-        public int EncounterRate;
 
         ASMFile IASMData.File => _file;
 
-        public EncounterSet(ASMFile file, List<Encounter> encounters, List<byte> probabilities, byte encounterRate)
+        public EncounterSet(ASMFile file, List<Encounter> encounters, List<byte> probabilities, bool isDynamic = false)
         {
             _file = file;
             Encounters = encounters;
             Probabilities = probabilities;
-            EncounterRate = encounterRate;
+            IsDynamic = isDynamic;
         }
 
         public Encounter Get(int index)
@@ -29,46 +29,73 @@
 
         public ASMSerializer GetSerializer()
         {
-            return ASMSerializers.EncounterSet;
+            return IsDynamic ? ASMSerializers.DynamicEncounterSet : ASMSerializers.EncounterSet;
         }
 
         public class Serializer : ASMSerializer
         {
+            private readonly bool _isDynamic;
+
+            public Serializer(bool isDynamic)
+            {
+                _isDynamic = isDynamic;
+            }
+
             internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
-                byte encounterRate;
-
-                string parameter = reader.Read();
-                encounterRate = byte.Parse(parameter.Split(" percent")[0]);
-
-                List<byte> probabilities = [60, 30, 10];
+                List<byte> probabilities;
                 List<Encounter> encounters = [];
-                for (byte b = 0; b < probabilities.Count; b++)
+                
+                if (_isDynamic)
                 {
-                    byte level = reader.ReadByte();
-                    string name = reader.Read();
-                    encounters.Add(new(level, name));
+                    probabilities = [];
+                    byte probability;
+                    while ((probability = reader.ReadByte()) != 255)
+                    {
+                        probabilities.Add(probability);
+                        string name = reader.Read();
+                        encounters.Add(new(reader.ReadByte(), reader.ReadByte(), name));
+                    }
+                }
+                else
+                {
+                    probabilities = [60, 30, 10];
+                    for (byte b = 0; b < probabilities.Count; b++)
+                    {
+                        byte level = reader.ReadByte();
+                        string name = reader.Read();
+                        encounters.Add(new(level, name));
+                    }
                 }
 
-                return new EncounterSet(file, encounters, probabilities, encounterRate);
+                return new EncounterSet(file, encounters, probabilities, _isDynamic);
             }
 
             internal override void WriteAssembly(ASMWriter writer, IASMData data)
             {
                 EncounterSet encounterSet = (EncounterSet)data;
 
-                string rate = PercentFromInt(encounterSet.EncounterRate);
-                writer.DeclareBytes([rate], "encounter rate");
-
-                foreach (Encounter encounter in encounterSet.Encounters)
+                if (_isDynamic)
                 {
-                    writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
+                    writer.Comment("%, species, min, max");
                 }
-            }
 
-            private static string PercentFromInt(int value)
-            {
-                return $"{value} percent";
+                for (int i = 0; i < encounterSet.Encounters.Count; i++)
+                {
+                    Encounter encounter = encounterSet.Get(i);
+                    if (_isDynamic)
+                    {
+                        writer.DeclareBytes([encounterSet.GetProbability(i), encounter.Name, encounter.MinLevel, encounter.MaxLevel]);
+                    }
+                    else
+                    {
+                        writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
+                    }
+                }
+                if (_isDynamic)
+                {
+                    writer.DeclareBytes([-1]);
+                }
             }
         }
     }

@@ -4,13 +4,15 @@
     {
         private readonly ASMFile _file;
         public Dictionary<string, EncounterSet> EncounterSets;
+        public Dictionary<string, byte> EncounterRates;
 
         ASMFile IASMData.File => _file;
 
-        public EncounterSetMap(ASMFile file, Dictionary<string, EncounterSet> encounterSets)
+        public EncounterSetMap(ASMFile file, Dictionary<string, EncounterSet> encounterSets, Dictionary<string, byte> encounterRates)
         {
             _file = file;
             EncounterSets = encounterSets;
+            EncounterRates = encounterRates;
         }
 
         public EncounterSet Get(string name)
@@ -35,15 +37,19 @@
 
             internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
             {
-                string value;
+                string mapName;
                 Dictionary<string, EncounterSet> encounterSets = [];
-                while ((value = reader.Read()) != "-1")
+                Dictionary<string, byte> encounterRates = [];
+                while ((mapName = reader.Read()) != "-1")
                 {
+                    string encounterRate = reader.Read();
+                    encounterRates.Add(mapName, byte.Parse(encounterRate.Split(" percent")[0]));
+
                     EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(reader, file);
-                    encounterSets.Add(value, encounterSet);
+                    encounterSets.Add(mapName, encounterSet);
                 }
 
-                return new EncounterSetMap(file, encounterSets);
+                return new EncounterSetMap(file, encounterSets, encounterRates);
             }
 
             internal override void WriteAssembly(ASMWriter writer, IASMData data)
@@ -53,7 +59,11 @@
                 foreach (string name in encounterSets.GetNames())
                 {
                     writer.WriteCommand(new(DefCommand, [name]));
+
+                    string rate = $"{encounterSets.EncounterRates[name]} percent";
+                    writer.DeclareBytes([rate], "encounter rate");
                     ASMSerializers.EncounterSet.WriteAssembly(writer, encounterSets.Get(name));
+
                     writer.WriteCommand(new(EndCommand));
                     writer.NewLine();
                 }
