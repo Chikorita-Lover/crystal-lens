@@ -56,8 +56,8 @@ namespace CrystalLens.ViewModels
 
         private void UpdateEncounterSprite(EncounterViewModel encounter)
         {
-            ASMProject project = IASMData.GetProject(EncounterSet);
             encounter.Sprite.Path = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Name.ToLower()}/front.png");
+            ASMProject project = IASMData.GetProject(Model);
         }
 
         private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
