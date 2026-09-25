@@ -60,7 +60,7 @@
                     EncounterSet encounters = encounterTable.EncounterSets[time];
                     foreach (Encounter encounter in encounters.Encounters)
                     {
-                        writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
+                        writer.DeclareBytes([encounter.MinLevel, encounter.Species]);
                     }
                 }
             }

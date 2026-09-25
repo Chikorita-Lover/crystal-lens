@@ -1,15 +1,8 @@
 ﻿namespace CrystalLens.Models
 {
-    public record Encounter(int MinLevel, int MaxLevel, string Name)
+    public record Encounter(byte MinLevel, byte MaxLevel, string Species)
     {
-        public string LevelDisplay
-        {
-            get => MinLevel == MaxLevel
-                ? MinLevel.ToString()
-                : MinLevel.ToString() + " – " + MaxLevel.ToString();
-        }
-
-        public Encounter(int level, string name) : this(level, level, name)
+        public Encounter(byte level, string species) : this(level, level, species)
         { }
     }
 }

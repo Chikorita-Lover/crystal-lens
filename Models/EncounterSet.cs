@@ -85,11 +85,11 @@
                     Encounter encounter = encounterSet.Get(i);
                     if (_isDynamic)
                     {
-                        writer.DeclareBytes([encounterSet.GetProbability(i), encounter.Name, encounter.MinLevel, encounter.MaxLevel]);
+                        writer.DeclareBytes([encounterSet.GetProbability(i), encounter.Species, encounter.MinLevel, encounter.MaxLevel]);
                     }
                     else
                     {
-                        writer.DeclareBytes([encounter.MinLevel, encounter.Name]);
+                        writer.DeclareBytes([encounter.MinLevel, encounter.Species]);
                     }
                 }
                 if (_isDynamic)

@@ -4,24 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CrystalLens.Views"
+             xmlns:converters="clr-namespace:CrystalLens.Converters"
              xmlns:vm="clr-namespace:CrystalLens.ViewModels"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:EncounterSetViewModel}">
+    <UserControl.Resources>
+        <vm:BindingProxy x:Key="Proxy" Data="{Binding}"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
+    </UserControl.Resources>
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button IsEnabled="{Binding IsDynamic}" Padding="6" Click="AddButton_Click">
+            <Button IsEnabled="{Binding IsDynamic}" Padding="6" Visibility="{Binding IsDynamic,Converter={StaticResource BoolToVisibilityConverter}}" Click="AddButton_Click">
                 <Path Data="M 4 0 V 8 M 0 4 H 8" Stroke="Black"/>
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsDynamic}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsDynamic}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
             </Button>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Encounters}" AutoGenerateColumns="False"
@@ -35,8 +30,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Level" Width="*" Binding="{Binding Level}"/>
+                <DataGridTextColumn Header="Species" Width="2*" Binding="{Binding Species}"/>
+                <DataGridTextColumn Header="Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource InvertedBoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}"/>
+                <DataGridTextColumn Header="Min. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}"/>
+                <DataGridTextColumn Header="Max. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MaxLevel}"/>
                 <DataGridTextColumn Header="Rate" Width="*" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True"/>
             </DataGrid.Columns>
         </DataGrid>

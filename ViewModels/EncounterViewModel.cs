@@ -4,11 +4,15 @@ namespace CrystalLens.ViewModels
 {
     public class EncounterViewModel : ObservableViewModel
     {
-        public string Name
+        public string Species
         {
             get; set { field = value; OnPropertyChanged(); }
         }
-        public int Level
+        public byte MinLevel
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
+        public byte MaxLevel
         {
             get; set { field = value; OnPropertyChanged(); }
         }
@@ -17,14 +21,15 @@ namespace CrystalLens.ViewModels
 
         internal EncounterViewModel(Encounter encounter, int probability)
         {
-            Name = encounter.Name;
-            Level = encounter.MinLevel;
+            Species = encounter.Species;
+            MinLevel = encounter.MinLevel;
+            MaxLevel = encounter.MaxLevel;
             Probability = probability;
         }
 
         internal Encounter ToModel()
         {
-            return new(Level, Name);
+            return new(MinLevel, MaxLevel, Species);
         }
     }
 }
