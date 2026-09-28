@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              xmlns:vm="clr-namespace:CrystalLens.ViewModels"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:PokemonStatsViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Style x:Key="TextBox" TargetType="TextBox">
@@ -48,7 +49,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Content="Species"/>
-                        <ComboBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" ItemsSource="{Binding PokemonConstants}" Style="{StaticResource ConstBox}" Width="120"/>
+                        <ComboBox Grid.Column="1" Grid.Row="0" Text="{Binding Species}" ItemsSource="{Binding PokemonConstants}" Style="{StaticResource ConstBox}" Width="120"/>
                         <Label Grid.Column="0" Grid.Row="1" Content="Type"/>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
                             <ComboBox Text="{Binding Type1}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}" Width="100" Margin="0,0,6,0"/>
@@ -112,19 +113,48 @@
         <StackPanel Grid.Column="1">
             <GroupBox Header="Base stats">
                 <StackPanel>
-                    <ItemsControl ItemsSource="{Binding BaseStats}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="{Binding Stat}" Width="120"/>
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBox Text="{Binding Value,Mode=TwoWay}" Style="{StaticResource NumericBox}"/>
-                                        <ProgressBar Value="{Binding Value}" Maximum="255" Width="255" Height="4"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="HP" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding HP}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding HP}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Attack" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding Attack}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding Attack}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Defense" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding Defense}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding Defense}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Speed" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding Speed}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding Speed}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Spcl.Atk" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding SpclAtk}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding SpclAtk}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Spcl.Def" Width="120"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBox Text="{Binding SpclDef}" Style="{StaticResource NumericBox}"/>
+                            <ProgressBar Value="{Binding SpclDef}" Maximum="255" Width="255" Height="4"/>
+                        </StackPanel>
+                    </StackPanel>
                     <Separator/>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Total" Width="120"/>

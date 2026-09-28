@@ -8,10 +8,40 @@ namespace CrystalLens.ViewModels
     {
         private readonly ChangeTracker tracker = new();
         public PokemonStats Model { get; }
-        public string Name
+        public string Species
         {
-            get => Model.Name;
-            set { Model.Name = value; OnPropertyChanged(); }
+            get => Model.Species;
+            set { Model.Species = value; OnPropertyChanged(); }
+        }
+        public byte HP
+        {
+            get => Model.HP;
+            set { Model.HP = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
+        }
+        public byte Attack
+        {
+            get => Model.Attack;
+            set { Model.Attack = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
+        }
+        public byte Defense
+        {
+            get => Model.Defense;
+            set { Model.Defense = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
+        }
+        public byte Speed
+        {
+            get => Model.Speed;
+            set { Model.Speed = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
+        }
+        public byte SpclAtk
+        {
+            get => Model.SpclAtk;
+            set { Model.SpclAtk = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
+        }
+        public byte SpclDef
+        {
+            get => Model.SpclDef;
+            set { Model.SpclDef = value; OnPropertyChanged(); OnPropertyChanged(nameof(BaseStatTotal)); }
         }
         public string Type1
         {
@@ -68,8 +98,7 @@ namespace CrystalLens.ViewModels
             get => Model.EggGroup2;
             set { Model.EggGroup2 = value; OnPropertyChanged(); }
         }
-        public ObservableCollection<StatEntry> BaseStats { get; }
-        public int BaseStatTotal => BaseStats.Sum(stat => stat.Value);
+        public int BaseStatTotal => Model.BaseStatTotal;
         public ObservableCollection<string> TMMoves { get; }
         public SpriteViewModel FrontSprite { get; } = new();
         public SpriteViewModel BackSprite { get; } = new();
@@ -87,20 +116,12 @@ namespace CrystalLens.ViewModels
             TMMoves = new(model.TMMoves);
 
             ASMProject project = ((IASMData)model).File.Project;
-            FrontSprite.Path = Path.Combine(project.Path, model.SpritePath.Replace(".dimensions", ".png"));
+            FrontSprite.Path = Path.Combine(project.Path, model.DimensionsPath.Replace(".dimensions", ".png"));
             FrontSprite.Animation = model.Animation;
             FrontSprite.PlayAnimationOnLoad = true;
             BackSprite.Path = FrontSprite.Path.Replace("front", "back");
 
             PropertyChanged += PokemonStatsViewModel_PropertyChanged;
-
-            BaseStats = [];
-            foreach (PokemonStats.Stat stat in model.BaseStats.Keys)
-            {
-                StatEntry entry = new(stat, model.BaseStats[stat]);
-                BaseStats.Add(entry);
-                entry.PropertyChanged += StatEntry_PropertyChanged;
-            }
 
             ReadConstantsOf(ASMConstantGroup.Species, PokemonConstants);
             ReadConstantsOf(ASMConstantGroup.Type, TypeConstants);
@@ -122,28 +143,6 @@ namespace CrystalLens.ViewModels
         private void PokemonStatsViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             tracker.MarkAsUnsaved();
-        }
-
-        private void StatEntry_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            StatEntry entry = (StatEntry)sender;
-            Model.BaseStats[entry.Stat] = entry.Value;
-            OnPropertyChanged(nameof(BaseStatTotal));
-        }
-
-        public class StatEntry : ObservableViewModel
-        {
-            public PokemonStats.Stat Stat { get; }
-            public byte Value
-            {
-                get; set { field = value; OnPropertyChanged(); }
-            }
-
-            public StatEntry(PokemonStats.Stat stat, byte value)
-            {
-                Stat = stat;
-                Value = value;
-            }
         }
     }
 }
