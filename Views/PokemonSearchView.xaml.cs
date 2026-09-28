@@ -24,6 +24,11 @@ namespace CrystalLens.Views
             {
                 e.Cancel = true;
             }
+            e.Column.MinWidth = 100;
+            if (e.Column is DataGridTextColumn textColumn)
+            {
+                textColumn.ElementStyle = (Style)FindResource("TextColumnElementStyle");
+            }
         }
 
         private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)

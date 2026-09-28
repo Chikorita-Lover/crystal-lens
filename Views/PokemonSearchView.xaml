@@ -23,7 +23,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Species" Binding="{Binding Name}" DisplayIndex="1"/>
+            <DataGridTextColumn Header="Species" Width="150" Binding="{Binding Name}" DisplayIndex="1" ElementStyle="{StaticResource TextColumnElementStyle}"/>
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

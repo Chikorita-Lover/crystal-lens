@@ -30,11 +30,11 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Species" Width="2*" Binding="{Binding Species}"/>
-                <DataGridTextColumn Header="Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource InvertedBoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}"/>
-                <DataGridTextColumn Header="Min. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}"/>
-                <DataGridTextColumn Header="Max. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MaxLevel}"/>
-                <DataGridTextColumn Header="Rate" Width="*" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Species" Width="2*" Binding="{Binding Species}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <DataGridTextColumn Header="Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource InvertedBoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <DataGridTextColumn Header="Min. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <DataGridTextColumn Header="Max. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MaxLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <DataGridTextColumn Header="Rate" Width="*" Binding="{Binding Probability, StringFormat={}{0}%}" IsReadOnly="True" ElementStyle="{StaticResource TextColumnElementStyle}"/>
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
