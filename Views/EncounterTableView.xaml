@@ -4,6 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CrystalLens.Views"
-             mc:Ignorable="d">
-    <local:EncounterSetView DataContext="{Binding EncounterSet}"/>
+             xmlns:vm="clr-namespace:CrystalLens.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:EncounterTableViewModel}">
+    <DockPanel>
+        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Keys}" SelectedItem="{Binding SelectedKey}" HorizontalAlignment="Right"/>
+        <local:EncounterSetView DataContext="{Binding EncounterSet}"/>
+    </DockPanel>
 </UserControl>

@@ -1,33 +1,41 @@
 ﻿using CrystalLens.Models;
-using System.Collections.ObjectModel;
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterTableViewModel : IChangeTracking
+    public class EncounterTableViewModel : ObservableViewModel, IChangeTracking
     {
+        private readonly Dictionary<DayTime, EncounterSetViewModel> _encounterSets = [];
         private readonly ChangeTracker tracker = new();
         public EncounterTable EncounterTable
         {
             get; set { field = value; PopulateEncounterSets(); }
         }
-        public EncounterSetViewModel EncounterSet => EncounterSets[1];
-        public ObservableCollection<EncounterSetViewModel> EncounterSets { get; } = [];
+        public EncounterSetViewModel EncounterSet
+        {
+            get; private set { field = value; OnPropertyChanged(); }
+        }
+        public ICollection<DayTime> Keys => EncounterTable.EncounterSets.Keys;
+        public DayTime SelectedKey
+        {
+            get; set { field = value; EncounterSet = _encounterSets[value]; OnPropertyChanged(); }
+        }
 
         ChangeTracker IChangeTracking.Tracker => tracker;
 
         internal EncounterTableViewModel(EncounterTable encounterTable)
         {
             EncounterTable = encounterTable;
+            SelectedKey = Keys.First();
         }
 
         private void PopulateEncounterSets()
         {
-            EncounterSets.Clear();
+            _encounterSets.Clear();
             tracker.ClearChildren();
-            foreach (EncounterSet encounterSet in EncounterTable.EncounterSets.Values)
+            foreach (KeyValuePair<DayTime, EncounterSet> pair in EncounterTable.EncounterSets)
             {
-                EncounterSetViewModel viewModel = new(encounterSet);
-                EncounterSets.Add(viewModel);
+                EncounterSetViewModel viewModel = new(pair.Value);
+                _encounterSets.Add(pair.Key, viewModel);
                 tracker.TryAddChildOf(viewModel);
             }
         }
