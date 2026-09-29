@@ -22,14 +22,12 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="IsEditable" Value="True"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="180"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0">
+    <ScrollViewer>
+        <StackPanel>
             <GroupBox Header="Appearance">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <local:Sprite DataContext="{Binding FrontSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
@@ -40,7 +38,7 @@
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -49,17 +47,17 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Content="Species"/>
-                        <ComboBox Grid.Column="1" Grid.Row="0" Text="{Binding Species}" ItemsSource="{Binding PokemonConstants}" Style="{StaticResource ConstBox}" Width="120"/>
+                        <ComboBox Grid.Column="1" Grid.Row="0" Text="{Binding Species}" ItemsSource="{Binding PokemonConstants}" Style="{StaticResource ConstBox}"/>
                         <Label Grid.Column="0" Grid.Row="1" Content="Type"/>
-                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                            <ComboBox Text="{Binding Type1}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}" Width="100" Margin="0,0,6,0"/>
-                            <ComboBox Text="{Binding Type2}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}" Width="100"/>
+                        <StackPanel Grid.Column="1" Grid.Row="1">
+                            <ComboBox Text="{Binding Type1}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}"/>
+                            <ComboBox Text="{Binding Type2}" ItemsSource="{Binding TypeConstants}" Style="{StaticResource ConstBox}"/>
                         </StackPanel>
                     </Grid>
                     <Separator/>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -74,11 +72,11 @@
                         <Label Grid.Column="0" Grid.Row="2" Content="Wild hold items"/>
                         <StackPanel Grid.Column="1" Grid.Row="2">
                             <StackPanel Orientation="Horizontal">
-                                <ComboBox Text="{Binding Item1}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}" Width="120"/>
+                                <ComboBox Text="{Binding Item1}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}"/>
                                 <Label Content="(23%)"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <ComboBox Text="{Binding Item2}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}" Width="120"/>
+                                <ComboBox Text="{Binding Item2}" ItemsSource="{Binding ItemConstants}" Style="{StaticResource ConstBox}"/>
                                 <Label Content="(2%)"/>
                             </StackPanel>
                         </StackPanel>
@@ -86,7 +84,7 @@
                     <Separator/>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -102,54 +100,52 @@
                         <Label Grid.Column="0" Grid.Row="2" Content="Growth rate"/>
                         <ComboBox Grid.Column="1" Grid.Row="2" Text="{Binding GrowthRate}" ItemsSource="{Binding GrowthRateConstants}" Style="{StaticResource ConstBox}" Width="180"/>
                         <Label Grid.Column="0" Grid.Row="3" Content="Egg Groups"/>
-                        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
-                            <ComboBox Text="{Binding EggGroup1}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}" Width="150" Margin="0,0,6,0"/>
-                            <ComboBox Text="{Binding EggGroup2}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}" Width="150"/>
+                        <StackPanel Grid.Column="1" Grid.Row="3">
+                            <ComboBox Text="{Binding EggGroup1}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}"/>
+                            <ComboBox Text="{Binding EggGroup2}" ItemsSource="{Binding EggGroupConstants}" Style="{StaticResource ConstBox}"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </GroupBox>
-        </StackPanel>
-        <StackPanel Grid.Column="1">
             <GroupBox Header="Base stats">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="HP" Width="120"/>
+                        <Label Content="HP" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding HP}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding HP}" Maximum="255" Width="255" Height="4"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Attack" Width="120"/>
+                        <Label Content="Attack" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding Attack}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding Attack}" Maximum="255" Width="255" Height="4"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Defense" Width="120"/>
+                        <Label Content="Defense" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding Defense}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding Defense}" Maximum="255" Width="255" Height="4"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Speed" Width="120"/>
+                        <Label Content="Speed" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding Speed}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding Speed}" Maximum="255" Width="255" Height="4"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Spcl.Atk" Width="120"/>
+                        <Label Content="Spcl.Atk" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding SpclAtk}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding SpclAtk}" Maximum="255" Width="255" Height="4"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Spcl.Def" Width="120"/>
+                        <Label Content="Spcl.Def" Width="200"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBox Text="{Binding SpclDef}" Style="{StaticResource NumericBox}"/>
                             <ProgressBar Value="{Binding SpclDef}" Maximum="255" Width="255" Height="4"/>
@@ -157,7 +153,7 @@
                     </StackPanel>
                     <Separator/>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Total" Width="120"/>
+                        <Label Content="Total" Width="200"/>
                         <TextBox Text="{Binding BaseStatTotal,Mode=OneWay}" Style="{StaticResource NumericBox}" IsReadOnly="True"/>
                     </StackPanel>
                 </StackPanel>
@@ -166,5 +162,5 @@
                 <ListBox ItemsSource="{Binding TMMoves}" Height="204"/>
             </GroupBox>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </UserControl>
