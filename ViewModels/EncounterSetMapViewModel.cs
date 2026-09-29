@@ -36,7 +36,11 @@ namespace CrystalLens.ViewModels
         internal EncounterSetMapViewModel(EncounterSetMap encounterSets)
         {
             EncounterSets = encounterSets;
-            SelectedMap = encounterSets.GetNames().First();
+            ICollection<string> mapNames = encounterSets.GetNames();
+            if (mapNames.Count > 0)
+            {
+                SelectedMap = mapNames.First();
+            }
         }
     }
 }

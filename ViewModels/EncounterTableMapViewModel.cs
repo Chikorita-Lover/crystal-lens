@@ -37,7 +37,11 @@ namespace CrystalLens.ViewModels
         internal EncounterTableMapViewModel(EncounterTableMap encounterTables)
         {
             EncounterTables = encounterTables;
-            SelectedMap = encounterTables.GetNames().First();
+            ICollection<string> mapNames = encounterTables.GetNames();
+            if (mapNames.Count > 0)
+            {
+                SelectedMap = mapNames.First();
+            }
         }
     }
 }

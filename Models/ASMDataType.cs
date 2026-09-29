@@ -5,11 +5,11 @@ namespace CrystalLens.Models
     public class ASMDataType
     {
         public static readonly ASMDataType GrassEncounters = new(
-            path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm") && !path.Contains("swarm_"),
+            path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm"),
             ASMSerializers.EncounterTableMap
             );
         public static readonly ASMDataType WaterEncounters = new(
-            path => path.StartsWith(@"data\wild\") && path.EndsWith("_water.asm") && !path.Contains("swarm_"),
+            path => path.StartsWith(@"data\wild\") && path.EndsWith("_water.asm"),
             ASMSerializers.EncounterSetMap
             );
         public static readonly ASMDataType ContestEncounters = new(
