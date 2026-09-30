@@ -3,6 +3,7 @@ using CrystalLens.ViewModels;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
@@ -41,10 +42,18 @@ namespace CrystalLens.Views
             {
                 try
                 {
-                    BitmapImage bitmap = new(new Uri(ViewModel.Path));
-                    int width = ViewModel.Width = bitmap.PixelWidth;
+                    BitmapSource source = new BitmapImage(new Uri(ViewModel.Path));
+
+                    int width = ViewModel.Width = source.PixelWidth;
                     Int32Rect rect = new(0, frame * width, width, width);
-                    image.Source = new CroppedBitmap(bitmap, rect);
+
+                    if (ViewModel.Colors.Count > 0)
+                    {
+                        BitmapPalette palette = new([.. ViewModel.Colors.Select(rgb => Color.FromRgb(rgb.R, rgb.G, rgb.B))]);
+                        source = CreatePaletteSwap(source, palette);
+                    }
+
+                    image.Source = new CroppedBitmap(source, rect);
                 }
                 catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)
                 {
@@ -62,13 +71,16 @@ namespace CrystalLens.Views
         {
             if (e.OldValue != null)
             {
-                ((SpriteViewModel)e.OldValue).PropertyChanged -= ViewModel_PropertyChanged;
+                SpriteViewModel oldModel = (SpriteViewModel)e.OldValue;
+                oldModel.PropertyChanged -= ViewModel_PropertyChanged;
+                oldModel.Colors.CollectionChanged -= Colors_CollectionChanged;
             }
             if (ViewModel != null)
             {
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
                 Frame = 0;
                 UpdateBitmap(Frame);
+                ViewModel.Colors.CollectionChanged += Colors_CollectionChanged;
                 if (ViewModel.Animation != null)
                 {
                     animation = CreateAnimationTimeline(ViewModel.Animation);
@@ -78,6 +90,11 @@ namespace CrystalLens.Views
                     }
                 }
             }
+        }
+
+        private void Colors_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateBitmap(Frame);
         }
 
         private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -90,6 +107,21 @@ namespace CrystalLens.Views
             {
                 UpdateBitmap(Frame);
             }
+        }
+
+        private static BitmapSource CreatePaletteSwap(BitmapSource source, BitmapPalette palette)
+        {
+            int width = source.PixelWidth;
+            int height = source.PixelHeight;
+
+            int stride = (width * source.Format.BitsPerPixel + 7) / 8;
+            byte[] pixels = new byte[stride * height];
+            source.CopyPixels(pixels, stride, 0);
+
+            return BitmapSource.Create(
+                width, height, source.DpiX, source.DpiY,
+                source.Format, palette, pixels, stride
+                );
         }
 
         private static ByteAnimationUsingKeyFrames CreateAnimationTimeline(SpriteAnimation animation)

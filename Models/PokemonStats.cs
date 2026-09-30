@@ -1,10 +1,12 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace CrystalLens.Models
 {
     public class PokemonStats : IASMData
     {
         private readonly ASMFile _file;
+        public readonly List<(byte R, byte G, byte B)> ShinyPalette;
         public string Species;
         public byte HP;
         public byte Attack;
@@ -61,6 +63,38 @@ namespace CrystalLens.Models
             {
                 Animation = (SpriteAnimation)file.Get(string.Empty);
             }
+
+            ShinyPalette = ReadShinyPalette();
+        }
+
+        private List<(byte R, byte G, byte B)> ReadShinyPalette()
+        {
+            string ShinyPalettePath = $"gfx/pokemon/{Species.ToLower()}/shiny.pal";
+            List<(byte, byte, byte)> colors = [(255, 255, 255)];
+            StreamReader reader = new(Path.Combine(IASMData.GetProject(this).Path, ShinyPalettePath));
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (line.IsWhiteSpace())
+                {
+                    continue;
+                }
+                if (Regex.IsMatch(line, "RGB ([0-3]?\\d, ){2}[0-3]?\\d"))
+                {
+                    MatchCollection matches = Regex.Matches(line, "[0-3]?\\d");
+                    byte r = (byte)(int.Parse(matches[0].Value) * 255 / 31);
+                    byte g = (byte)(int.Parse(matches[1].Value) * 255 / 31);
+                    byte b = (byte)(int.Parse(matches[2].Value) * 255 / 31);
+                    colors.Add((r, g, b));
+                }
+                else
+                {
+                    throw new FileFormatException();
+                }
+            }
+            reader.Close();
+            colors.Add((0, 0, 0));
+            return colors;
         }
 
         public ASMSerializer GetSerializer()

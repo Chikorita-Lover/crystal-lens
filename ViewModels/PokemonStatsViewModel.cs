@@ -102,6 +102,10 @@ namespace CrystalLens.ViewModels
         public ObservableCollection<string> TMMoves { get; }
         public SpriteViewModel FrontSprite { get; } = new();
         public SpriteViewModel BackSprite { get; } = new();
+        public bool IsShiny
+        {
+            get; set { field = value; UpdateSpritePalettes(); OnPropertyChanged(); }
+        }
         public ObservableCollection<string> PokemonConstants { get; } = [];
         public ObservableCollection<string> TypeConstants { get; } = [];
         public ObservableCollection<string> ItemConstants { get; } = [];
@@ -130,6 +134,16 @@ namespace CrystalLens.ViewModels
             ReadConstantsOf(ASMConstantGroup.EggGroup, EggGroupConstants);
         }
 
+        private void UpdateSpritePalettes()
+        {
+            FrontSprite.Colors.Clear();
+            BackSprite.Colors.Clear();
+            if (IsShiny)
+            {
+                Model.ShinyPalette.ForEach(rgb => { FrontSprite.Colors.Add(rgb); BackSprite.Colors.Add(rgb); });
+            }
+        }
+
         private void ReadConstantsOf(ASMConstantGroup group, ObservableCollection<string> collection)
         {
             Dictionary<string, byte> constants = IASMData.GetProject(Model).Constants[group];
@@ -142,7 +156,10 @@ namespace CrystalLens.ViewModels
 
         private void PokemonStatsViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            tracker.MarkAsUnsaved();
+            if (e.PropertyName != nameof(IsShiny))
+            {
+                tracker.MarkAsUnsaved();
+            }
         }
     }
 }

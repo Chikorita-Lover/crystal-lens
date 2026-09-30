@@ -29,9 +29,14 @@
     <ScrollViewer>
         <StackPanel>
             <GroupBox Header="Appearance">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <local:Sprite DataContext="{Binding FrontSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
-                    <local:Sprite DataContext="{Binding BackSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <local:Sprite DataContext="{Binding FrontSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                        <local:Sprite DataContext="{Binding BackSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                    </StackPanel>
+                    <CheckBox IsChecked="{Binding IsShiny}" HorizontalAlignment="Center">
+                        <Path Data="M7 10A4 4 0 014 13a4 4 0 013 3 4 4 0 013-3A4 4 0 017 10m6-6A4 4 0 0110 7a4 4 0 013 3 4 4 0 013-3A4 4 0 0113 4M3 0A4 4 0 010 3 4 4 0 013 6 4 4 0 016 3 4 4 0 013 0" Fill="DarkRed"/>
+                    </CheckBox>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Profile">
