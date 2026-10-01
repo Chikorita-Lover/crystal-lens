@@ -21,7 +21,7 @@
             <DataGridTemplateColumn Header="Image" CanUserSort="False" DisplayIndex="0">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <local:Sprite DataContext="{Binding FrontSprite}"/>
+                        <local:Sprite Path="{Binding FrontSpritePath}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

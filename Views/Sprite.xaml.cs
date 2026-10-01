@@ -1,5 +1,4 @@
 ﻿using CrystalLens.Models;
-using CrystalLens.ViewModels;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +13,13 @@ namespace CrystalLens.Views
     /// </summary>
     public partial class Sprite : UserControl
     {
+        public static readonly DependencyProperty PathProperty =
+            DependencyProperty.Register(
+                nameof(Path),
+                typeof(string),
+                typeof(Sprite),
+                new PropertyMetadata(string.Empty, Path_Changed)
+                );
         public static readonly DependencyProperty FrameProperty =
             DependencyProperty.Register(
                 nameof(Frame),
@@ -21,92 +27,113 @@ namespace CrystalLens.Views
                 typeof(Sprite),
                 new PropertyMetadata((byte)0, Frame_Changed)
                 );
-        public SpriteViewModel ViewModel => (SpriteViewModel)DataContext;
+        public static readonly DependencyProperty PaletteProperty =
+            DependencyProperty.Register(
+                nameof(Palette),
+                typeof(List<(byte, byte, byte)>),
+                typeof(Sprite),
+                new PropertyMetadata(null, Palette_Changed)
+                );
+        public static readonly DependencyProperty ApplyPaletteProperty =
+            DependencyProperty.Register(
+                nameof(ApplyPalette),
+                typeof(bool),
+                typeof(Sprite),
+                new PropertyMetadata(false, Palette_Changed)
+                );
+        public static readonly DependencyProperty AnimationProperty =
+            DependencyProperty.Register(
+                nameof(Animation),
+                typeof(SpriteAnimation),
+                typeof(Sprite),
+                new PropertyMetadata(null, Animation_Changed)
+                );
+        public string Path
+        {
+            get => (string)GetValue(PathProperty);
+            set => SetValue(PathProperty, value);
+        }
         public byte Frame
         {
             get => (byte)GetValue(FrameProperty);
             set => SetValue(FrameProperty, value);
         }
-        private AnimationTimeline? animation;
+        public List<(byte R, byte G, byte B)>? Palette
+        {
+            get => (List<(byte, byte, byte)>)GetValue(PaletteProperty);
+            set => SetValue(PaletteProperty, value);
+        }
+        public bool ApplyPalette
+        {
+            get => (bool)GetValue(ApplyPaletteProperty);
+            set => SetValue(ApplyPaletteProperty, value);
+        }
+        public SpriteAnimation? Animation
+        {
+            get => (SpriteAnimation)GetValue(AnimationProperty);
+            set => SetValue(AnimationProperty, value);
+        }
+        private BitmapSource? _source;
+        private AnimationTimeline? _animationTimeline;
 
         public Sprite()
         {
             InitializeComponent();
-
-            DataContextChanged += Sprite_DataContextChanged;
         }
 
-        private void UpdateBitmap(byte frame)
+        private void UpdateBitmapSource()
         {
-            if (ViewModel != null)
+            if (Path.Length > 0)
             {
                 try
                 {
-                    BitmapSource source = new BitmapImage(new Uri(ViewModel.Path));
+                    _source = new BitmapImage(new Uri(Path));
 
-                    int width = ViewModel.Width = source.PixelWidth;
-                    Int32Rect rect = new(0, frame * width, width, width);
+                    int width = _source.PixelWidth;
+                    Image.Width = width;
+                    Image.HorizontalAlignment = width == 48 ? HorizontalAlignment.Right : HorizontalAlignment.Center;
 
-                    if (ViewModel.Colors.Count > 0)
+                    if (ApplyPalette && Palette != null)
                     {
-                        BitmapPalette palette = new([.. ViewModel.Colors.Select(rgb => Color.FromRgb(rgb.R, rgb.G, rgb.B))]);
-                        source = CreatePaletteSwap(source, palette);
+                        BitmapPalette palette = new([.. Palette.Select(rgb => Color.FromRgb(rgb.R, rgb.G, rgb.B))]);
+                        _source = CreatePaletteSwap(_source, palette);
                     }
-
-                    image.Source = new CroppedBitmap(source, rect);
                 }
                 catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)
                 {
-                    image.Source = null;
+                    _source = null;
                 }
+            }
+            else
+            {
+                _source = null;
+            }
+        }
+
+        private void UpdateFrame(byte frame)
+        {
+            if (_source != null)
+            {
+                try
+                {
+                    int width = _source.PixelWidth;
+                    Int32Rect rect = new(0, frame * width, width, width);
+                    Image.Source = new CroppedBitmap(_source, rect);
+                }
+                catch (ArgumentException)
+                {
+                    Image.Source = null;
+                }
+            }
+            else
+            {
+                Image.Source = null;
             }
         }
 
         public void PlayAnimation()
         {
-            BeginAnimation(FrameProperty, animation);
-        }
-
-        private void Sprite_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.OldValue != null)
-            {
-                SpriteViewModel oldModel = (SpriteViewModel)e.OldValue;
-                oldModel.PropertyChanged -= ViewModel_PropertyChanged;
-                oldModel.Colors.CollectionChanged -= Colors_CollectionChanged;
-            }
-            if (ViewModel != null)
-            {
-                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-                Frame = 0;
-                UpdateBitmap(Frame);
-                ViewModel.Colors.CollectionChanged += Colors_CollectionChanged;
-                if (ViewModel.Animation != null)
-                {
-                    animation = CreateAnimationTimeline(ViewModel.Animation);
-                    if (ViewModel.PlayAnimationOnLoad)
-                    {
-                        PlayAnimation();
-                    }
-                }
-            }
-        }
-
-        private void Colors_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            UpdateBitmap(Frame);
-        }
-
-        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(SpriteViewModel.Animation) && ViewModel.Animation != null)
-            {
-                animation = CreateAnimationTimeline(ViewModel.Animation);
-            }
-            else if (e.PropertyName == nameof(SpriteViewModel.Path))
-            {
-                UpdateBitmap(Frame);
-            }
+            BeginAnimation(FrameProperty, _animationTimeline);
         }
 
         private static BitmapSource CreatePaletteSwap(BitmapSource source, BitmapPalette palette)
@@ -162,10 +189,33 @@ namespace CrystalLens.Views
             return timeline;
         }
 
+        private static void Path_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            Sprite sprite = (Sprite)sender;
+            sprite.UpdateBitmapSource();
+            sprite.Frame = 0;
+            sprite.UpdateFrame(sprite.Frame);
+        }
+
+        private static void Palette_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            Sprite sprite = (Sprite)sender;
+            sprite.UpdateBitmapSource();
+            sprite.UpdateFrame(sprite.Frame);
+        }
+
         private static void Frame_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             Sprite sprite = (Sprite)sender;
-            sprite.UpdateBitmap((byte)e.NewValue);
+            sprite.UpdateFrame(sprite.Frame);
+        }
+
+        private static void Animation_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            Sprite sprite = (Sprite)sender;
+            sprite.Frame = 0;
+            sprite._animationTimeline = sprite.Animation != null ? CreateAnimationTimeline(sprite.Animation) : null;
+            sprite.PlayAnimation();
         }
     }
 }

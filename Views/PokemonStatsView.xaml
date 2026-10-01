@@ -25,14 +25,19 @@
             <Setter Property="Width" Value="180"/>
             <Setter Property="Margin" Value="0,5,0,0"/>
         </Style>
+        <Style x:Key="BorderedSprite" TargetType="local:Sprite">
+            <Setter Property="BorderBrush" Value="#ABADB3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
             <GroupBox Header="Appearance">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <local:Sprite DataContext="{Binding FrontSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
-                        <local:Sprite DataContext="{Binding BackSprite}" BorderBrush="#ABADB3" BorderThickness="1" Margin="2"/>
+                        <local:Sprite Path="{Binding FrontSpritePath}" Palette="{Binding ShinyColors}" ApplyPalette="{Binding IsShiny}" Animation="{Binding Animation}" Style="{StaticResource BorderedSprite}"/>
+                        <local:Sprite Path="{Binding BackSpritePath}" Palette="{Binding ShinyColors}" ApplyPalette="{Binding IsShiny}" Style="{StaticResource BorderedSprite}"/>
                     </StackPanel>
                     <CheckBox IsChecked="{Binding IsShiny}" HorizontalAlignment="Center">
                         <Path Data="M7 10A4 4 0 014 13a4 4 0 013 3 4 4 0 013-3A4 4 0 017 10m6-6A4 4 0 0110 7a4 4 0 013 3 4 4 0 013-3A4 4 0 0113 4M3 0A4 4 0 010 3 4 4 0 013 6 4 4 0 016 3 4 4 0 013 0" Fill="DarkRed"/>

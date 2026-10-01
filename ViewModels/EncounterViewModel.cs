@@ -17,7 +17,10 @@ namespace CrystalLens.ViewModels
             get; set { field = value; OnPropertyChanged(); }
         }
         public int Probability { get; }
-        public SpriteViewModel Sprite { get; } = new();
+        public string SpritePath
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
 
         internal EncounterViewModel(Encounter encounter, int probability)
         {

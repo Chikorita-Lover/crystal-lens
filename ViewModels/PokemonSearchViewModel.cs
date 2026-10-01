@@ -30,7 +30,6 @@ namespace CrystalLens.ViewModels
                     PokemonStatsViewModel entry = new(stats);
                     if (!options.IsFiltered || options.FilterKey.Selector.Invoke(entry).Any(o => o.ToString() == options.FilterValue))
                     {
-                        entry.FrontSprite.PlayAnimationOnLoad = false;
                         Entries.Add(entry);
                     }
                 }

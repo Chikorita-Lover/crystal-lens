@@ -57,17 +57,20 @@ namespace CrystalLens.ViewModels
         private void UpdateEncounterSprite(EncounterViewModel encounter)
         {
             ASMProject project = IASMData.GetProject(Model);
-            encounter.Sprite.Path = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Species.ToLower()}/front.png");
+            encounter.SpritePath = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Species.ToLower()}/front.png");
         }
 
         private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            EncounterViewModel encounter = (EncounterViewModel)sender;
-            int index = Encounters.IndexOf(encounter);
-            Model.Encounters[index] = encounter.ToModel();
-            tracker.MarkAsUnsaved();
+            if (e.PropertyName != nameof(EncounterViewModel.SpritePath))
+            {
+                EncounterViewModel encounter = (EncounterViewModel)sender;
+                int index = Encounters.IndexOf(encounter);
+                Model.Encounters[index] = encounter.ToModel();
+                tracker.MarkAsUnsaved();
 
-            UpdateEncounterSprite(encounter);
+                UpdateEncounterSprite(encounter);
+            }
         }
     }
 }

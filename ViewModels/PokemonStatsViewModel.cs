@@ -100,11 +100,13 @@ namespace CrystalLens.ViewModels
         }
         public int BaseStatTotal => Model.BaseStatTotal;
         public ObservableCollection<string> TMMoves { get; }
-        public SpriteViewModel FrontSprite { get; } = new();
-        public SpriteViewModel BackSprite { get; } = new();
+        public string FrontSpritePath { get; }
+        public string BackSpritePath { get; }
+        public List<(byte R, byte G, byte B)> ShinyColors => Model.ShinyPalette;
+        public SpriteAnimation Animation => Model.Animation;
         public bool IsShiny
         {
-            get; set { field = value; UpdateSpritePalettes(); OnPropertyChanged(); }
+            get; set { field = value; OnPropertyChanged(); }
         }
         public ObservableCollection<string> PokemonConstants { get; } = [];
         public ObservableCollection<string> TypeConstants { get; } = [];
@@ -120,10 +122,8 @@ namespace CrystalLens.ViewModels
             TMMoves = new(model.TMMoves);
 
             ASMProject project = ((IASMData)model).File.Project;
-            FrontSprite.Path = Path.Combine(project.Path, model.DimensionsPath.Replace(".dimensions", ".png"));
-            FrontSprite.Animation = model.Animation;
-            FrontSprite.PlayAnimationOnLoad = true;
-            BackSprite.Path = FrontSprite.Path.Replace("front", "back");
+            FrontSpritePath = Path.Combine(project.Path, model.DimensionsPath.Replace(".dimensions", ".png"));
+            BackSpritePath = FrontSpritePath.Replace("front", "back");
 
             PropertyChanged += PokemonStatsViewModel_PropertyChanged;
 
@@ -132,16 +132,6 @@ namespace CrystalLens.ViewModels
             ReadConstantsOf(ASMConstantGroup.Item, ItemConstants);
             ReadConstantsOf(ASMConstantGroup.GrowthRate, GrowthRateConstants);
             ReadConstantsOf(ASMConstantGroup.EggGroup, EggGroupConstants);
-        }
-
-        private void UpdateSpritePalettes()
-        {
-            FrontSprite.Colors.Clear();
-            BackSprite.Colors.Clear();
-            if (IsShiny)
-            {
-                Model.ShinyPalette.ForEach(rgb => { FrontSprite.Colors.Add(rgb); BackSprite.Colors.Add(rgb); });
-            }
         }
 
         private void ReadConstantsOf(ASMConstantGroup group, ObservableCollection<string> collection)
