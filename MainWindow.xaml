@@ -8,7 +8,8 @@
         xmlns:vm="clr-namespace:CrystalLens.ViewModels"
         xmlns:views="clr-namespace:CrystalLens.Views"
         mc:Ignorable="d"
-        Title="{Binding WindowTitle}" Height="545" Width="970">
+        Title="{Binding WindowTitle}" Height="545" Width="970" 
+        Closing="Window_Closing">
     <Window.Resources>
         <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
     </Window.Resources>

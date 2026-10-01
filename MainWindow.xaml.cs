@@ -86,7 +86,7 @@ namespace CrystalLens
             if (tab.HasUnsavedChanges)
             {
                 string text = $"{tab.Name} has unsaved changes. Would you like to save?";
-                result = MessageBox.Show(text, "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+                result = ShowUnsavedChangesBox(text);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -122,6 +122,34 @@ namespace CrystalLens
                 ViewModel.OpenTabs.Add(new PokemonSearchViewModel(ViewModel.OpenProject.Model, optionsWindow.ViewModel));
                 tabs.SelectedIndex = tabs.Items.Count - 1;
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            IEnumerable<DataTabViewModel> unsavedTabs = ViewModel.OpenTabs.Where(tab => tab.HasUnsavedChanges);
+            if (unsavedTabs.Any())
+            {
+                string text = $"One or more files have unsaved changes. Would you like to save?";
+                MessageBoxResult result = ShowUnsavedChangesBox(text);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        foreach (DataTabViewModel tab in unsavedTabs)
+                        {
+                            tab.Save();
+                        }
+                        break;
+                    case MessageBoxResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
+        }
+
+        private static MessageBoxResult ShowUnsavedChangesBox(string text)
+        {
+            return MessageBox.Show(text, "Unsaved Changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
         }
     }
 }
