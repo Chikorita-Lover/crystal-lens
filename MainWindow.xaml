@@ -9,6 +9,7 @@
         xmlns:views="clr-namespace:CrystalLens.Views"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="545" Width="970" 
+        Icon="/Assets/Images/Icon.ico" 
         Closing="Window_Closing">
     <Window.Resources>
         <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>

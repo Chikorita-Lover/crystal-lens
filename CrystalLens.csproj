@@ -10,11 +10,15 @@
 
   <ItemGroup>
     <None Remove="Assets\Images\Close.png" />
+    <None Remove="Assets\Images\Icon.ico" />
     <None Remove="Assets\Images\Unsaved.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\Images\Close.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Icon.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Unsaved.png">
