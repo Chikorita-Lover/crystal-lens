@@ -20,9 +20,9 @@ namespace CrystalLens
             InitializeComponent();
         }
 
-        private ASMFile OpenFile(string path, ASMProject project)
+        private ASMFile OpenFile(ASMFile.Header header, ASMProject project)
         {
-            ASMFile file = ASMFile.ReadFile(path, project);
+            ASMFile file = ASMFile.ReadFile(header, project);
             ViewModel.OpenTab(new ASMFileViewModel(file));
             return file;
         }
@@ -107,7 +107,7 @@ namespace CrystalLens
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
-            OpenFile(fileEntry.Path, ViewModel.OpenProject.Model);
+            OpenFile(fileEntry.Header, ViewModel.OpenProject.Model);
         }
 
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)

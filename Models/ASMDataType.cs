@@ -25,6 +25,7 @@ namespace CrystalLens.Models
             ASMSerializers.SpriteAnimation
             );
         public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, ContestEncounters, PokemonStats, SpriteAnimation];
+        public static readonly Predicate<string> ValidPath = path => Values.Any(type => type.PathPredicate.Invoke(path));
 
         public readonly Predicate<string> PathPredicate;
         public readonly ASMSerializer Serializer;

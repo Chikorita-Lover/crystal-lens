@@ -59,7 +59,8 @@ namespace CrystalLens.Models
             TMMoves = tmMoves;
 
             DimensionsPath = $"gfx/pokemon/{(species == "UNOWN" ? "unown_a" : species.ToLower())}/front.dimensions";
-            if (ASMFile.TryReadFile(file.Project, Path.Combine(file.Project.Path, Path.GetDirectoryName(DimensionsPath), "anim.asm"), out file))
+            string animPath = Path.Combine(Path.GetDirectoryName(DimensionsPath), "anim.asm");
+            if (ASMFile.TryReadFile(file.Project, new(animPath, [string.Empty]), out file))
             {
                 Animation = (SpriteAnimation)file.Get(string.Empty);
             }

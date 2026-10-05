@@ -9,7 +9,7 @@ namespace CrystalLens.Models
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public string Path { get; }
         public readonly string Name;
-        public ObservableCollection<ASMFile> ProjectFiles { get; private set; } = [];
+        public ObservableCollection<ASMFile.Header> FileHeaders { get; private set; } = [];
 
         private ASMProject(string path)
         {
@@ -17,23 +17,33 @@ namespace CrystalLens.Models
             Name = System.IO.Path.GetFileName(path);
         }
 
+        public string GetRelativePath(string absolutePath)
+        {
+            return System.IO.Path.GetRelativePath(Path, absolutePath);
+        }
+
+        public string GetAbsolutePath(string relativePath)
+        {
+            return System.IO.Path.Combine(Path, relativePath);
+        }
+
         public static ASMProject OpenProject(string path)
         {
             ASMProject project = new(path);
-            project.ProjectFiles = new(project.LoadFilesFromDirectory(System.IO.Path.Combine(path, "data")));
-            project.LoadFilesFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
+            project.FileHeaders = new(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data")));
+            project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
 
             return project;
         }
 
-        private List<ASMFile> LoadFilesFromDirectory(string path)
+        private List<ASMFile.Header> ReadFileHeadersFromDirectory(string path)
         {
-            List<ASMFile> openFiles = [];
+            List<ASMFile.Header> headers = [];
 
             string[] directories = Directory.GetDirectories(path);
             foreach (string directory in directories)
             {
-                openFiles.AddRange(LoadFilesFromDirectory(directory));
+                headers.AddRange(ReadFileHeadersFromDirectory(directory));
             }
 
             string[] files = Directory.GetFiles(path, "*.asm");
@@ -42,8 +52,11 @@ namespace CrystalLens.Models
                 try
                 {
                     TryReadConstants(filePath);
-                    ASMFile file = ASMFile.ReadFile(filePath, this);
-                    openFiles.Add(file);
+                    if (ASMDataType.ValidPath.Invoke(System.IO.Path.GetRelativePath(Path, filePath)))
+                    {
+                        ASMFile.Header header = ASMFile.ReadFileHeader(filePath, this);
+                        headers.Add(header);
+                    }
                 }
                 catch (FileFormatException)
                 { }
@@ -53,7 +66,7 @@ namespace CrystalLens.Models
                 { }
             }
 
-            return openFiles;
+            return headers;
         }
 
         private void TryReadConstants(string path)

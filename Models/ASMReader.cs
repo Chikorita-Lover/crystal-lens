@@ -4,26 +4,26 @@ namespace CrystalLens.Models
 {
     public class ASMReader
     {
-        private readonly StreamReader _reader;
+        private readonly ASMProject _project;
+        private readonly Stack<StreamReader> _readers = [];
         private readonly Queue<object> _queue = [];
-        private int _line = 1;
 
-        public ASMReader(string path)
+        private StreamReader? CurrentReader => _readers.Count > 0 ? _readers.Peek() : null;
+
+        public ASMReader(ASMProject project, StreamReader reader)
         {
-            _reader = new(path);
+            _project = project;
+            _readers.Push(reader);
         }
 
-        public void Close()
-        {
-            _reader.Close();
-        }
+        public ASMReader(ASMProject project, string path) : this(project, new StreamReader(path))
+        { }
 
-        public void AdvanceToLine(int target)
+        public void CloseChildren()
         {
-            while (_line < target)
+            while (_readers.Count > 1)
             {
-                _reader.ReadLine();
-                _line++;
+                _readers.Pop().Close();
             }
         }
 
@@ -31,14 +31,28 @@ namespace CrystalLens.Models
         {
             if (_queue.Count == 0)
             {
-                string? line = _reader.ReadLine();
-                _line++;
-                if (line == null)
+                if (CurrentReader == null)
                 {
                     return null;
                 }
-                ASMCommand command = ASMCommand.FromLine(line);
-                RunCommand(command);
+                string? line = CurrentReader.ReadLine();
+                if (line == null)
+                {
+                    if (_readers.Count > 1)
+                    {
+                        _readers.Pop().Close();
+                        return Read();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                if (!ASMCommand.IsLabel(line))
+                {
+                    ASMCommand command = ASMCommand.FromLine(line);
+                    RunCommand(command);
+                }
                 return Read();
             }
             return _queue.Dequeue().ToString();
@@ -50,10 +64,19 @@ namespace CrystalLens.Models
             return (byte)(int.Parse(value ?? "0") % 256);
         }
 
+        private void Include(string path)
+        {
+            _readers.Push(new(Path.Combine(_project.Path, path)));
+        }
+
         private void RunCommand(ASMCommand command)
         {
             switch (command.Command)
             {
+                case "INCLUDE":
+                    string path = command.Get(0);
+                    Include(path[1 .. (path.Length - 1)]);
+                    break;
                 case "frame":
                     _queue.Enqueue(command.GetByte(0));
                     _queue.Enqueue(command.GetByte(1));

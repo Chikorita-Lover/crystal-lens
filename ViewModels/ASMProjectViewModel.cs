@@ -11,24 +11,26 @@ namespace CrystalLens.ViewModels
         public ASMProjectViewModel(ASMProject model)
         {
             Model = model;
-            foreach (ASMFile file in model.ProjectFiles)
+            foreach (ASMFile.Header header in model.FileHeaders.Where(file => file.Labels.Count > 0))
             {
-                FileEntry entry = new(file.Path, Model.Path);
+                FileEntry entry = new(header, Model.Path);
                 FileEntries.Add(entry);
             }
         }
 
         public class FileEntry
         {
+            public ASMFile.Header Header { get; }
             public string Path { get; }
             public string Name { get; }
             public string ShortPath { get; }
 
-            public FileEntry(string path, string relativePath)
+            public FileEntry(ASMFile.Header header, string projectPath)
             {
-                Path = path;
-                Name = System.IO.Path.GetFileName(path);
-                ShortPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetRelativePath(relativePath, path)) ?? string.Empty;
+                Header = header;
+                Path = System.IO.Path.Combine(projectPath, header.RelativePath);
+                Name = System.IO.Path.GetFileName(Path);
+                ShortPath = System.IO.Path.GetDirectoryName(header.RelativePath) ?? string.Empty;
             }
         }
     }

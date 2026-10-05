@@ -1,15 +1,16 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace CrystalLens.Models
 {
     public class ASMFile
     {
+        private readonly Dictionary<string, IASMData> _labelsToData = [];
         public ASMProject Project { get; }
         public string Path { get; set; }
         public string RelativePath => System.IO.Path.GetRelativePath(Project.Path, Path);
-        private readonly Dictionary<string, IASMData> labeledData = [];
 
-        public ICollection<string> Labels => labeledData.Keys;
+        public ICollection<string> Labels => _labelsToData.Keys;
 
         private ASMFile(ASMProject project, string path)
         {
@@ -19,63 +20,87 @@ namespace CrystalLens.Models
 
         public IASMData Get(string label)
         {
-            return labeledData[label];
+            return _labelsToData[label];
         }
 
-        public static ASMFile ReadFile(string path, ASMProject project)
+        public static Header ReadFileHeader(string path, ASMProject project)
         {
-            ASMFile file = new(project, path);
+            List<string> labels = [];
 
             StreamReader reader = new(path);
             string? line;
-            int lineNumber = 0;
-            Queue<ASMCommand> commands = [];
-            Dictionary<string, Queue<ASMCommand>> labeledCommands = [];
-            Dictionary<string, int> labelsToLines = [];
-            labeledCommands.Add(string.Empty, commands);
-            labelsToLines.Add(string.Empty, 0);
             while ((line = reader.ReadLine()) != null)
             {
-                lineNumber++;
-                ASMCommand command = ASMCommand.FromLine(line);
-                if (command.Command.EndsWith(':'))
+                if (ASMCommand.IsLabel(line))
                 {
-                    if (!command.Command.Contains('.')) // TEMP
-                    {
-                        string label = command.Command.Split(':')[0];
-                        commands = [];
-                        labeledCommands.Add(label, commands);
-                        labelsToLines.Add(label, lineNumber);
-                    }
-                }
-                else if (!command.Command.IsWhiteSpace())
-                {
-                    commands.Enqueue(command);
+                    string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
+                    labels.Add(label);
                 }
             }
-
             reader.Close();
 
-            ASMReader asmReader = new(path);
-            foreach (string label in labeledCommands.Keys)
+            if (labels.Count == 0)
             {
-                commands = labeledCommands[label];
-                if (commands.Count == 0)
-                {
-                    continue;
-                }
-
-                asmReader.AdvanceToLine(labelsToLines[label]);
-
-                ASMDataType type = InferDataType(file)
-                    ?? throw new FileFormatException($"Cannot infer the data type of the provided file.");
-
-                IASMData data = type.Serializer.ReadAssembly(asmReader, file);
-
-                file.labeledData.Add(label, data);
+                labels.Add(string.Empty);
             }
-            asmReader.Close();
+
+            return new(project.GetRelativePath(path), labels);
+        }
+
+        public static ASMFile ReadFile(Header header, ASMProject project)
+        {
+            ASMFile file = new(project, project.GetAbsolutePath(header.RelativePath));
+
+            StreamReader reader = new(file.Path);
+            bool isSingleton = header.Labels.Count == 1 && header.Labels[0] == string.Empty;
+            if (isSingleton)
+            {
+                if (TryReadData(reader, file, out IASMData data))
+                {
+                    file._labelsToData.Add(string.Empty, data);
+                }
+            }
+            else
+            {
+                string? line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (ASMCommand.IsLabel(line))
+                    {
+                        string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
+
+                        if (TryReadData(reader, file, out IASMData data))
+                        {
+                            file._labelsToData.Add(label, data);
+                        }
+                    }
+                }
+            }
+            reader.Close();
+
             return file;
+        }
+
+        private static bool TryReadData(StreamReader reader, ASMFile file, out IASMData data)
+        {
+            ASMDataType? type = InferDataType(file);
+
+            if (type != null)
+            {
+                ASMReader asmReader = new(file.Project, reader);
+                long position = reader.BaseStream.Position;
+                data = type.Serializer.ReadAssembly(asmReader, file);
+
+                asmReader.CloseChildren();
+                reader.BaseStream.Position = position;
+                reader.DiscardBufferedData();
+                return true;
+            }
+            else
+            {
+                data = null;
+                return false;
+            }
         }
 
         public static List<Dictionary<string, byte>> ReadGroupedConstants(string path)
@@ -133,16 +158,16 @@ namespace CrystalLens.Models
             return constants;
         }
 
-        public static bool TryReadFile(ASMProject project, string path, out ASMFile data)
+        public static bool TryReadFile(ASMProject project, Header header, out ASMFile data)
         {
             try
             {
-                data = ReadFile(path, project);
+                data = ReadFile(header, project);
                 return true;
             }
             catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
             {
-                data = new(project, path);
+                data = new(project, project.GetAbsolutePath(header.RelativePath));
                 return false;
             }
         }
@@ -172,5 +197,7 @@ namespace CrystalLens.Models
                 data.GetSerializer().WriteAssembly(writer, data);
             }
         }
+
+        public record Header(string RelativePath, List<string> Labels);
     }
 }

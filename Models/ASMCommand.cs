@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CrystalLens.Models
 {
@@ -96,6 +97,11 @@ namespace CrystalLens.Models
                 builder.Append($"; {Comment}");
             }
             return builder.ToString();
+        }
+
+        public static bool IsLabel(string line)
+        {
+            return Regex.IsMatch(line, "^[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?::?");
         }
     }
 }
