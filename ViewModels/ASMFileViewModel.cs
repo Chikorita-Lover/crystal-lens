@@ -63,6 +63,10 @@ namespace CrystalLens.ViewModels
             {
                 return new PokemonStatsViewModel(pokemonStats);
             }
+            if (data is EvolutionMoveSet evosAttacks)
+            {
+                return new EvolutionMoveSetViewModel(evosAttacks);
+            }
             return null;
         }
     }

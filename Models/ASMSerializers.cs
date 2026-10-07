@@ -7,6 +7,7 @@
         public static readonly EncounterTable.Serializer EncounterTable = new();
         public static readonly EncounterSet.Serializer EncounterSet = new(false);
         public static readonly EncounterSet.Serializer DynamicEncounterSet = new(true);
+        public static readonly EvolutionMoveSet.Serializer EvosAttacks = new();
         public static readonly PokemonStats.Serializer PokemonStats = new();
         public static readonly SpriteAnimation.Serializer SpriteAnimation = new();
     }

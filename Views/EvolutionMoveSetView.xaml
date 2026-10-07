@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="CrystalLens.Views.EvolutionMoveSetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CrystalLens.Views"
+             xmlns:vm="clr-namespace:CrystalLens.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:EvolutionMoveSetViewModel}">
+    <TabControl>
+        <TabItem Header="Evolutions" Width="100">
+            <DataGrid ItemsSource="{Binding Evolutions}" RowDetailsVisibilityMode="Visible" AutoGenerateColumns="False" HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Method" Binding="{Binding Method}" Width="*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                    <DataGridTextColumn Header="Species" Binding="{Binding Species}" Width="*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                </DataGrid.Columns>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding Triggers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="{Binding Label}" Width="200"/>
+                                        <TextBox Text="{Binding Value}" Width="180"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+            </DataGrid>
+        </TabItem>
+        <TabItem Header="Moves" Width="100">
+            <DataGrid ItemsSource="{Binding Moves}" AutoGenerateColumns="False" HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Level" Binding="{Binding Level}" Width="100" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                    <DataGridTextColumn Header="Move" Binding="{Binding Move}" Width="*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+    </TabControl>
+</UserControl>

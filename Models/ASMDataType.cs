@@ -20,11 +20,15 @@ namespace CrystalLens.Models
             path => path.StartsWith(@"data\pokemon\base_stats\"),
             ASMSerializers.PokemonStats
             );
+        public static readonly ASMDataType EvosAttacks = new(
+            path => path == @"data\pokemon\evos_attacks.asm",
+            ASMSerializers.EvosAttacks
+            );
         public static readonly ASMDataType SpriteAnimation = new(
             path => path.StartsWith(@"gfx\pokemon\"),
             ASMSerializers.SpriteAnimation
             );
-        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, ContestEncounters, PokemonStats, SpriteAnimation];
+        public static readonly ASMDataType[] Values = [GrassEncounters, WaterEncounters, ContestEncounters, PokemonStats, EvosAttacks, SpriteAnimation];
         public static readonly Predicate<string> ValidPath = path => Values.Any(type => type.PathPredicate.Invoke(path));
 
         public readonly Predicate<string> PathPredicate;

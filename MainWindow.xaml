@@ -147,6 +147,9 @@
                     <DataTemplate DataType="{x:Type vm:PokemonStatsViewModel}">
                         <views:PokemonStatsView/>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:EvolutionMoveSetViewModel}">
+                        <views:EvolutionMoveSetView/>
+                    </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PokemonSearchViewModel}">
                         <views:PokemonSearchView/>
                     </DataTemplate>
