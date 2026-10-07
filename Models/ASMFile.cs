@@ -50,12 +50,12 @@ namespace CrystalLens.Models
         public static ASMFile ReadFile(Header header, ASMProject project)
         {
             ASMFile file = new(project, project.GetAbsolutePath(header.RelativePath));
+            ASMReader asmReader = new(project, new StreamReader(file.Path));
 
             bool isSingleton = header.Labels.Count == 1 && header.Labels[0] == string.Empty;
             if (isSingleton)
             {
-                StreamReader reader = new(file.Path);
-                if (TryReadData(reader, file, out IASMData data))
+                if (TryReadData(asmReader, file, out IASMData data))
                 {
                     file._labelsToData.Add(string.Empty, data);
                 }
@@ -64,32 +64,26 @@ namespace CrystalLens.Models
             {
                 foreach (string label in header.Labels)
                 {
-                    StreamReader reader = new(file.Path);
-                    string? line;
-                    while (!(line = reader.ReadLine()).StartsWith($"{label}:"))
-                    { }
+                    asmReader.JumpTo(label);
 
-                    if (TryReadData(reader, file, out IASMData data))
+                    if (TryReadData(asmReader, file, out IASMData data))
                     {
                         file._labelsToData.Add(label, data);
                     }
-                    reader.Close();
                 }
             }
+            asmReader.Close();
 
             return file;
         }
 
-        private static bool TryReadData(StreamReader reader, ASMFile file, out IASMData data)
+        private static bool TryReadData(ASMReader reader, ASMFile file, out IASMData data)
         {
             ASMDataType? type = InferDataType(file);
 
             if (type != null)
             {
-                ASMReader asmReader = new(file.Project, reader);
-                data = type.Serializer.ReadAssembly(asmReader, file);
-
-                asmReader.CloseChildren();
+                data = type.Serializer.ReadAssembly(reader, file);
                 return true;
             }
             else
