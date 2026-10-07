@@ -51,10 +51,10 @@ namespace CrystalLens.Models
         {
             ASMFile file = new(project, project.GetAbsolutePath(header.RelativePath));
 
-            StreamReader reader = new(file.Path);
             bool isSingleton = header.Labels.Count == 1 && header.Labels[0] == string.Empty;
             if (isSingleton)
             {
+                StreamReader reader = new(file.Path);
                 if (TryReadData(reader, file, out IASMData data))
                 {
                     file._labelsToData.Add(string.Empty, data);
@@ -62,21 +62,20 @@ namespace CrystalLens.Models
             }
             else
             {
-                string? line;
-                while ((line = reader.ReadLine()) != null)
+                foreach (string label in header.Labels)
                 {
-                    if (ASMCommand.IsLabel(line))
-                    {
-                        string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
+                    StreamReader reader = new(file.Path);
+                    string? line;
+                    while (!(line = reader.ReadLine()).StartsWith($"{label}:"))
+                    { }
 
-                        if (TryReadData(reader, file, out IASMData data))
-                        {
-                            file._labelsToData.Add(label, data);
-                        }
+                    if (TryReadData(reader, file, out IASMData data))
+                    {
+                        file._labelsToData.Add(label, data);
                     }
+                    reader.Close();
                 }
             }
-            reader.Close();
 
             return file;
         }
@@ -88,12 +87,9 @@ namespace CrystalLens.Models
             if (type != null)
             {
                 ASMReader asmReader = new(file.Project, reader);
-                long position = reader.BaseStream.Position;
                 data = type.Serializer.ReadAssembly(asmReader, file);
 
                 asmReader.CloseChildren();
-                reader.BaseStream.Position = position;
-                reader.DiscardBufferedData();
                 return true;
             }
             else
