@@ -20,7 +20,7 @@ namespace CrystalLens.Models
             Name = System.IO.Path.GetFileName(path);
         }
 
-        public string? GetPicPath(string species, bool isBackpic = false)
+        public string GetPicPath(string species, bool isBackpic = false)
         {
             PicPointerTable? selectedPicPointers = null;
             byte index;
@@ -52,7 +52,7 @@ namespace CrystalLens.Models
             }
             string? label = isBackpic ? selectedPicPointers?.GetBackpicPointer(index) : selectedPicPointers?.GetFrontpicPointer(index);
             string? path = label != null ? _pics[label] : null;
-            return path != null ? GetAbsolutePath(path) : null;
+            return path != null ? GetAbsolutePath(path) : string.Empty;
         }
 
         public string GetRelativePath(string absolutePath)
