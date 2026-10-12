@@ -106,8 +106,10 @@ namespace CrystalLens
 
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ASMProjectViewModel.FileEntry fileEntry = (ASMProjectViewModel.FileEntry)((ListViewItem)sender).DataContext;
-            OpenFile(fileEntry.Header, ViewModel.OpenProject.Model);
+            if (((FrameworkElement)sender).DataContext is ASMProjectViewModel.FileEntry fileEntry)
+            {
+                OpenFile(fileEntry.Header, ViewModel.OpenProject.Model);
+            }
         }
 
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)

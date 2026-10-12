@@ -13,6 +13,18 @@
         Closing="Window_Closing">
     <Window.Resources>
         <converters:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
+        <HierarchicalDataTemplate DataType="{x:Type vm:ASMProjectViewModel+FolderEntry}" ItemsSource="{Binding Children}">
+            <StackPanel Orientation="Horizontal">
+                <Path Data="M0 0H4.5l1.5 1.5H12V9H0z" Fill="DarkSlateGray" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Name}" Margin="6,0,0,0"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+        <DataTemplate DataType="{x:Type vm:ASMProjectViewModel+FileEntry}">
+            <StackPanel Orientation="Horizontal">
+                <Path Data="M1.5 0h6l3 3v9h-9z" Fill="DarkSlateGray" Width="12" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Name}" Margin="6,0,0,0"/>
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -53,23 +65,15 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Content="Project Explorer"/>
-                <ListView Grid.Row="1" ItemsSource="{Binding OpenProject.FileEntries}" Width="250" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" Margin="0,0,6,0"/>
-                                <TextBlock Text="{Binding ShortPath}" Opacity="0.5"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
+                <TreeView Grid.Row="1" ItemsSource="{Binding OpenProject.Entries}" Width="250" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
                             <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
                             <Setter Property="ToolTip" Value="{Binding Path}"/>
                         </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.Style>
-                        <Style TargetType="ListView">
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.Style>
+                        <Style TargetType="TreeView">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LoadingProject}" Value="True">
                                     <Setter Property="Opacity" Value="0.25"/>
@@ -81,8 +85,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </ListView.Style>
-                </ListView>
+                    </TreeView.Style>
+                </TreeView>
                 <StackPanel Grid.Row="1" VerticalAlignment="Center">
                     <Label Content="Opening project..." HorizontalContentAlignment="Center"/>
                     <ProgressBar IsIndeterminate="True" Height="4"/>
