@@ -7,6 +7,7 @@ namespace CrystalLens.Models
     {
         private readonly ASMProject _project;
         private readonly Stack<StreamReader> _readers = [];
+        private readonly Queue<string> _queuedLines = [];
         private readonly List<object> _stream = [];
         private readonly Dictionary<string, int> _labelsToPositions = [];
         private int _position;
@@ -38,7 +39,7 @@ namespace CrystalLens.Models
                 {
                     return null;
                 }
-                string? line = CurrentReader.ReadLine();
+                string? line = _queuedLines.Count > 0 ? _queuedLines.Dequeue() : CurrentReader.ReadLine();
                 if (line == null)
                 {
                     if (_readers.Count > 1)
@@ -51,10 +52,25 @@ namespace CrystalLens.Models
                         return null;
                     }
                 }
-                if (ASMCommand.IsLabel(line))
+                string[] instructions;
+                if (ASMCommand.HasLabel(line))
                 {
                     string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
                     _labelsToPositions.Add(label, _stream.Count);
+
+                    string remainder = line.Trim()[(label.Length + 1)..];
+                    if (remainder.StartsWith(':'))
+                    {
+                        remainder = remainder[1..];
+                    }
+                    _queuedLines.Enqueue(remainder);
+                }
+                else if ((instructions = line.Split("::")).Length > 1)
+                {
+                    foreach (string instruction in instructions)
+                    {
+                        _queuedLines.Enqueue(instruction);
+                    }
                 }
                 else
                 {

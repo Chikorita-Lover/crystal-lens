@@ -31,7 +31,7 @@ namespace CrystalLens.Models
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (ASMCommand.IsLabel(line))
+                if (ASMCommand.HasLabel(line))
                 {
                     string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
                     labels.Add(label);

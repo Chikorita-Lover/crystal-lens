@@ -99,7 +99,7 @@ namespace CrystalLens.Models
             return builder.ToString();
         }
 
-        public static bool IsLabel(string line)
+        public static bool HasLabel(string line)
         {
             return Regex.IsMatch(line, "^[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?::?");
         }
