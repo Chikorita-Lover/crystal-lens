@@ -13,19 +13,39 @@ namespace CrystalLens.ViewModels
         public EvolutionMoveSetViewModel(EvolutionMoveSet model)
         {
             Model = model;
-            Evolutions = [.. model.Evolutions.Select(m => new EvolutionViewModel(m))];
+            Evolutions = [.. model.Evolutions.Select(m => {
+                EvolutionViewModel evolution = new(m);
+                UpdateEvolutionPic(evolution);
+                evolution.PropertyChanged += Evolution_PropertyChanged;
+                return evolution;
+            })];
             Moves = [.. model.Moves.Select(m => new MoveEntry(m))];
 
             Evolutions.CollectionChanged += Evolutions_CollectionChanged;
             Moves.CollectionChanged += Moves_CollectionChanged;
         }
 
+        private void UpdateEvolutionPic(EvolutionViewModel evolution)
+        {
+            evolution.PicPath = IASMData.GetProject(Model).GetPicPath(evolution.Species);
+        }
+
+        private void Evolution_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(EvolutionViewModel.Species) && sender is EvolutionViewModel evolution)
+            {
+                UpdateEvolutionPic(evolution);
+            }
+        }
+
         private void Evolutions_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            if (e.NewItems != null)
             {
                 foreach (EvolutionViewModel evolution in e.NewItems)
                 {
+                    UpdateEvolutionPic(evolution);
+                    evolution.PropertyChanged += Evolution_PropertyChanged;
                     Model.Evolutions.Add(evolution.Model);
                 }
             }

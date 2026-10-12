@@ -19,6 +19,10 @@ namespace CrystalLens.ViewModels
             get => Model.Species;
             set { Model.Species = value; OnPropertyChanged(); }
         }
+        public string PicPath
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
 
         public EvolutionViewModel(EvolutionMoveSet.Evolution model)
         {
@@ -31,6 +35,7 @@ namespace CrystalLens.ViewModels
                 trigger.PropertyChanged += Trigger_PropertyChanged;
                 return trigger;
             }));
+            PicPath = string.Empty;
 
             Triggers.CollectionChanged += Triggers_CollectionChanged;
         }

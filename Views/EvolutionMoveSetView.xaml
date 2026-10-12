@@ -9,8 +9,15 @@
              d:DataContext="{d:DesignInstance Type=vm:EvolutionMoveSetViewModel}">
     <TabControl>
         <TabItem Header="Evolutions" Width="100">
-            <DataGrid ItemsSource="{Binding Evolutions}" RowDetailsVisibilityMode="Visible" AutoGenerateColumns="False" HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC">
+            <DataGrid ItemsSource="{Binding Evolutions}" CanUserSortColumns="False" RowDetailsVisibilityMode="Visible" AutoGenerateColumns="False" HorizontalGridLinesBrush="#ACACAC" VerticalGridLinesBrush="#ACACAC">
                 <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Image">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <local:Sprite Path="{Binding PicPath}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Method" Binding="{Binding Method}" Width="*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                     <DataGridTextColumn Header="Species" Binding="{Binding Species}" Width="*" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                 </DataGrid.Columns>
