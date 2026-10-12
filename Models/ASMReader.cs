@@ -5,6 +5,7 @@ namespace CrystalLens.Models
 {
     public class ASMReader
     {
+        private static readonly string[] IgnoredMacros = ["table_width", "assert_table_length"];
         private readonly ASMProject _project;
         private readonly Stack<StreamReader> _readers = [];
         private readonly Queue<string> _queuedLines = [];
@@ -107,6 +108,10 @@ namespace CrystalLens.Models
 
         private void RunCommand(ASMCommand command)
         {
+            if (IgnoredMacros.Contains(command.Command))
+            {
+                return;
+            }
             switch (command.Command)
             {
                 case "INCLUDE":
@@ -127,6 +132,10 @@ namespace CrystalLens.Models
                 case "dorepeat":
                     _stream.Add(SpriteAnimation.DoRepeatCommand);
                     _stream.Add(command.GetByte(0));
+                    break;
+                case "dba_pics":
+                    _stream.Add(command.Count >= 1 ? command.Get(0) : -1);
+                    _stream.Add(command.Count >= 2 ? command.Get(1) : -1);
                     break;
                 default:
                     for (int i = 0; i < command.Count; i++)

@@ -10,5 +10,7 @@
         public static readonly EvolutionMoveSet.Serializer EvosAttacks = new();
         public static readonly PokemonStats.Serializer PokemonStats = new();
         public static readonly SpriteAnimation.Serializer SpriteAnimation = new();
+        public static readonly PicPointerTable.Serializer PicPointers = new();
+        public static readonly BinaryFileReference.Serializer Incbin = new();
     }
 }

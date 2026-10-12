@@ -100,8 +100,8 @@ namespace CrystalLens.ViewModels
         }
         public int BaseStatTotal => Model.BaseStatTotal;
         public ObservableCollection<string> TMMoves { get; }
-        public string FrontSpritePath { get; }
-        public string BackSpritePath { get; }
+        public string? FrontpicPath { get; }
+        public string? BackpicPath { get; }
         public List<(byte R, byte G, byte B)> ShinyColors => Model.ShinyPalette;
         public SpriteAnimation Animation => Model.Animation;
         public bool IsShiny
@@ -122,8 +122,8 @@ namespace CrystalLens.ViewModels
             TMMoves = new(model.TMMoves);
 
             ASMProject project = ((IASMData)model).File.Project;
-            FrontSpritePath = Path.Combine(project.Path, model.DimensionsPath.Replace(".dimensions", ".png"));
-            BackSpritePath = FrontSpritePath.Replace("front", "back");
+            FrontpicPath = project.GetPicPath(model.Species);
+            BackpicPath = project.GetPicPath(model.Species, true);
 
             PropertyChanged += PokemonStatsViewModel_PropertyChanged;
 

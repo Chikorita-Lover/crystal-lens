@@ -1,6 +1,5 @@
 ﻿using CrystalLens.Models;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace CrystalLens.ViewModels
 {
@@ -57,12 +56,12 @@ namespace CrystalLens.ViewModels
         private void UpdateEncounterSprite(EncounterViewModel encounter)
         {
             ASMProject project = IASMData.GetProject(Model);
-            encounter.SpritePath = Path.Combine(project.Path, $"gfx/pokemon/{encounter.Species.ToLower()}/front.png");
+            encounter.PicPath = project.GetPicPath(encounter.Species);
         }
 
         private void Encounter_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(EncounterViewModel.SpritePath))
+            if (e.PropertyName != nameof(EncounterViewModel.PicPath))
             {
                 EncounterViewModel encounter = (EncounterViewModel)sender;
                 int index = Encounters.IndexOf(encounter);

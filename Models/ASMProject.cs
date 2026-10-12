@@ -7,14 +7,52 @@ namespace CrystalLens.Models
     {
         public static readonly Dictionary<string, byte> GenderRatioDefinitions = GenerateGenderRatioDefinitions();
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
+        private readonly Dictionary<string, string> _pics = [];
         public string Path { get; }
         public readonly string Name;
         public ObservableCollection<ASMFile.Header> FileHeaders { get; private set; } = [];
+        private PicPointerTable? _pokemonPicPointers;
+        private PicPointerTable? _unownPicPointers;
 
         private ASMProject(string path)
         {
             Path = path;
             Name = System.IO.Path.GetFileName(path);
+        }
+
+        public string? GetPicPath(string species, bool isBackpic = false)
+        {
+            PicPointerTable? selectedPicPointers = null;
+            byte index;
+            if (species == "UNOWN")
+            {
+                index = 1;
+                if (_unownPicPointers == null)
+                {
+                    ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\unown_pic_pointers.asm", ["UnownPicPointers"]), this);
+                    if (file.Get("UnownPicPointers") is PicPointerTable picPointers)
+                    {
+                        _unownPicPointers = picPointers;
+                    }
+                }
+                selectedPicPointers = _unownPicPointers;
+            }
+            else
+            {
+                index = Constants[ASMConstantGroup.Species][species];
+                if (_pokemonPicPointers == null)
+                {
+                    ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\pic_pointers.asm", ["PokemonPicPointers"]), this);
+                    if (file.Get("PokemonPicPointers") is PicPointerTable picPointers)
+                    {
+                        _pokemonPicPointers = picPointers;
+                    }
+                }
+                selectedPicPointers = _pokemonPicPointers;
+            }
+            string? label = isBackpic ? selectedPicPointers?.GetBackpicPointer(index) : selectedPicPointers?.GetFrontpicPointer(index);
+            string? path = label != null ? _pics[label] : null;
+            return path != null ? GetAbsolutePath(path) : null;
         }
 
         public string GetRelativePath(string absolutePath)
@@ -32,6 +70,18 @@ namespace CrystalLens.Models
             ASMProject project = new(path);
             project.FileHeaders = new(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data")));
             project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
+            {
+                ASMFile.Header header = ASMFile.ReadFileHeader(project.GetAbsolutePath(@"gfx\pics.asm"), project);
+                ASMFile picsFile = ASMFile.ReadFile(header, project);
+                foreach (string label in picsFile.Labels)
+                {
+                    if (picsFile.Get(label) is BinaryFileReference bin)
+                    {
+                        string pic = bin.Path.Replace(".2bpp.lz", ".png").Replace(".animated", "");
+                        project._pics.Add(label, pic);
+                    }
+                }
+            }
 
             return project;
         }
