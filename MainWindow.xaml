@@ -65,111 +65,119 @@
                     <MenuItem Header="Pokémon Search..." Click="PokemonSearch_Click" IsEnabled="{Binding OpenProject,Converter={StaticResource ObjectNotNullConverter}}"/>
                 </MenuItem>
             </Menu>
-            <Grid DockPanel.Dock="Left" HorizontalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Label Grid.Row="0" Content="Project Explorer"/>
-                <TreeView Name="ProjectExplorer" Grid.Row="1" ItemsSource="{Binding OpenProject.Entries}" Width="250" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                    <TreeView.ItemContainerStyle>
-                        <Style TargetType="TreeViewItem">
-                            <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
-                            <Setter Property="ToolTip" Value="{Binding Path}"/>
+            <Grid Name="ContentGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300" MinWidth="25" MaxWidth="600"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Content="Project Explorer"/>
+                    <TreeView Name="ProjectExplorer" Grid.Row="1" ItemsSource="{Binding OpenProject.Entries}" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                                <Setter Property="ToolTip" Value="{Binding Path}"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        <TreeView.Style>
+                            <Style TargetType="TreeView">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LoadingProject}" Value="True">
+                                        <Setter Property="Opacity" Value="0.25"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding LoadingProject}" Value="False">
+                                        <Setter Property="Opacity" Value="1.0"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TreeView.Style>
+                    </TreeView>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                        <Label Content="Opening project..." HorizontalContentAlignment="Center"/>
+                        <ProgressBar IsIndeterminate="True" Height="4"/>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LoadingProject}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding LoadingProject}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                    </StackPanel>
+                </Grid>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" MouseDoubleClick="GridSplitter_MouseDoubleClick"/>
+                <TabControl Grid.Column="2" Name="tabs" ItemsSource="{Binding OpenTabs}" SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}"/>
+                                <Button Width="18" Height="18" Background="Transparent" BorderBrush="Transparent" Margin="4,0,0,0"
+                        Command="ApplicationCommands.Close" CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
+                                    <Image>
+                                        <Image.Style>
+                                            <Style TargetType="Image">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                        <Setter Property="Source" Value="/Assets/Images/Unsaved.png"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="False">
+                                                        <Setter Property="Source" Value="/Assets/Images/Close.png"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
+                                                        <Setter Property="Source" Value="/Assets/Images/Close.png"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                </Button>
+                                <StackPanel.ToolTip>
+                                    <TextBlock Text="{Binding Path}"/>
+                                </StackPanel.ToolTip>
+                            </StackPanel>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:ASMFileViewModel}">
+                            <ContentPresenter Content="{Binding Data}"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:EncounterTableMapViewModel}">
+                            <views:EncounterTableMapView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:EncounterSetMapViewModel}">
+                            <views:EncounterSetMapView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:EncounterSetViewModel}">
+                            <views:EncounterSetView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:PokemonStatsViewModel}">
+                            <views:PokemonStatsView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:EvolutionMoveSetViewModel}">
+                            <views:EvolutionMoveSetView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:PokemonSearchViewModel}">
+                            <views:PokemonSearchView/>
+                        </DataTemplate>
+                    </TabControl.Resources>
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Padding" Value="6,2,2,2"/>
                         </Style>
-                    </TreeView.ItemContainerStyle>
-                    <TreeView.Style>
-                        <Style TargetType="TreeView">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding LoadingProject}" Value="True">
-                                    <Setter Property="Opacity" Value="0.25"/>
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding LoadingProject}" Value="False">
-                                    <Setter Property="Opacity" Value="1.0"/>
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TreeView.Style>
-                </TreeView>
-                <StackPanel Grid.Row="1" VerticalAlignment="Center">
-                    <Label Content="Opening project..." HorizontalContentAlignment="Center"/>
-                    <ProgressBar IsIndeterminate="True" Height="4"/>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding LoadingProject}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding LoadingProject}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                </StackPanel>
+                    </TabControl.ItemContainerStyle>
+                </TabControl>
             </Grid>
-            <TabControl Name="tabs" ItemsSource="{Binding OpenTabs}" SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}"/>
-                            <Button Width="18" Height="18" Background="Transparent" BorderBrush="Transparent" Margin="4,0,0,0"
-                                    Command="ApplicationCommands.Close" CommandParameter="{Binding Header,RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="Image">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
-                                                    <Setter Property="Source" Value="/Assets/Images/Unsaved.png"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="False">
-                                                    <Setter Property="Source" Value="/Assets/Images/Close.png"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsMouseOver,RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True">
-                                                    <Setter Property="Source" Value="/Assets/Images/Close.png"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                            <StackPanel.ToolTip>
-                                <TextBlock Text="{Binding Path}"/>
-                            </StackPanel.ToolTip>
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.Resources>
-                    <DataTemplate DataType="{x:Type vm:ASMFileViewModel}">
-                        <ContentPresenter Content="{Binding Data}"/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:EncounterTableMapViewModel}">
-                        <views:EncounterTableMapView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:EncounterSetMapViewModel}">
-                        <views:EncounterSetMapView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:EncounterSetViewModel}">
-                        <views:EncounterSetView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:PokemonStatsViewModel}">
-                        <views:PokemonStatsView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:EvolutionMoveSetViewModel}">
-                        <views:EvolutionMoveSetView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:PokemonSearchViewModel}">
-                        <views:PokemonSearchView/>
-                    </DataTemplate>
-                </TabControl.Resources>
-                <TabControl.ItemContainerStyle>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Padding" Value="6,2,2,2"/>
-                    </Style>
-                </TabControl.ItemContainerStyle>
-            </TabControl>
         </DockPanel>
     </Grid>
 </Window>

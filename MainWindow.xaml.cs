@@ -136,6 +136,11 @@ namespace CrystalLens
             }
         }
 
+        private void GridSplitter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ContentGrid.ColumnDefinitions[0].Width = new GridLength(300);
+        }
+
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)
         {
             PokemonSearchOptionsWindow optionsWindow = new()
