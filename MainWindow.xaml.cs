@@ -131,7 +131,7 @@ namespace CrystalLens
                 }
                 else if (data is ASMProjectViewModel.LabelEntry labelEntry)
                 {
-                    OpenFile(labelEntry.Header, labelEntry.Name);
+                    OpenFile(labelEntry.Header, labelEntry.Label);
                 }
             }
         }
