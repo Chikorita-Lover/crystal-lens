@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace CrystalLens
 {
@@ -20,11 +21,16 @@ namespace CrystalLens
             InitializeComponent();
         }
 
-        private ASMFile OpenFile(ASMFile.Header header, ASMProject project)
+        private ASMFile OpenFile(ASMFile.Header header, string label)
         {
-            ASMFile file = ASMFile.ReadFile(header, project);
-            ViewModel.OpenTab(new ASMFileViewModel(file));
+            ASMFile file = ASMFile.ReadFile(header, ViewModel.OpenProject.Model);
+            ViewModel.OpenTab(new ASMFileViewModel(file, label));
             return file;
+        }
+
+        private ASMFile OpenFile(ASMFile.Header header)
+        {
+            return OpenFile(header, header.Labels.First());
         }
 
         private async void OpenProject_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -106,9 +112,27 @@ namespace CrystalLens
 
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (((FrameworkElement)sender).DataContext is ASMProjectViewModel.FileEntry fileEntry)
+            TreeViewItem item = (TreeViewItem)sender;
+            object data = item.DataContext;
+            if (ProjectExplorer.SelectedItem == data)
             {
-                OpenFile(fileEntry.Header, ViewModel.OpenProject.Model);
+                if (data is ASMProjectViewModel.FileEntry fileEntry)
+                {
+                    OpenFile(fileEntry.Header);
+                    // ListViewItem expands on double-click after the callback, inverting the value set below
+                    if (fileEntry.Header.Labels.Count == 1 && fileEntry.Header.Labels[0] == string.Empty)
+                    {
+                        item.IsExpanded ^= true;
+                    }
+                    else
+                    {
+                        item.IsExpanded = false;
+                    }
+                }
+                else if (data is ASMProjectViewModel.LabelEntry labelEntry)
+                {
+                    OpenFile(labelEntry.Header, labelEntry.Name);
+                }
             }
         }
 

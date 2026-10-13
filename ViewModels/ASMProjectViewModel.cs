@@ -31,6 +31,12 @@ namespace CrystalLens.ViewModels
                     entries = folder.Children;
                 }
                 entries.Insert(0, entry);
+
+                path = Path.Combine(path, entry.Name);
+                foreach (string label in header.Labels)
+                {
+                    entry.Children.Add(new(header, path, label));
+                }
             }
         }
 
@@ -60,12 +66,27 @@ namespace CrystalLens.ViewModels
             public ASMFile.Header Header { get; }
             public string Name { get; }
             public string ShortPath { get; }
+            public ObservableCollection<LabelEntry> Children { get; } = [];
 
             public FileEntry(ASMFile.Header header, string projectPath) : base(System.IO.Path.Combine(projectPath, header.RelativePath))
             {
                 Header = header;
                 Name = System.IO.Path.GetFileName(Path);
                 ShortPath = System.IO.Path.GetDirectoryName(header.RelativePath) ?? string.Empty;
+            }
+        }
+
+        public class LabelEntry : ExplorerEntry
+        {
+            public ASMFile.Header Header { get; }
+            public readonly string Name;
+            public string DisplayName { get; }
+
+            public LabelEntry(ASMFile.Header header, string path, string label) : base(path)
+            {
+                Header = header;
+                Name = label;
+                DisplayName = label.Length == 0 ? "<top>" : label;
             }
         }
     }

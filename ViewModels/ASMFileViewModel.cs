@@ -19,14 +19,17 @@ namespace CrystalLens.ViewModels
         }
         public object Data { get; }
 
-        public ASMFileViewModel(ASMFile file)
+        public ASMFileViewModel(ASMFile file, string label)
         {
             File = file;
             Path = file.Path;
-            Data = CreateDataViewModel(file.Get(file.Labels.First()));
+            Data = CreateDataViewModel(file.Get(label));
             tracker.TryAddChildOf(Data);
             tracker.StatusChanged += Tracker_StatusChanged;
         }
+
+        public ASMFileViewModel(ASMFile file) : this(file, file.Labels.First())
+        { }
 
         public override void Save()
         {
