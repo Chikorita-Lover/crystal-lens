@@ -7,6 +7,7 @@
         xmlns:converters="clr-namespace:CrystalLens.Converters"
         xmlns:vm="clr-namespace:CrystalLens.ViewModels"
         xmlns:views="clr-namespace:CrystalLens.Views"
+        xmlns:properties="clr-namespace:CrystalLens.Properties"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="545" Width="970" 
         Icon="/Assets/Images/Icon.ico" 
@@ -67,7 +68,7 @@
             </Menu>
             <Grid Name="ContentGrid">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300" MinWidth="25" MaxWidth="600"/>
+                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default},Path=ProjectExplorerWidth,Mode=TwoWay}" MinWidth="25" MaxWidth="600"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>

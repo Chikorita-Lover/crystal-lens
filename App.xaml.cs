@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using CrystalLens.Properties;
 using System.Windows;
 
 namespace CrystalLens
@@ -9,6 +8,14 @@ namespace CrystalLens
     /// </summary>
     public partial class App : Application
     {
-    }
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Settings.Default.Reload();
+        }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Settings.Default.Save();
+        }
+    }
 }
