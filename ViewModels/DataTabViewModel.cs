@@ -8,6 +8,10 @@
         {
             get; set { field = value; OnPropertyChanged(); }
         }
+        public string Tooltip
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
         public bool HasUnsavedChanges
         {
             get; set { field = value; OnPropertyChanged(); }

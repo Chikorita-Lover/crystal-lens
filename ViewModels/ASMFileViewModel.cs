@@ -6,14 +6,19 @@ namespace CrystalLens.ViewModels
     public class ASMFileViewModel : DataTabViewModel
     {
         public readonly ASMFile File;
+        public readonly string Label;
         public string Path
         {
             get;
             set
             {
                 field = value;
+                Tooltip = value;
                 File.Path = value;
-                Name = System.IO.Path.GetFileName(value);
+                if (Label.Length == 0)
+                {
+                    Name = System.IO.Path.GetFileName(value);
+                }
                 OnPropertyChanged();
             }
         }
@@ -22,7 +27,12 @@ namespace CrystalLens.ViewModels
         public ASMFileViewModel(ASMFile file, string label)
         {
             File = file;
+            Label = label;
             Path = file.Path;
+            if (label.Length > 0)
+            {
+                Name = label;
+            }
             Data = CreateDataViewModel(file.Get(label));
             tracker.TryAddChildOf(Data);
             tracker.StatusChanged += Tracker_StatusChanged;

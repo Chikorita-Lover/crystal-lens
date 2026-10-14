@@ -155,7 +155,7 @@
                                     </Image>
                                 </Button>
                                 <StackPanel.ToolTip>
-                                    <TextBlock Text="{Binding Path}"/>
+                                    <TextBlock Text="{Binding Tooltip}"/>
                                 </StackPanel.ToolTip>
                             </StackPanel>
                         </DataTemplate>
