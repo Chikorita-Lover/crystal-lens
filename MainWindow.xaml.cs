@@ -1,7 +1,9 @@
 ﻿using CrystalLens.Models;
+using CrystalLens.Properties;
 using CrystalLens.ViewModels;
 using CrystalLens.Views;
 using Microsoft.Win32;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +21,23 @@ namespace CrystalLens
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private async void OpenProject(string path)
+        {
+            ViewModel.LoadingProject = true;
+
+            Task<ASMProject> task = Task.Run(() =>
+            {
+                return ASMProject.OpenProject(path);
+            });
+
+            ASMProject project = await task;
+
+            ViewModel.LoadingProject = false;
+            ViewModel.OpenProject = new(project);
+
+            AddRecentProject(project.Path);
         }
 
         private ASMFile OpenFile(ASMFile.Header header, string label)
@@ -39,17 +58,7 @@ namespace CrystalLens
 
             if (dialog.ShowDialog() == true)
             {
-                ViewModel.LoadingProject = true;
-
-                Task<ASMProject> task = Task.Run(() =>
-                {
-                    return ASMProject.OpenProject(dialog.FolderName);
-                });
-
-                ASMProject project = await task;
-
-                ViewModel.LoadingProject = false;
-                ViewModel.OpenProject = new(project);
+                OpenProject(dialog.FolderName);
             }
         }
 
@@ -141,6 +150,15 @@ namespace CrystalLens
             ContentGrid.ColumnDefinitions[0].Width = new GridLength(300);
         }
 
+        private void RecentProject_Click(object sender, RoutedEventArgs e)
+        {
+            string? path;
+            if (sender is MenuItem item && (path = item.DataContext.ToString()) != "(none)" && path != null)
+            {
+                OpenProject(path);
+            }
+        }
+
         private void PokemonSearch_Click(object sender, RoutedEventArgs e)
         {
             PokemonSearchOptionsWindow optionsWindow = new()
@@ -181,6 +199,27 @@ namespace CrystalLens
         private static MessageBoxResult ShowUnsavedChangesBox(string text)
         {
             return MessageBox.Show(text, "Unsaved Changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning, MessageBoxResult.Yes);
+        }
+
+        private static void AddRecentProject(string path)
+        {
+            StringCollection recentProjects = Settings.Default.RecentProjects;
+            int index = recentProjects.IndexOf(path);
+            if (index > 0)
+            {
+                recentProjects.RemoveAt(index);
+            }
+            if (index != 0)
+            {
+                recentProjects.Insert(0, path);
+            }
+
+            if (recentProjects[^1] == "(none)" || recentProjects.Count > 10)
+            {
+                recentProjects.RemoveAt(recentProjects.Count - 1);
+            }
+
+            App.RefreshSettings();
         }
     }
 }

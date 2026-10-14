@@ -53,6 +53,18 @@
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="Open Project..." Command="{x:Static local:MainWindow.OpenProjectCommand}" InputGestureText="Ctrl+Shift+O"/>
+                    <MenuItem Header="Recent Projects" ItemsSource="{Binding Source={StaticResource AppSettings},Path=Default.RecentProjects,Mode=OneWay}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="(none)">
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <EventSetter Event="Click" Handler="RecentProject_Click"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
                     <Separator/>
                     <MenuItem Header="_Save" Command="ApplicationCommands.Save"/>
                     <MenuItem Header="Save _As..." Command="ApplicationCommands.SaveAs" InputGestureText="Ctrl+Shift+S"/>

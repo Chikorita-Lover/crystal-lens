@@ -17,5 +17,11 @@ namespace CrystalLens
         {
             Settings.Default.Save();
         }
+
+        internal static void RefreshSettings()
+        {
+            Settings.Default.Save();
+            Settings.Default.Reload();
+        }
     }
 }
