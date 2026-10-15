@@ -40,6 +40,8 @@ namespace CrystalLens.ViewModels
         {
             OpenTabs.Add(tab);
             SelectedTabIndex = OpenTabs.Count - 1;
+
+            CommandManager.InvalidateRequerySuggested();
         }
 
         private void UpdateWindowTitle()

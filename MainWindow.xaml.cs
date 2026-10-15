@@ -64,13 +64,14 @@ namespace CrystalLens
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            DataTabViewModel file = (DataTabViewModel)tabs.SelectedItem;
+            DataTabViewModel file = e.Parameter as DataTabViewModel ?? (DataTabViewModel)tabs.SelectedItem;
             file.Save();
         }
 
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = tabs.HasItems && tabs.SelectedItem is ASMFileViewModel;
+            DataTabViewModel? item = e.Parameter as DataTabViewModel ?? (tabs.HasItems ? (DataTabViewModel)tabs.SelectedItem : null);
+            e.CanExecute = item is ASMFileViewModel;
         }
 
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -168,8 +169,7 @@ namespace CrystalLens
             };
             if (optionsWindow.ShowDialog() == true)
             {
-                ViewModel.OpenTabs.Add(new PokemonSearchViewModel(ViewModel.OpenProject.Model, optionsWindow.ViewModel));
-                tabs.SelectedIndex = tabs.Items.Count - 1;
+                ViewModel.OpenTab(new PokemonSearchViewModel(ViewModel.OpenProject.Model, optionsWindow.ViewModel));
             }
         }
 
