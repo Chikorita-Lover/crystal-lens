@@ -5,7 +5,8 @@
         private readonly ASMFile _file;
         public Dictionary<DayTime, EncounterSet> EncounterSets;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.EncounterTable;
 
         public EncounterTable(ASMFile file, Dictionary<DayTime, EncounterSet> encounterSets)
         {
@@ -21,11 +22,6 @@
         public void Add(DayTime time, EncounterSet encounters)
         {
             EncounterSets[time] = encounters;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.EncounterTable;
         }
 
         public class Serializer : ASMSerializer

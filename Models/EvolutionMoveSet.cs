@@ -7,17 +7,13 @@
         public readonly List<MoveEntry> Moves;
 
         public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.EvosAttacks;
 
         public EvolutionMoveSet(ASMFile file, List<Evolution> evolutions, List<MoveEntry> moves)
         {
             _file = file;
             Evolutions = evolutions;
             Moves = moves;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.EvosAttacks;
         }
 
         public class Evolution

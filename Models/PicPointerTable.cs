@@ -6,6 +6,7 @@
         private readonly List<(string? Frontpic, string? Backpic)> _pictures;
 
         public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.PicPointers;
 
         private PicPointerTable(ASMFile file, List<(string?, string?)> pictures)
         {
@@ -21,11 +22,6 @@
         public string? GetBackpicPointer(int index)
         {
             return _pictures[index - 1].Backpic;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.PicPointers;
         }
 
         public class Serializer : ASMSerializer

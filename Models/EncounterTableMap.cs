@@ -9,7 +9,8 @@
         public Dictionary<string, EncounterTable> EncounterTables;
         public Dictionary<string, byte[]> EncounterRates;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.EncounterTableMap;
 
         public EncounterTableMap(ASMFile file, Dictionary<string, EncounterTable> encounterTables, Dictionary<string, byte[]> encounterRates)
         {
@@ -26,11 +27,6 @@
         public ICollection<string> GetNames()
         {
             return EncounterTables.Keys;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.EncounterTableMap;
         }
 
         public class Serializer : ASMSerializer

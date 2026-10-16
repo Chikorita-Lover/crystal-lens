@@ -6,7 +6,8 @@
         public Dictionary<string, EncounterSet> EncounterSets;
         public Dictionary<string, byte> EncounterRates;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.EncounterSetMap;
 
         public EncounterSetMap(ASMFile file, Dictionary<string, EncounterSet> encounterSets, Dictionary<string, byte> encounterRates)
         {
@@ -23,11 +24,6 @@
         public ICollection<string> GetNames()
         {
             return EncounterSets.Keys;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.EncounterSetMap;
         }
 
         public class Serializer : ASMSerializer

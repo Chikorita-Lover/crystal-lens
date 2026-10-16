@@ -5,15 +5,23 @@ namespace CrystalLens.Models
     public class ASMDataType
     {
         public static readonly List<ASMDataType> Values = [];
-        public static readonly ASMDataType GrassEncounters = Register(new(
+        public static readonly ASMDataType EncounterTable = Register(new(
+            path => false,
+            ASMSerializers.EncounterTable
+            ));
+        public static readonly ASMDataType EncounterTableMap = Register(new(
             path => path.StartsWith(@"data\wild\") && path.EndsWith("_grass.asm"),
             ASMSerializers.EncounterTableMap
             ));
-        public static readonly ASMDataType WaterEncounters = Register(new(
+        public static readonly ASMDataType EncounterSet = Register(new(
+            path => false,
+            ASMSerializers.EncounterSet
+            ));
+        public static readonly ASMDataType EncounterSetMap = Register(new(
             path => path.StartsWith(@"data\wild\") && path.EndsWith("_water.asm"),
             ASMSerializers.EncounterSetMap
             ));
-        public static readonly ASMDataType ContestEncounters = Register(new(
+        public static readonly ASMDataType DynamicEncounterSet = Register(new(
             path => path.StartsWith(@"data\wild\") && Path.GetFileNameWithoutExtension(path).Contains("contest"),
             ASMSerializers.DynamicEncounterSet
             ));

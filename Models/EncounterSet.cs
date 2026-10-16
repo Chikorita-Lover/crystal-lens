@@ -7,7 +7,8 @@
         public List<Encounter> Encounters;
         public List<byte> Probabilities;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => IsDynamic ? ASMDataType.DynamicEncounterSet : ASMDataType.EncounterSet;
 
         public EncounterSet(ASMFile file, List<Encounter> encounters, List<byte> probabilities, bool isDynamic = false)
         {
@@ -25,11 +26,6 @@
         public byte GetProbability(int index)
         {
             return Probabilities[index];
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return IsDynamic ? ASMSerializers.DynamicEncounterSet : ASMSerializers.EncounterSet;
         }
 
         public class Serializer : ASMSerializer

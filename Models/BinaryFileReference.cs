@@ -6,16 +6,12 @@
         public readonly string Path;
 
         public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.Incbin;
 
         public BinaryFileReference(ASMFile file, string path)
         {
             _file = file;
             Path = path;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.Incbin;
         }
 
         public class Serializer : ASMSerializer

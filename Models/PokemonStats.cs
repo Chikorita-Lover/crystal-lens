@@ -30,7 +30,8 @@ namespace CrystalLens.Models
         public int BaseStatTotal => HP + Attack + Defense + Speed + SpclAtk + SpclDef;
         public SpriteAnimation Animation;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.PokemonStats;
 
         private PokemonStats(ASMFile file, string species, byte hp, byte attack, byte defense,
             byte speed, byte spclAtk, byte spclDef, string type1, string type2, byte catchRate,
@@ -96,11 +97,6 @@ namespace CrystalLens.Models
             reader.Close();
             colors.Add((0, 0, 0));
             return colors;
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            return ASMSerializers.PokemonStats;
         }
 
         public class Builder

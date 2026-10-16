@@ -11,7 +11,8 @@
 
         public int CommandCount => _commands.Count;
 
-        ASMFile IASMData.File => _file;
+        public ASMFile File => _file;
+        public ASMDataType Type => ASMDataType.SpriteAnimation;
 
         public SpriteAnimation(ASMFile file, List<Command> commands)
         {
@@ -22,11 +23,6 @@
         public Command Get(int index)
         {
             return _commands[index];
-        }
-
-        public ASMSerializer GetSerializer()
-        {
-            throw new NotImplementedException();
         }
 
         public abstract record Command()

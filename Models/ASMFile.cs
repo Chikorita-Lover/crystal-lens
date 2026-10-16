@@ -184,7 +184,7 @@ namespace CrystalLens.Models
                     writer.Label(label);
                 }
                 IASMData data = Get(label);
-                data.GetSerializer().WriteAssembly(writer, data);
+                data.Type.Serializer.WriteAssembly(writer, data);
             }
         }
 
