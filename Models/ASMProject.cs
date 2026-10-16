@@ -13,6 +13,7 @@ namespace CrystalLens.Models
         public ObservableCollection<ASMFile.Header> FileHeaders { get; private set; } = [];
         private PicPointerTable? _pokemonPicPointers;
         private PicPointerTable? _unownPicPointers;
+        private PaletteTable? _pokemonPalettes;
 
         private ASMProject(string path)
         {
@@ -55,6 +56,20 @@ namespace CrystalLens.Models
             return path != null ? GetAbsolutePath(path) : string.Empty;
         }
 
+        public GBCPalette GetShinyPalette(string species)
+        {
+            byte index = Constants[ASMConstantGroup.Species][species];
+            if (_pokemonPalettes == null)
+            {
+                ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\palettes.asm", ["PokemonPalettes"]), this);
+                if (file.Get("PokemonPalettes") is PaletteTable palettes)
+                {
+                    _pokemonPalettes = palettes;
+                }
+            }
+            return _pokemonPalettes.GetShinyPalette(index);
+        }
+
         public string GetRelativePath(string absolutePath)
         {
             return System.IO.Path.GetRelativePath(Path, absolutePath);
@@ -68,7 +83,11 @@ namespace CrystalLens.Models
         public static ASMProject OpenProject(string path)
         {
             ASMProject project = new(path);
-            project.FileHeaders = new(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data")));
+            List<ASMFile.Header> headers = [];
+            headers.AddRange(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data")));
+            headers.AddRange(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "gfx")));
+            project.FileHeaders = new(headers);
+
             project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
             {
                 ASMFile.Header header = ASMFile.ReadFileHeader(project.GetAbsolutePath(@"gfx\pics.asm"), project);
@@ -96,7 +115,7 @@ namespace CrystalLens.Models
                 headers.AddRange(ReadFileHeadersFromDirectory(directory));
             }
 
-            string[] files = Directory.GetFiles(path, "*.asm");
+            IEnumerable<string> files = Directory.GetFiles(path).Where(file => file.EndsWith(".asm") || file.EndsWith(".pal"));
             foreach (string filePath in files)
             {
                 try

@@ -89,6 +89,12 @@ namespace CrystalLens.Models
             return (byte)(int.Parse(value ?? "0") % 256);
         }
 
+        public short ReadWord()
+        {
+            string? value = Read();
+            return (short)(int.Parse(value ?? "0") % (1 << 16));
+        }
+
         public void JumpTo(string label)
         {
             bool hasLabel;
@@ -136,6 +142,15 @@ namespace CrystalLens.Models
                 case "dba_pics":
                     _stream.Add(command.Count >= 1 ? command.Get(0) : -1);
                     _stream.Add(command.Count >= 2 ? command.Get(1) : -1);
+                    break;
+                case "RGB":
+                    for (int i = 0; i < command.Count / 3; i++)
+                    {
+                        short r = (short)((1 << 0) * command.GetByte(i * 3));
+                        short g = (short)((1 << 5) * command.GetByte(i * 3 + 1));
+                        short b = (short)((1 << 10) * command.GetByte(i * 3 + 2));
+                        _stream.Add(r + g + b);
+                    }
                     break;
                 default:
                     for (int i = 0; i < command.Count; i++)

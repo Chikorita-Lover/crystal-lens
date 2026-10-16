@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CrystalLens.Views"
              xmlns:vm="clr-namespace:CrystalLens.ViewModels"
+             xmlns:converters="clr-namespace:CrystalLens.Converters"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:PokemonStatsViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -30,14 +31,29 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="2"/>
         </Style>
+        <converters:SpeciesToShinyPaletteConverter x:Key="SpeciesToShinyPaletteConverter"/>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
             <GroupBox Header="Appearance">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <local:Sprite Path="{Binding FrontpicPath}" Palette="{Binding ShinyColors}" ApplyPalette="{Binding IsShiny}" Animation="{Binding Animation}" Style="{StaticResource BorderedSprite}"/>
-                        <local:Sprite Path="{Binding BackpicPath}" Palette="{Binding ShinyColors}" ApplyPalette="{Binding IsShiny}" Style="{StaticResource BorderedSprite}"/>
+                        <local:Sprite Path="{Binding FrontpicPath}" ApplyPalette="{Binding IsShiny}" Animation="{Binding Animation}" Style="{StaticResource BorderedSprite}">
+                            <local:Sprite.Palette>
+                                <MultiBinding Converter="{StaticResource SpeciesToShinyPaletteConverter}">
+                                    <Binding Path="Model.File.Project"/>
+                                    <Binding Path="Species"/>
+                                </MultiBinding>
+                            </local:Sprite.Palette>
+                        </local:Sprite>
+                        <local:Sprite Path="{Binding BackpicPath}" ApplyPalette="{Binding IsShiny}" Style="{StaticResource BorderedSprite}">
+                            <local:Sprite.Palette>
+                                <MultiBinding Converter="{StaticResource SpeciesToShinyPaletteConverter}">
+                                    <Binding Path="Model.File.Project"/>
+                                    <Binding Path="Species"/>
+                                </MultiBinding>
+                            </local:Sprite.Palette>
+                        </local:Sprite>
                     </StackPanel>
                     <CheckBox IsChecked="{Binding IsShiny}" HorizontalAlignment="Center">
                         <Path Data="M7 10A4 4 0 014 13a4 4 0 013 3 4 4 0 013-3A4 4 0 017 10m6-6A4 4 0 0110 7a4 4 0 013 3 4 4 0 013-3A4 4 0 0113 4M3 0A4 4 0 010 3 4 4 0 013 6 4 4 0 016 3 4 4 0 013 0" Fill="DarkRed"/>

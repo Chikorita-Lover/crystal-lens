@@ -102,7 +102,6 @@ namespace CrystalLens.ViewModels
         public ObservableCollection<string> TMMoves { get; }
         public string FrontpicPath { get; }
         public string BackpicPath { get; }
-        public List<(byte R, byte G, byte B)> ShinyColors => Model.ShinyPalette;
         public SpriteAnimation Animation => Model.Animation;
         public bool IsShiny
         {

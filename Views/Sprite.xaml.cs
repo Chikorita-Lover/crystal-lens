@@ -30,7 +30,7 @@ namespace CrystalLens.Views
         public static readonly DependencyProperty PaletteProperty =
             DependencyProperty.Register(
                 nameof(Palette),
-                typeof(List<(byte, byte, byte)>),
+                typeof(BitmapPalette),
                 typeof(Sprite),
                 new PropertyMetadata(null, Palette_Changed)
                 );
@@ -58,9 +58,9 @@ namespace CrystalLens.Views
             get => (byte)GetValue(FrameProperty);
             set => SetValue(FrameProperty, value);
         }
-        public List<(byte R, byte G, byte B)>? Palette
+        public BitmapPalette? Palette
         {
-            get => (List<(byte, byte, byte)>)GetValue(PaletteProperty);
+            get => (BitmapPalette)GetValue(PaletteProperty);
             set => SetValue(PaletteProperty, value);
         }
         public bool ApplyPalette
@@ -95,8 +95,7 @@ namespace CrystalLens.Views
 
                     if (ApplyPalette && Palette != null)
                     {
-                        BitmapPalette palette = new([.. Palette.Select(rgb => Color.FromRgb(rgb.R, rgb.G, rgb.B))]);
-                        _source = CreatePaletteSwap(_source, palette);
+                        _source = CreatePaletteSwap(_source, Palette);
                     }
                 }
                 catch (Exception ex) when (ex is ArgumentNullException or UriFormatException or FileNotFoundException or DirectoryNotFoundException)

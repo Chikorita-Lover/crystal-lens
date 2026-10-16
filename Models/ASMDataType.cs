@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace CrystalLens.Models
 {
@@ -34,12 +35,20 @@ namespace CrystalLens.Models
             ASMSerializers.EvosAttacks
             ));
         public static readonly ASMDataType SpriteAnimation = Register(new(
-            path => path.StartsWith(@"gfx\pokemon\"),
+            path => Regex.Match(path, @"gfx\\pokemon\\\w+\\anim\w*.asm").Success,
             ASMSerializers.SpriteAnimation
             ));
         public static readonly ASMDataType PicPointers = Register(new(
             path => path.StartsWith(@"data\pokemon\") && path.EndsWith("pic_pointers.asm"),
             ASMSerializers.PicPointers
+            ));
+        public static readonly ASMDataType Palettes = Register(new(
+            path => path == @"data\pokemon\palettes.asm",
+            ASMSerializers.Palettes
+            ));
+        public static readonly ASMDataType GBCPal = Register(new(
+            path => path.EndsWith(".pal"),
+            ASMSerializers.GBCPal
             ));
         public static readonly ASMDataType Incbin = Register(new(
             path => path == @"gfx\pics.asm",
