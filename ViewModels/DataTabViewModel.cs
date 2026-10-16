@@ -4,6 +4,10 @@
     {
         protected readonly ChangeTracker tracker = new();
         
+        public virtual string Path
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
         public virtual string Name
         {
             get; set { field = value; OnPropertyChanged(); }

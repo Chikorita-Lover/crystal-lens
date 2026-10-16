@@ -15,6 +15,7 @@ namespace CrystalLens.ViewModels
         internal PokemonSearchViewModel(ASMProject project, PokemonSearchOptions options)
         {
             _project = project;
+            Path = string.Empty;
             Tooltip = Name;
             Options = options;
             ShownFields.AddRange(options.Fields.SelectMany(field => field.IsShown ? field.Type.PropertyNames : []));

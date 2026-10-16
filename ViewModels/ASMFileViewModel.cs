@@ -7,7 +7,7 @@ namespace CrystalLens.ViewModels
     {
         public readonly ASMFile File;
         public readonly string Label;
-        public string Path
+        public override string Path
         {
             get;
             set

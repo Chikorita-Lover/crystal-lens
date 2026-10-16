@@ -4,11 +4,11 @@ using CrystalLens.ViewModels;
 using CrystalLens.Views;
 using Microsoft.Win32;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CrystalLens
 {
@@ -118,6 +118,21 @@ namespace CrystalLens
         private void Close_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = tabs.HasItems;
+        }
+
+        private void OpenInExplorer_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"/select,\"{(string)e.Parameter}\"",
+                UseShellExecute = true
+            });
+        }
+
+        private void OpenInExplorer_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is string path && File.Exists(path);
         }
 
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
