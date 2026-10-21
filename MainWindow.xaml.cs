@@ -42,7 +42,7 @@ namespace CrystalLens
 
         private ASMFile OpenFile(ASMFile.Header header, string label)
         {
-            ASMFile file = ASMFile.ReadFile(header, ViewModel.OpenProject.Model);
+            ASMFile file = ViewModel.OpenProject.Model.LoadFile(header);
             ViewModel.OpenTab(new ASMFileViewModel(file, label));
             return file;
         }

@@ -19,7 +19,7 @@ namespace CrystalLens.ViewModels
         private void PopulateExplorer()
         {
             Dictionary<string, FolderEntry> pathToEntry = [];
-            foreach (ASMFile.Header header in Model.FileHeaders.Where(file => file.Labels.Count > 0).Reverse())
+            foreach (ASMFile.Header header in Model.FileHeaders.Values.Where(file => file.Labels.Count > 0).Reverse())
             {
                 FileEntry entry = new(header, Model.Path);
 

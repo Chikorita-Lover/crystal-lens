@@ -25,10 +25,11 @@ namespace CrystalLens.ViewModels
 
         private void PopulateEntries(PokemonSearchOptions options)
         {
-            foreach (ASMFile.Header header in _project.FileHeaders)
+            foreach (ASMFile.Header header in _project.FileHeaders.Values)
             {
-                if (ASMDataType.PokemonStats.PathPredicate.Invoke(header.RelativePath) && ASMFile.TryReadFile(_project, header, out ASMFile file))
+                if (ASMDataType.PokemonStats.PathPredicate.Invoke(header.RelativePath))
                 {
+                    ASMFile file = _project.LoadFile(header);
                     PokemonStatsViewModel entry = new((PokemonStats)file.Get(string.Empty));
                     if (!options.IsFiltered || options.FilterKey.Selector.Invoke(entry).Any(o => o.ToString() == options.FilterValue))
                     {

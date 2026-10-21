@@ -1,19 +1,18 @@
-﻿using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.IO;
 
 namespace CrystalLens.Models
 {
     public class ASMProject
     {
         public static readonly Dictionary<string, byte> GenderRatioDefinitions = GenerateGenderRatioDefinitions();
+        private static readonly ICollection<string> LabelsToCache = ["PokemonPicPointers", "UnownPicPointers", "PokemonPalettes"];
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
+        public readonly Dictionary<string, ASMFile.Header> FileHeaders = [];
+        private readonly Dictionary<string, ASMFile> _cachedFiles = [];
+        private readonly Dictionary<string, ASMFile> _labelToCachedFile = [];
         private readonly Dictionary<string, string> _pics = [];
         public string Path { get; }
         public readonly string Name;
-        public ObservableCollection<ASMFile.Header> FileHeaders { get; private set; } = [];
-        private PicPointerTable? _pokemonPicPointers;
-        private PicPointerTable? _unownPicPointers;
-        private PaletteTable? _pokemonPalettes;
 
         private ASMProject(string path)
         {
@@ -23,51 +22,28 @@ namespace CrystalLens.Models
 
         public string GetPicPath(string species, bool isBackpic = false)
         {
-            PicPointerTable? selectedPicPointers = null;
-            byte index;
+            PicPointerTable selectedPicPointers;
+            int index;
             if (species == "UNOWN")
             {
                 index = 1;
-                if (_unownPicPointers == null)
-                {
-                    ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\unown_pic_pointers.asm", ["UnownPicPointers"]), this);
-                    if (file.Get("UnownPicPointers") is PicPointerTable picPointers)
-                    {
-                        _unownPicPointers = picPointers;
-                    }
-                }
-                selectedPicPointers = _unownPicPointers;
+                selectedPicPointers = GetCachedData<PicPointerTable>("UnownPicPointers");
             }
             else
             {
                 index = Constants[ASMConstantGroup.Species][species];
-                if (_pokemonPicPointers == null)
-                {
-                    ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\pic_pointers.asm", ["PokemonPicPointers"]), this);
-                    if (file.Get("PokemonPicPointers") is PicPointerTable picPointers)
-                    {
-                        _pokemonPicPointers = picPointers;
-                    }
-                }
-                selectedPicPointers = _pokemonPicPointers;
+                selectedPicPointers = GetCachedData<PicPointerTable>("PokemonPicPointers");
             }
-            string? label = isBackpic ? selectedPicPointers?.GetBackpicPointer(index) : selectedPicPointers?.GetFrontpicPointer(index);
+            string? label = isBackpic ? selectedPicPointers.GetBackpicPointer(index) : selectedPicPointers.GetFrontpicPointer(index);
             string? path = label != null ? _pics[label] : null;
             return path != null ? GetAbsolutePath(path) : string.Empty;
         }
 
         public GBCPalette GetShinyPalette(string species)
         {
-            byte index = Constants[ASMConstantGroup.Species][species];
-            if (_pokemonPalettes == null)
-            {
-                ASMFile file = ASMFile.ReadFile(new(@"data\pokemon\palettes.asm", ["PokemonPalettes"]), this);
-                if (file.Get("PokemonPalettes") is PaletteTable palettes)
-                {
-                    _pokemonPalettes = palettes;
-                }
-            }
-            return _pokemonPalettes.GetShinyPalette(index);
+            int index = Constants[ASMConstantGroup.Species][species];
+            PaletteTable palettes = GetCachedData<PaletteTable>("PokemonPalettes");
+            return palettes.GetShinyPalette(index);
         }
 
         public string GetRelativePath(string absolutePath)
@@ -80,39 +56,39 @@ namespace CrystalLens.Models
             return System.IO.Path.Combine(Path, relativePath);
         }
 
+        public ASMFile LoadFile(ASMFile.Header header)
+        {
+            if (_cachedFiles.TryGetValue(header.RelativePath, out ASMFile? file))
+            {
+                return file;
+            }
+            return ASMFile.ReadFile(header, this);
+        }
+
+        public T GetCachedData<T>(string label) where T : IASMData
+        {
+            ASMFile file = _labelToCachedFile[label];
+            return (T)file.Get(label);
+        }
+
         public static ASMProject OpenProject(string path)
         {
             ASMProject project = new(path);
-            List<ASMFile.Header> headers = [];
-            headers.AddRange(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data")));
-            headers.AddRange(project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "gfx")));
-            project.FileHeaders = new(headers);
+            project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants"));
+            project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data"));
+            project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "gfx"));
 
-            project.ReadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants")); // only for reading constants
-            {
-                ASMFile.Header header = ASMFile.ReadFileHeader(project.GetAbsolutePath(@"gfx\pics.asm"), project);
-                ASMFile picsFile = ASMFile.ReadFile(header, project);
-                foreach (string label in picsFile.Labels)
-                {
-                    if (picsFile.Get(label) is BinaryFileReference bin)
-                    {
-                        string pic = bin.Path.Replace(".2bpp.lz", ".png").Replace(".animated", "");
-                        project._pics.Add(label, pic);
-                    }
-                }
-            }
+            project.LoadPicPaths(project.FileHeaders[@"gfx\pics.asm"]);
 
             return project;
         }
 
-        private List<ASMFile.Header> ReadFileHeadersFromDirectory(string path)
+        private void LoadFileHeadersFromDirectory(string path)
         {
-            List<ASMFile.Header> headers = [];
-
             string[] directories = Directory.GetDirectories(path);
             foreach (string directory in directories)
             {
-                headers.AddRange(ReadFileHeadersFromDirectory(directory));
+                LoadFileHeadersFromDirectory(directory);
             }
 
             IEnumerable<string> files = Directory.GetFiles(path).Where(file => file.EndsWith(".asm") || file.EndsWith(".pal"));
@@ -121,10 +97,20 @@ namespace CrystalLens.Models
                 try
                 {
                     TryReadConstants(filePath);
-                    if (ASMDataType.ValidPath.Invoke(System.IO.Path.GetRelativePath(Path, filePath)))
+                    string relativePath = GetRelativePath(filePath);
+                    if (ASMDataType.ValidPath.Invoke(relativePath))
                     {
                         ASMFile.Header header = ASMFile.ReadFileHeader(filePath, this);
-                        headers.Add(header);
+                        FileHeaders.Add(relativePath, header);
+                        if (ShouldCacheFileByPath(relativePath) || header.Labels.Any(LabelsToCache.Contains))
+                        {
+                            ASMFile file = LoadFile(header);
+                            _cachedFiles.Add(relativePath, file);
+                            foreach (string label in header.Labels.Where(label => label.Length > 0))
+                            {
+                                _labelToCachedFile.Add(label, file);
+                            }
+                        }
                     }
                 }
                 catch (FileFormatException)
@@ -134,8 +120,19 @@ namespace CrystalLens.Models
                 catch (InvalidOperationException) // TEMP
                 { }
             }
+        }
 
-            return headers;
+        private void LoadPicPaths(ASMFile.Header header)
+        {
+            ASMFile file = LoadFile(header);
+            foreach (string label in file.Labels)
+            {
+                if (file.Get(label) is BinaryFileReference bin)
+                {
+                    string picPath = bin.Path.Replace(".2bpp.lz", ".png").Replace(".animated", "");
+                    _pics.Add(label, picPath);
+                }
+            }
         }
 
         private void TryReadConstants(string path)
@@ -162,6 +159,11 @@ namespace CrystalLens.Models
                     Constants.Add(ASMConstantGroup.Type, constants[0]);
                     break;
             }
+        }
+
+        private static bool ShouldCacheFileByPath(string path)
+        {
+            return path == @"gfx\pics.asm" || path.StartsWith(@"data\pokemon\base_stats\");
         }
 
         private static Dictionary<string, byte> GenerateGenderRatioDefinitions()

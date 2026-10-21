@@ -152,7 +152,7 @@ namespace CrystalLens.Models
         {
             try
             {
-                data = ReadFile(header, project);
+                data = project.LoadFile(header);
                 return true;
             }
             catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
