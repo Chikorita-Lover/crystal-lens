@@ -148,20 +148,6 @@ namespace CrystalLens.Models
             return constants;
         }
 
-        public static bool TryReadFile(ASMProject project, Header header, out ASMFile data)
-        {
-            try
-            {
-                data = project.LoadFile(header);
-                return true;
-            }
-            catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
-            {
-                data = new(project, project.GetAbsolutePath(header.RelativePath));
-                return false;
-            }
-        }
-
         private static ASMDataType? InferDataType(ASMFile file)
         {
             foreach (ASMDataType type in ASMDataType.Values)

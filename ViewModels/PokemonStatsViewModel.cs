@@ -1,6 +1,5 @@
 ﻿using CrystalLens.Models;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace CrystalLens.ViewModels
 {
@@ -102,7 +101,6 @@ namespace CrystalLens.ViewModels
         public ObservableCollection<string> TMMoves { get; }
         public string FrontpicPath { get; }
         public string BackpicPath { get; }
-        public SpriteAnimation Animation => Model.Animation;
         public bool IsShiny
         {
             get; set { field = value; OnPropertyChanged(); }

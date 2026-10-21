@@ -1,8 +1,6 @@
-﻿using CrystalLens.Models;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
@@ -44,7 +42,7 @@ namespace CrystalLens.Views
         public static readonly DependencyProperty AnimationProperty =
             DependencyProperty.Register(
                 nameof(Animation),
-                typeof(SpriteAnimation),
+                typeof(AnimationTimeline),
                 typeof(Sprite),
                 new PropertyMetadata(null, Animation_Changed)
                 );
@@ -68,13 +66,12 @@ namespace CrystalLens.Views
             get => (bool)GetValue(ApplyPaletteProperty);
             set => SetValue(ApplyPaletteProperty, value);
         }
-        public SpriteAnimation? Animation
+        public AnimationTimeline? Animation
         {
-            get => (SpriteAnimation)GetValue(AnimationProperty);
+            get => (AnimationTimeline)GetValue(AnimationProperty);
             set => SetValue(AnimationProperty, value);
         }
         private BitmapSource? _source;
-        private AnimationTimeline? _animationTimeline;
 
         public Sprite()
         {
@@ -132,7 +129,7 @@ namespace CrystalLens.Views
 
         public void PlayAnimation()
         {
-            BeginAnimation(FrameProperty, _animationTimeline);
+            BeginAnimation(FrameProperty, Animation);
         }
 
         private static BitmapSource CreatePaletteSwap(BitmapSource source, BitmapPalette palette)
@@ -148,44 +145,6 @@ namespace CrystalLens.Views
                 width, height, source.DpiX, source.DpiY,
                 source.Format, palette, pixels, stride
                 );
-        }
-
-        private static ByteAnimationUsingKeyFrames CreateAnimationTimeline(SpriteAnimation animation)
-        {
-            ByteAnimationUsingKeyFrames timeline = new()
-            {
-                SpeedRatio = 60.0
-            };
-            ByteKeyFrameCollection keyFrames = timeline.KeyFrames;
-            int i = 0;
-            int currentFrame = 0;
-            int repeats = 0;
-            while (i < animation.CommandCount)
-            {
-                SpriteAnimation.Command command = animation.Get(i);
-                if (command is SpriteAnimation.Frame frameCommand)
-                {
-                    DiscreteByteKeyFrame keyFrame = new(frameCommand.Index, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(currentFrame)));
-                    keyFrames.Add(keyFrame);
-                    currentFrame += frameCommand.Duration + 1;
-                }
-                else if (command is SpriteAnimation.SetRepeat setRepeatCommand)
-                {
-                    repeats = setRepeatCommand.Count;
-                }
-                else if (command is SpriteAnimation.DoRepeat doRepeatCommand)
-                {
-                    if (--repeats > 0)
-                    {
-                        i = doRepeatCommand.Index - 1;
-                    }
-                }
-
-                i++;
-            }
-            keyFrames.Add(new DiscreteByteKeyFrame(0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(currentFrame))));
-
-            return timeline;
         }
 
         private static void Path_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -213,7 +172,6 @@ namespace CrystalLens.Views
         {
             Sprite sprite = (Sprite)sender;
             sprite.Frame = 0;
-            sprite._animationTimeline = sprite.Animation != null ? CreateAnimationTimeline(sprite.Animation) : null;
             sprite.PlayAnimation();
         }
     }

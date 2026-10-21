@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace CrystalLens.Models
+﻿namespace CrystalLens.Models
 {
     public class PokemonStats : IASMData
     {
@@ -26,7 +24,6 @@ namespace CrystalLens.Models
         public string EggGroup2;
         public List<string> TMMoves { get; }
         public int BaseStatTotal => HP + Attack + Defense + Speed + SpclAtk + SpclDef;
-        public SpriteAnimation Animation;
 
         public ASMFile File => _file;
         public ASMDataType Type => ASMDataType.PokemonStats;
@@ -58,11 +55,6 @@ namespace CrystalLens.Models
             TMMoves = tmMoves;
 
             DimensionsPath = $"gfx/pokemon/{(species == "UNOWN" ? "unown_a" : species.ToLower())}/front.dimensions";
-            string animPath = Path.Combine(Path.GetDirectoryName(DimensionsPath), "anim.asm");
-            if (ASMFile.TryReadFile(file.Project, new(animPath, [string.Empty]), out file))
-            {
-                Animation = (SpriteAnimation)file.Get(string.Empty);
-            }
         }
 
         public class Builder

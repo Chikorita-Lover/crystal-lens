@@ -32,19 +32,26 @@
             <Setter Property="Margin" Value="2"/>
         </Style>
         <converters:SpeciesToShinyPaletteConverter x:Key="SpeciesToShinyPaletteConverter"/>
+        <converters:SpeciesToAnimationConverter x:Key="SpeciesToAnimationConverter"/>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
             <GroupBox Header="Appearance">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <local:Sprite Path="{Binding FrontpicPath}" ApplyPalette="{Binding IsShiny}" Animation="{Binding Animation}" Style="{StaticResource BorderedSprite}">
+                        <local:Sprite Path="{Binding FrontpicPath}" ApplyPalette="{Binding IsShiny}" Style="{StaticResource BorderedSprite}">
                             <local:Sprite.Palette>
                                 <MultiBinding Converter="{StaticResource SpeciesToShinyPaletteConverter}">
                                     <Binding Path="Model.File.Project"/>
                                     <Binding Path="Species"/>
                                 </MultiBinding>
                             </local:Sprite.Palette>
+                            <local:Sprite.Animation>
+                                <MultiBinding Converter="{StaticResource SpeciesToAnimationConverter}">
+                                    <Binding Path="Model.File.Project"/>
+                                    <Binding Path="Species"/>
+                                </MultiBinding>
+                            </local:Sprite.Animation>
                         </local:Sprite>
                         <local:Sprite Path="{Binding BackpicPath}" ApplyPalette="{Binding IsShiny}" Style="{StaticResource BorderedSprite}">
                             <local:Sprite.Palette>
