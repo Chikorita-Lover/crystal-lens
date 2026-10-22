@@ -145,22 +145,33 @@ namespace CrystalLens
             });
         }
 
+        private void OpenInExternalProgram_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Parameter is string path && File.Exists(path);
+        }
+
         private void ShowInExplorer_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            string path = (string)e.Parameter;
+            if (Directory.Exists(path))
+            {
+                OpenInExternalProgram_Executed(sender, e);
+                return;
+            }
             Process.Start(new ProcessStartInfo
             {
                 FileName = "explorer.exe",
-                Arguments = $"/select,\"{(string)e.Parameter}\"",
+                Arguments = $"/select,\"{path}\"",
                 UseShellExecute = true
             });
         }
 
         private void ShowInExplorer_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = e.Parameter is string path && File.Exists(path);
+            e.CanExecute = e.Parameter is string path && (Directory.Exists(path) || File.Exists(path));
         }
 
-        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             TreeViewItem item = (TreeViewItem)sender;
             object data = item.DataContext;
@@ -169,7 +180,7 @@ namespace CrystalLens
                 if (data is ASMProjectViewModel.FileEntry fileEntry)
                 {
                     OpenFile(fileEntry.Header);
-                    // ListViewItem expands on double-click after the callback, inverting the value set below
+                    // TreeViewItem expands on double-click after the callback, inverting the value set below
                     if (fileEntry.Header.Labels.Count == 1 && fileEntry.Header.Labels[0] == string.Empty)
                     {
                         item.IsExpanded ^= true;

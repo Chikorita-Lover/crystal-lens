@@ -50,7 +50,7 @@
         <CommandBinding Command="ApplicationCommands.Close" Executed="Close_Executed" CanExecute="Close_CanExecute"/>
         <CommandBinding Command="commands:RoutedCommands.CopyPath" Executed="CopyPath_Executed"/>
         <CommandBinding Command="commands:RoutedCommands.CopyRelativePath" Executed="CopyRelativePath_Executed"/>
-        <CommandBinding Command="commands:RoutedCommands.OpenInExternalProgram" Executed="OpenInExternalProgram_Executed" CanExecute="ShowInExplorer_CanExecute"/>
+        <CommandBinding Command="commands:RoutedCommands.OpenInExternalProgram" Executed="OpenInExternalProgram_Executed" CanExecute="OpenInExternalProgram_CanExecute"/>
         <CommandBinding Command="commands:RoutedCommands.ShowInExplorer" Executed="ShowInExplorer_Executed" CanExecute="ShowInExplorer_CanExecute"/>
     </Window.CommandBindings>
     <Grid>
@@ -97,8 +97,19 @@
                     <TreeView Name="ProjectExplorer" Grid.Row="1" ItemsSource="{Binding OpenProject.Entries}" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
-                                <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                                <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick"/>
                                 <Setter Property="ToolTip" Value="{Binding Path}"/>
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Command="commands:RoutedCommands.CopyPath" CommandParameter="{Binding Path}"/>
+                                            <MenuItem Command="commands:RoutedCommands.CopyRelativePath" CommandParameter="{Binding Path}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Show in File Explorer" Command="commands:RoutedCommands.ShowInExplorer" CommandParameter="{Binding Path}"/>
+                                            <MenuItem Command="commands:RoutedCommands.OpenInExternalProgram" CommandParameter="{Binding Path}"/>
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.Style>
