@@ -120,7 +120,16 @@ namespace CrystalLens
             e.CanExecute = tabs.HasItems;
         }
 
-        private void OpenInExplorer_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void OpenInExternalProgram_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = (string)e.Parameter,
+                UseShellExecute = true
+            });
+        }
+
+        private void ShowInExplorer_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
             {
@@ -130,7 +139,7 @@ namespace CrystalLens
             });
         }
 
-        private void OpenInExplorer_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void ShowInExplorer_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = e.Parameter is string path && File.Exists(path);
         }

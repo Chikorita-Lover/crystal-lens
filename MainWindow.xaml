@@ -48,7 +48,8 @@
         <CommandBinding Command="ApplicationCommands.Save" Executed="Save_Executed" CanExecute="Save_CanExecute"/>
         <CommandBinding Command="ApplicationCommands.SaveAs" Executed="SaveAs_Executed" CanExecute="Save_CanExecute"/>
         <CommandBinding Command="ApplicationCommands.Close" Executed="Close_Executed" CanExecute="Close_CanExecute"/>
-        <CommandBinding Command="commands:RoutedCommands.OpenInExplorer" Executed="OpenInExplorer_Executed" CanExecute="OpenInExplorer_CanExecute"/>
+        <CommandBinding Command="commands:RoutedCommands.OpenInExternalProgram" Executed="OpenInExternalProgram_Executed" CanExecute="ShowInExplorer_CanExecute"/>
+        <CommandBinding Command="commands:RoutedCommands.ShowInExplorer" Executed="ShowInExplorer_Executed" CanExecute="ShowInExplorer_CanExecute"/>
     </Window.CommandBindings>
     <Grid>
         <DockPanel>
@@ -194,7 +195,8 @@
                                         <MenuItem Header="Save" Command="ApplicationCommands.Save" CommandParameter="{Binding}"/>
                                         <MenuItem Header="Close" Command="ApplicationCommands.Close" CommandParameter="{Binding}" InputGestureText="Ctrl+W"/>
                                         <Separator/>
-                                        <MenuItem Header="Open in File Explorer" Command="commands:RoutedCommands.OpenInExplorer" CommandParameter="{Binding Path}"/>
+                                        <MenuItem Header="Show in File Explorer" Command="commands:RoutedCommands.ShowInExplorer" CommandParameter="{Binding Path}"/>
+                                        <MenuItem Header="Open in External Program" Command="commands:RoutedCommands.OpenInExternalProgram" CommandParameter="{Binding Path}"/>
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
