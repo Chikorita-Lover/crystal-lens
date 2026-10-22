@@ -7,9 +7,10 @@ namespace CrystalLens.ViewModels
 {
     public class MainViewModel : ObservableViewModel
     {
+        internal PokemonSearchOptions DefaultSearchOptions;
         public ASMProjectViewModel? OpenProject
         {
-            get; set { field = value; UpdateWindowTitle(); OnPropertyChanged(); }
+            get; set { field = value; UpdateWindowTitle(); DefaultSearchOptions = new(value); OnPropertyChanged(); }
         }
         public ObservableCollection<DataTabViewModel> OpenTabs { get; } = [];
         public int SelectedTabIndex

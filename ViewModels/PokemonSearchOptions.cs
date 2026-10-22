@@ -44,6 +44,19 @@ namespace CrystalLens.ViewModels
             }
         }
 
+        internal PokemonSearchOptions(PokemonSearchOptions other)
+        {
+            _project = other._project;
+            foreach (Field otherField in other.Fields)
+            {
+                Fields.Add(new(otherField.Type) { IsShown = otherField.IsShown });
+            }
+
+            IsFiltered = other.IsFiltered;
+            FilterKey = other.FilterKey;
+            FilterValue = other.FilterValue;
+        }
+
         private static List<FieldType> GenerateFieldTypes()
         {
             List<FieldType> types = [];

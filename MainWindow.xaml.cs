@@ -216,10 +216,11 @@ namespace CrystalLens
             PokemonSearchOptionsWindow optionsWindow = new()
             {
                 Owner = this,
-                DataContext = new PokemonSearchOptions(ViewModel.OpenProject)
+                DataContext = new PokemonSearchOptions(ViewModel.DefaultSearchOptions)
             };
             if (optionsWindow.ShowDialog() == true)
             {
+                ViewModel.DefaultSearchOptions = optionsWindow.ViewModel;
                 ViewModel.OpenTab(new PokemonSearchViewModel(ViewModel.OpenProject.Model, optionsWindow.ViewModel));
             }
         }
