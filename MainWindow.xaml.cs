@@ -120,6 +120,22 @@ namespace CrystalLens
             e.CanExecute = tabs.HasItems;
         }
 
+        private void CopyPath_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Clipboard.SetText((string)e.Parameter);
+        }
+
+        private void CopyRelativePath_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            string? relativePath = ViewModel.OpenProject?.Model.GetRelativePath((string)e.Parameter);
+            Clipboard.SetText(relativePath ?? string.Empty);
+        }
+
+        private void CopyRelativePath_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewModel.OpenProject != null;
+        }
+
         private void OpenInExternalProgram_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
