@@ -12,6 +12,7 @@
         <vm:BindingProxy x:Key="Proxy" Data="{Binding}"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
+        <converters:ProjectToConstantsConverter x:Key="ProjectToConstantsConverter"/>
     </UserControl.Resources>
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -30,7 +31,9 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Species" Width="2*" Binding="{Binding Species}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <DataGridComboBoxColumn Header="Species" Width="2*" SelectedValueBinding="{Binding Species}" ItemsSource="{Binding Data.Model.File.Project,Source={StaticResource Proxy},Converter={StaticResource ProjectToConstantsConverter},ConverterParameter=Species}"
+                                        ElementStyle="{StaticResource ComboBoxColumnElementStyle}" EditingElementStyle="{StaticResource ComboBoxColumnEditingElementStyle}">
+                </DataGridComboBoxColumn>
                 <DataGridTextColumn Header="Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource InvertedBoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                 <DataGridTextColumn Header="Min. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                 <DataGridTextColumn Header="Max. Level" Width="*" Visibility="{Binding Data.IsDynamic,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MaxLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
