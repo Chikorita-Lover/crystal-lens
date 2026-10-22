@@ -79,7 +79,7 @@
                     <MenuItem Header="Pokémon Search..." Click="PokemonSearch_Click" IsEnabled="{Binding OpenProject,Converter={StaticResource ObjectNotNullConverter}}"/>
                 </MenuItem>
             </Menu>
-            <Grid Name="ContentGrid">
+            <Grid Name="ContentGrid" Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{Binding Source={StaticResource AppSettings},Path=Default.ProjectExplorerWidth,Mode=TwoWay}" MinWidth="25" MaxWidth="600"/>
                     <ColumnDefinition Width="5"/>
@@ -130,7 +130,7 @@
                         </StackPanel.Style>
                     </StackPanel>
                 </Grid>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" MouseDoubleClick="GridSplitter_MouseDoubleClick"/>
+                <GridSplitter Grid.Column="1" Background="Transparent" HorizontalAlignment="Stretch" MouseDoubleClick="GridSplitter_MouseDoubleClick"/>
                 <TabControl Grid.Column="2" Name="tabs" ItemsSource="{Binding OpenTabs}" SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
                     <TabControl.ItemTemplate>
                         <DataTemplate>

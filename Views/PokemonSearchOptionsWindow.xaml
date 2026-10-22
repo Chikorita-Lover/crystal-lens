@@ -5,14 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CrystalLens.Views"
         mc:Ignorable="d"
-        Title="Pokémon Search" Width="250" Height="250"
+        Title="Pokémon Search" Width="250" Height="280"
+        Icon="/Assets/Images/Icon.ico"
         ResizeMode="NoResize"
-        WindowStyle="ThreeDBorderWindow">
-    <StackPanel>
+        WindowStyle="ThreeDBorderWindow"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="5">
         <CheckBox IsChecked="{Binding IsFiltered}">
             Filter results:
         </CheckBox>
-        <Grid IsEnabled="{Binding IsFiltered}" Margin="20,0,0,0">
+        <Grid IsEnabled="{Binding IsFiltered}" Margin="20,5,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -33,7 +35,7 @@
             <ComboBox Grid.Row="1" Grid.Column="1" IsEditable="True" ItemsSource="{Binding FilterValues}" Text="{Binding FilterValue}"/>
         </Grid>
         <GroupBox Header="Fields">
-            <ListBox ItemsSource="{Binding Fields}" Height="100">
+            <ListBox ItemsSource="{Binding Fields}" Height="120">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <CheckBox Content="{Binding Type.Name}" IsChecked="{Binding IsShown}"/>
@@ -42,8 +44,8 @@
             </ListBox>
         </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="OK" Width="75" Click="OK_Click"/>
-            <Button Content="Cancel" Width="75" Click="Cancel_Click"/>
+            <Button Content="OK" Width="75" Click="OK_Click" Margin="5,0,0,0"/>
+            <Button Content="Cancel" Width="75" Click="Cancel_Click" Margin="5,0,0,0"/>
         </StackPanel>
     </StackPanel>
 </Window>
