@@ -16,7 +16,10 @@ namespace CrystalLens.ViewModels
         {
             get; set { field = value; OnPropertyChanged(); }
         }
-        public int Probability { get; }
+        public int Probability
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
         public string PicPath
         {
             get; set { field = value; OnPropertyChanged(); }

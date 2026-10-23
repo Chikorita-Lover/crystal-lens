@@ -12,12 +12,28 @@ namespace CrystalLens.ViewModels
         }
         public EncounterSetViewModel EncounterSet
         {
-            get; private set { field = value; OnPropertyChanged(); }
+            get;
+            private set
+            {
+                field = value;
+                value.IsCombiningEntries = IsCombiningEntries;
+                OnPropertyChanged();
+            }
         }
         public ICollection<DayTime> Keys => EncounterTable.EncounterSets.Keys;
         public DayTime SelectedKey
         {
             get; set { field = value; EncounterSet = _encounterSets[value]; OnPropertyChanged(); }
+        }
+        public bool IsCombiningEntries
+        {
+            get;
+            set
+            {
+                field = value;
+                EncounterSet.IsCombiningEntries = value;
+                OnPropertyChanged();
+            }
         }
 
         ChangeTracker IChangeTracking.Tracker => tracker;

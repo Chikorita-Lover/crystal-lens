@@ -3,29 +3,79 @@ using System.Collections.ObjectModel;
 
 namespace CrystalLens.ViewModels
 {
-    public class EncounterSetViewModel : IChangeTracking
+    public class EncounterSetViewModel : ObservableViewModel, IChangeTracking
     {
         private readonly ChangeTracker tracker = new();
+        private readonly Dictionary<EncounterViewModel, List<int>> _encountersToModelIndices = [];
         public EncounterSet Model
         {
             get; set { field = value; PopulateEncounters(); }
         }
         public bool IsDynamic => Model.IsDynamic;
         public ObservableCollection<EncounterViewModel> Encounters { get; } = [];
+        public bool IsCombiningEntries
+        {
+            get;
+            set
+            {
+                field = value;
+                IsShowingMinMaxLevels = IsDynamic || value;
+                PopulateEncounters();
+                OnPropertyChanged();
+            }
+        }
+        public bool IsShowingMinMaxLevels
+        {
+            get; set { field = value; OnPropertyChanged(); }
+        }
 
         ChangeTracker IChangeTracking.Tracker => tracker;
 
         internal EncounterSetViewModel(EncounterSet encounterSet)
         {
             Model = encounterSet;
+            IsCombiningEntries = false;
         }
 
-        private void PopulateEncounters()
+        internal void PopulateEncounters()
         {
             Encounters.Clear();
-            for (int i = 0; i < Model.Encounters.Count; i++)
+            _encountersToModelIndices.Clear();
+            
+            if (IsCombiningEntries)
             {
-                AddEncounterViewModel(new(Model.Get(i), Model.GetProbability(i)));
+                Dictionary<string, EncounterViewModel> speciesToEncounters = [];
+                for (int i = 0; i < Model.Encounters.Count; i++)
+                {
+                    Encounter encounter = Model.Get(i);
+                    EncounterViewModel encounterVM;
+                    if (speciesToEncounters.TryGetValue(encounter.Species, out encounterVM))
+                    {
+                        encounterVM.MinLevel = Math.Min(encounterVM.MinLevel, encounter.MinLevel);
+                        encounterVM.MaxLevel = Math.Max(encounterVM.MaxLevel, encounter.MaxLevel);
+                        encounterVM.Probability += Model.GetProbability(i);
+
+                        _encountersToModelIndices[encounterVM].Add(i);
+                    }
+                    else
+                    {
+                        encounterVM = new(encounter, Model.GetProbability(i));
+                        speciesToEncounters.Add(encounter.Species, encounterVM);
+
+                        _encountersToModelIndices.Add(encounterVM, [i]);
+                    }
+                }
+                foreach (EncounterViewModel encounter in speciesToEncounters.Values.OrderByDescending(encounter => encounter.Probability))
+                {
+                    AddEncounterViewModel(encounter);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Model.Encounters.Count; i++)
+                {
+                    AddEncounterViewModel(new(Model.Get(i), Model.GetProbability(i)));
+                }
             }
         }
 
@@ -63,12 +113,27 @@ namespace CrystalLens.ViewModels
         {
             if (e.PropertyName != nameof(EncounterViewModel.PicPath))
             {
-                EncounterViewModel encounter = (EncounterViewModel)sender;
-                int index = Encounters.IndexOf(encounter);
-                Model.Encounters[index] = encounter.ToModel();
-                tracker.MarkAsUnsaved();
+                EncounterViewModel encounterVM = (EncounterViewModel)sender;
+                if (IsCombiningEntries)
+                {
+                    foreach (int index in _encountersToModelIndices[encounterVM])
+                    {
+                        Encounter oldEncounter = Model.Encounters[index];
+                        Model.Encounters[index] = new(oldEncounter.MinLevel, oldEncounter.MaxLevel, encounterVM.Species);
+                    }
+                }
+                else
+                {
+                    int index = Encounters.IndexOf(encounterVM);
+                    Model.Encounters[index] = encounterVM.ToModel();
+                }
 
-                UpdateEncounterSprite(encounter);
+                if (e.PropertyName == nameof(EncounterViewModel.Species))
+                {
+                    UpdateEncounterSprite(encounterVM);
+                }
+
+                tracker.MarkAsUnsaved();
             }
         }
     }

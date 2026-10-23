@@ -28,6 +28,17 @@ namespace CrystalLens.ViewModels
             private set
             {
                 field = value;
+                value.IsCombiningEntries = IsCombiningEntries;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsCombiningEntries
+        {
+            get;
+            set
+            {
+                field = value;
+                SelectedEncounters.IsCombiningEntries = value;
                 OnPropertyChanged();
             }
         }

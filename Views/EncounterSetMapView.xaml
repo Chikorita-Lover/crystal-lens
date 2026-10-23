@@ -6,6 +6,14 @@
              xmlns:local="clr-namespace:CrystalLens.Views"
              mc:Ignorable="d">
     <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
+            <ToolBar.Resources>
+                <Style TargetType="DockPanel">
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                </Style>
+            </ToolBar.Resources>
+            <CheckBox HorizontalAlignment="Right" ToolTip="Combine Like Entries" IsChecked="{Binding IsCombiningEntries}">🔀</CheckBox>
+        </ToolBar>
         <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding MapNames}" SelectedItem="{Binding SelectedMap, Mode=TwoWay}"/>
         <local:EncounterSetView DataContext="{Binding SelectedEncounters, UpdateSourceTrigger=PropertyChanged}"/>
     </DockPanel>
