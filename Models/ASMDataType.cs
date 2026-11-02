@@ -35,7 +35,7 @@ namespace CrystalLens.Models
             ASMSerializers.EvosAttacks
             ));
         public static readonly ASMDataType SpriteAnimation = Register(new(
-            path => path == @"gfx\pokemon\anims.asm" || path == @"gfx\pokemon\idles.asm" || Regex.Match(path, @"gfx\\pokemon\\\w+\\anim\w*.asm").Success,
+            path => path == @"gfx\pokemon\anims.asm" || path == @"gfx\pokemon\idles.asm" || path == @"gfx\pokemon\unown_anims.asm" || path == @"gfx\pokemon\unown_idles.asm" || Regex.Match(path, @"gfx\\pokemon\\\w+\\anim\w*.asm").Success,
             ASMSerializers.SpriteAnimation
             ));
         public static readonly ASMDataType PokemonPicPointers = Register(new(
@@ -50,9 +50,13 @@ namespace CrystalLens.Models
             path => path == @"data\pokemon\palettes.asm",
             ASMSerializers.Palettes
             ));
-        public static readonly ASMDataType AnimPointers = Register(new(
+        public static readonly ASMDataType PokemonAnimPointers = Register(new(
             path => path == @"gfx\pokemon\anim_pointers.asm" || path == @"gfx\pokemon\idle_pointers.asm",
-            ASMSerializers.AnimPointers
+            ASMSerializers.PokemonAnimPointers
+            ));
+        public static readonly ASMDataType UnownAnimPointers = Register(new(
+            path => path == @"gfx\pokemon\unown_anim_pointers.asm" || path == @"gfx\pokemon\unown_idle_pointers.asm",
+            ASMSerializers.UnownAnimPointers
             ));
         public static readonly ASMDataType GBCPal = Register(new(
             path => path.EndsWith(".pal"),

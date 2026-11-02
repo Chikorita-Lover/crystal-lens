@@ -5,7 +5,7 @@ namespace CrystalLens.Models
     public class ASMProject
     {
         public static readonly Dictionary<string, byte> GenderRatioDefinitions = GenerateGenderRatioDefinitions();
-        private static readonly ICollection<string> LabelsToCache = ["AnimationPointers", "PokemonPicPointers", "UnownPicPointers", "PokemonPalettes"];
+        private static readonly ICollection<string> LabelsToCache = ["AnimationPointers", "UnownAnimationPointers", "PokemonPicPointers", "UnownPicPointers", "PokemonPalettes"];
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public readonly Dictionary<string, ASMFile.Header> FileHeaders = [];
         private readonly Dictionary<string, ASMFile> _cachedFiles = [];
@@ -48,8 +48,18 @@ namespace CrystalLens.Models
 
         public SpriteAnimation GetAnimation(string species)
         {
-            int index = Constants[ASMConstantGroup.Species][species] - 1;
-            AnimationPointerTable animPointers = GetCachedData<AnimationPointerTable>("AnimationPointers");
+            int index;
+            AnimationPointerTable animPointers;
+            if (species == "UNOWN")
+            {
+                index = 0;
+                animPointers = GetCachedData<AnimationPointerTable>("UnownAnimationPointers");
+            }
+            else
+            {
+                index = Constants[ASMConstantGroup.Species][species] - 1;
+                animPointers = GetCachedData<AnimationPointerTable>("AnimationPointers");
+            }
             string animPointer = animPointers[index];
             return GetCachedData<SpriteAnimation>(animPointer);
         }
@@ -171,7 +181,7 @@ namespace CrystalLens.Models
 
         private static bool ShouldCacheFileByPath(string path)
         {
-            return path == @"gfx\pics.asm" || path == @"gfx\pokemon\anims.asm" || path.StartsWith(@"data\pokemon\base_stats\");
+            return path == @"gfx\pics.asm" || path == @"gfx\pokemon\anims.asm" || path == @"gfx\pokemon\unown_anims.asm" || path.StartsWith(@"data\pokemon\base_stats\");
         }
 
         private static Dictionary<string, byte> GenerateGenderRatioDefinitions()

@@ -6,7 +6,7 @@
         public string this[int index] { get => _animations[index]; }
 
         public ASMFile File { get; }
-        public ASMDataType Type => ASMDataType.AnimPointers;
+        public ASMDataType Type => ASMDataType.PokemonAnimPointers;
 
         public AnimationPointerTable(ASMFile file, List<string> animations)
         {
