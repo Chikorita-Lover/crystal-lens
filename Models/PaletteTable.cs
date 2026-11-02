@@ -27,7 +27,7 @@
                 _length = length;
             }
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<(object?, GBCPalette)> palettes = [];
                 for (int i = 0; i < _length; i++)
@@ -42,8 +42,8 @@
                      * 
                      * Anyways, a whole lot of jank.
                      */
-                    reader.Read();
-                    reader.Read();
+                    reader.ReadSymbol();
+                    reader.ReadSymbol();
 
                     GBCPalette shiny = (GBCPalette)ASMSerializers.GBCPal.ReadAssembly(reader, file);
                     palettes.Add((null, shiny));

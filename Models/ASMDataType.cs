@@ -38,9 +38,13 @@ namespace CrystalLens.Models
             path => path == @"gfx\pokemon\anims.asm" || path == @"gfx\pokemon\idles.asm" || Regex.Match(path, @"gfx\\pokemon\\\w+\\anim\w*.asm").Success,
             ASMSerializers.SpriteAnimation
             ));
-        public static readonly ASMDataType PicPointers = Register(new(
-            path => path.StartsWith(@"data\pokemon\") && path.EndsWith("pic_pointers.asm"),
-            ASMSerializers.PicPointers
+        public static readonly ASMDataType PokemonPicPointers = Register(new(
+            path => path == @"data\pokemon\pic_pointers.asm",
+            ASMSerializers.PokemonPicPointers
+            ));
+        public static readonly ASMDataType UnownPicPointers = Register(new(
+            path => path == @"data\pokemon\unown_pic_pointers.asm",
+            ASMSerializers.UnownPicPointers
             ));
         public static readonly ASMDataType Palettes = Register(new(
             path => path == @"data\pokemon\palettes.asm",

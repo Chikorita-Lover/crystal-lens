@@ -26,7 +26,7 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<byte> probabilities = [30, 30, 20, 10, 5, 4, 1];
                 Dictionary<DayTime, EncounterSet> encounterSets = [];
@@ -36,7 +36,7 @@
                     foreach (byte probability in probabilities)
                     {
                         byte level = reader.ReadByte();
-                        string name = reader.Read();
+                        string name = reader.ReadSymbol();
                         encounters.Add(new(level, name));
                     }
                     DayTime time = Enum.GetValues<DayTime>()[i];

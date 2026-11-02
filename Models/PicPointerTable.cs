@@ -6,7 +6,7 @@
         private readonly List<(string? Frontpic, string? Backpic)> _pictures;
 
         public ASMFile File => _file;
-        public ASMDataType Type => ASMDataType.PicPointers;
+        public ASMDataType Type => ASMDataType.PokemonPicPointers;
 
         private PicPointerTable(ASMFile file, List<(string?, string?)> pictures)
         {
@@ -26,13 +26,20 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            private readonly int _length;
+
+            public Serializer(int length)
+            {
+                _length = length;
+            }
+
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<(string?, string?)> pictures = [];
-                for (int i = 0; i < 251; i++) // currently hardcoded to read 251 entries
+                for (int i = 0; i < _length; i++)
                 {
-                    string frontpic = reader.Read();
-                    string backpic = reader.Read();
+                    string frontpic = reader.ReadSymbol();
+                    string backpic = reader.ReadSymbol();
                     pictures.Add((frontpic == "-1" ? null : frontpic, backpic == "-1" ? null : backpic));
                 }
                 return new PicPointerTable(file, pictures);

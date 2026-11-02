@@ -3,21 +3,17 @@ using System.Text.RegularExpressions;
 
 namespace CrystalLens.Models
 {
-    public class ASMReader
+    public abstract class ASMReader
     {
-        private static readonly string[] IgnoredMacros = ["table_width", "assert_table_length"];
-        private readonly ASMProject _project;
+        protected readonly ASMProject Project;
         private readonly Stack<StreamReader> _readers = [];
         private readonly Queue<string> _queuedLines = [];
-        private readonly List<object> _stream = [];
-        private readonly Dictionary<string, int> _labelsToPositions = [];
-        private int _position;
 
         private StreamReader? CurrentReader => _readers.Count > 0 ? _readers.Peek() : null;
 
         public ASMReader(ASMProject project, StreamReader reader)
         {
-            _project = project;
+            Project = project;
             _readers.Push(reader);
         }
 
@@ -32,133 +28,73 @@ namespace CrystalLens.Models
             }
         }
 
-        public string? Read()
+        protected string? ReadLine()
         {
-            if (_position >= _stream.Count)
+            string? line = _queuedLines.Count > 0 ? _queuedLines.Dequeue() : CurrentReader?.ReadLine();
+            if (line == null)
             {
-                if (CurrentReader == null)
+                if (_readers.Count > 1)
+                {
+                    _readers.Pop().Close();
+                    return ReadLine();
+                }
+                else
                 {
                     return null;
                 }
-                string? line = _queuedLines.Count > 0 ? _queuedLines.Dequeue() : CurrentReader.ReadLine();
-                if (line == null)
+            }
+
+            if (ASMCommand.HasLabel(line))
+            {
+                string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
+                
+                string remainder = line.Trim()[(label.Length + 1)..];
+                bool isGlobal;
+                if (isGlobal = remainder.StartsWith(':'))
                 {
-                    if (_readers.Count > 1)
+                    remainder = remainder[1..];
+                }
+                _queuedLines.Enqueue(remainder);
+                return isGlobal ? $"{label}::" : $"{label}:";
+            }
+            else
+            {
+                string[] instructions = line.Split("::");
+                string? first = null;
+                foreach (string instruction in instructions)
+                {
+                    if (first == null)
                     {
-                        _readers.Pop().Close();
-                        return Read();
+                        first = instruction;
                     }
                     else
-                    {
-                        return null;
-                    }
-                }
-                string[] instructions;
-                if (ASMCommand.HasLabel(line))
-                {
-                    string label = Regex.Match(line, "[A-Za-z_][\\w#$@]+(\\.[A-Za-z_][\\w#$@]+)?").Value;
-                    _labelsToPositions.Add(label, _stream.Count);
-
-                    string remainder = line.Trim()[(label.Length + 1)..];
-                    if (remainder.StartsWith(':'))
-                    {
-                        remainder = remainder[1..];
-                    }
-                    _queuedLines.Enqueue(remainder);
-                }
-                else if ((instructions = line.Split("::")).Length > 1)
-                {
-                    foreach (string instruction in instructions)
                     {
                         _queuedLines.Enqueue(instruction);
                     }
                 }
-                else
-                {
-                    ASMCommand command = ASMCommand.FromLine(line);
-                    RunCommand(command);
-                }
-                return Read();
+                return first;
             }
-            return _stream[_position++].ToString();
-        }
-
-        public byte ReadByte()
-        {
-            string? value = Read();
-            return (byte)(int.Parse(value ?? "0") % 256);
-        }
-
-        public short ReadWord()
-        {
-            string? value = Read();
-            return (short)(int.Parse(value ?? "0") % (1 << 16));
-        }
-
-        public void JumpTo(string label)
-        {
-            bool hasLabel;
-            while (!(hasLabel = _labelsToPositions.ContainsKey(label)) && Read() != null)
-            { }
-            if (!hasLabel)
-            {
-                throw new KeyNotFoundException("The specified label is not defined in the provided ASM file.");
-            }
-            _position = _labelsToPositions[label];
         }
 
         private void Include(string path)
         {
-            _readers.Push(new(Path.Combine(_project.Path, path)));
+            _readers.Push(new(Path.Combine(Project.Path, path)));
         }
 
-        private void RunCommand(ASMCommand command)
+        protected void ProcessCommand(ASMCommand command)
         {
-            if (IgnoredMacros.Contains(command.Command))
-            {
-                return;
-            }
             switch (command.Command)
             {
                 case "INCLUDE":
                     string path = command.Get(0);
                     Include(path[1 .. (path.Length - 1)]);
                     break;
-                case "frame":
-                    _stream.Add(command.GetByte(0));
-                    _stream.Add(command.GetByte(1));
-                    break;
-                case "endanim":
-                    _stream.Add(SpriteAnimation.EndAnimCommand);
-                    break;
-                case "setrepeat":
-                    _stream.Add(SpriteAnimation.SetRepeatCommand);
-                    _stream.Add(command.GetByte(0));
-                    break;
-                case "dorepeat":
-                    _stream.Add(SpriteAnimation.DoRepeatCommand);
-                    _stream.Add(command.GetByte(0));
-                    break;
-                case "dba_pics":
-                    _stream.Add(command.Count >= 1 ? command.Get(0) : -1);
-                    _stream.Add(command.Count >= 2 ? command.Get(1) : -1);
-                    break;
-                case "RGB":
-                    for (int i = 0; i < command.Count / 3; i++)
-                    {
-                        short r = (short)((1 << 0) * command.GetByte(i * 3));
-                        short g = (short)((1 << 5) * command.GetByte(i * 3 + 1));
-                        short b = (short)((1 << 10) * command.GetByte(i * 3 + 2));
-                        _stream.Add(r + g + b);
-                    }
-                    break;
                 default:
-                    for (int i = 0; i < command.Count; i++)
-                    {
-                        _stream.Add(command.Get(i));
-                    }
+                    ProcessCustomCommand(command);
                     break;
             }
         }
+
+        protected abstract void ProcessCustomCommand(ASMCommand command);
     }
 }

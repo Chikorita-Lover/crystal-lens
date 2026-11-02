@@ -23,12 +23,12 @@
                 _length = length;
             }
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<string> animations = [];
                 for (int i = 0; i < _length; i++)
                 {
-                    animations.Add(reader.Read());
+                    animations.Add(reader.ReadSymbol());
                 }
                 return new AnimationPointerTable(file, animations);
             }

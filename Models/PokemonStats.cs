@@ -1,4 +1,6 @@
-﻿namespace CrystalLens.Models
+﻿using System.IO;
+
+namespace CrystalLens.Models
 {
     public class PokemonStats : IASMData
     {
@@ -162,25 +164,25 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 Builder builder = new Builder()
-                    .Species(reader.Read())
+                    .Species(reader.ReadSymbol())
                     .Stats(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte())
-                    .Type(reader.Read(), reader.Read())
+                    .Type(reader.ReadSymbol(), reader.ReadSymbol())
                     .CatchRate(reader.ReadByte())
                     .BaseExp(reader.ReadByte())
-                    .Items(reader.Read(), reader.Read())
-                    .GenderRatio(reader.Read());
-                reader.Read(); // unknown 1
+                    .Items(reader.ReadSymbol(), reader.ReadSymbol())
+                    .GenderRatio(reader.ReadSymbol());
+                reader.ReadSymbol(); // unknown 1
                 builder.EggCycles(reader.ReadByte());
-                reader.Read(); // unknown 2
-                reader.Read(); // dimensions
-                reader.Read(); // beta front pic
-                reader.Read(); // beta back pic
+                reader.ReadSymbol(); // unknown 2
+                reader.ReadSymbol(); // dimensions
+                reader.ReadSymbol(); // beta front pic
+                reader.ReadSymbol(); // beta back pic
                 builder
-                    .GrowthRate(reader.Read())
-                    .EggGroups(reader.Read(), reader.Read())
+                    .GrowthRate(reader.ReadSymbol())
+                    .EggGroups(reader.ReadSymbol(), reader.ReadSymbol())
                     .TMMoves(ReadTMHMs(reader));
 
                 return builder.Build(file);
@@ -213,14 +215,21 @@
                 writer.Comment("end");
             }
 
-            private static List<string> ReadTMHMs(ASMReader reader)
+            private static List<string> ReadTMHMs(ASMByteReader reader)
             {
                 List<string> tmhms = [];
-                string? value;
-                while ((value = reader.Read()) != null)
+                try
                 {
-                    tmhms.Add(value);
+                    string? value;
+                    while (true)
+                    {
+                        value = reader.ReadSymbol();
+                        tmhms.Add(value);
+                    }
                 }
+                catch (EndOfStreamException)
+                { }
+
                 return tmhms;
             }
         }

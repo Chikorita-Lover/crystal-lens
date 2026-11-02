@@ -39,7 +39,7 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<Command> animCommands = [];
                 byte value;

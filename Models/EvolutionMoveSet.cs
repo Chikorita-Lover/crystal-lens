@@ -44,20 +44,20 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<Evolution> evolutions = [];
                 List<MoveEntry> moves = [];
 
                 string method;
-                while ((method = reader.Read()) != "0")
+                while ((method = reader.ReadSymbol()) != "0")
                 {
                     string[] triggers = new string[method == "EVOLVE_STAT" ? 2 : 1];
                     for (int i = 0; i < triggers.Length; i++)
                     {
-                        triggers[i] = reader.Read();
+                        triggers[i] = reader.ReadSymbol();
                     }
-                    string species = reader.Read();
+                    string species = reader.ReadSymbol();
 
                     evolutions.Add(new(method, triggers, species));
                 }
@@ -65,7 +65,7 @@
                 byte level;
                 while ((level = reader.ReadByte()) != 0)
                 {
-                    string move = reader.Read();
+                    string move = reader.ReadSymbol();
                     moves.Add(new(level, move));
                 }
 

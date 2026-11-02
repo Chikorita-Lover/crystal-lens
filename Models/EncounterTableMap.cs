@@ -34,17 +34,17 @@
             private const string DefCommand = "def_grass_wildmons";
             private const string EndCommand = "end_grass_wildmons";
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 string mapName;
                 Dictionary<string, EncounterTable> encounterTables = [];
                 Dictionary<string, byte[]> encounterRates = [];
-                while ((mapName = reader.Read()) != "-1")
+                while ((mapName = reader.ReadSymbol()) != "-1")
                 {
                     byte[] mapEncounterRates = new byte[3];
                     for (int i = 0; i < mapEncounterRates.Length; i++)
                     {
-                        string parameter = reader.Read();
+                        string parameter = reader.ReadSymbol();
                         mapEncounterRates[i] = byte.Parse(parameter.Split(" percent")[0]);
                     }
                     encounterRates.Add(mapName, mapEncounterRates);

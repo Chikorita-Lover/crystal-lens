@@ -10,7 +10,8 @@
         public static readonly EvolutionMoveSet.Serializer EvosAttacks = new();
         public static readonly PokemonStats.Serializer PokemonStats = new();
         public static readonly SpriteAnimation.Serializer SpriteAnimation = new();
-        public static readonly PicPointerTable.Serializer PicPointers = new();
+        public static readonly PicPointerTable.Serializer PokemonPicPointers = new(251);
+        public static readonly PicPointerTable.Serializer UnownPicPointers = new(26);
         public static readonly PaletteTable.Serializer Palettes = new(256);
         public static readonly AnimationPointerTable.Serializer AnimPointers = new(251);
         public static readonly GBCPalette.Serializer GBCPal = new(2);

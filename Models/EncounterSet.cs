@@ -37,7 +37,7 @@
                 _isDynamic = isDynamic;
             }
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 List<byte> probabilities;
                 List<Encounter> encounters = [];
@@ -49,7 +49,7 @@
                     while ((probability = reader.ReadByte()) != 255)
                     {
                         probabilities.Add(probability);
-                        string name = reader.Read();
+                        string name = reader.ReadSymbol();
                         encounters.Add(new(reader.ReadByte(), reader.ReadByte(), name));
                     }
                 }
@@ -59,7 +59,7 @@
                     for (byte b = 0; b < probabilities.Count; b++)
                     {
                         byte level = reader.ReadByte();
-                        string name = reader.Read();
+                        string name = reader.ReadSymbol();
                         encounters.Add(new(level, name));
                     }
                 }

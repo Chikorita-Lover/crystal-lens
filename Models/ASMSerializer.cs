@@ -2,7 +2,7 @@
 {
     public abstract class ASMSerializer
     {
-        internal abstract IASMData ReadAssembly(ASMReader reader, ASMFile file);
+        internal abstract IASMData ReadAssembly(ASMByteReader reader, ASMFile file);
 
         internal abstract void WriteAssembly(ASMWriter writer, IASMData data);
     }

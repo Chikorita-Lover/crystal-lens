@@ -36,7 +36,7 @@
                 _count = count;
             }
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 short[] colors = new short[_count];
                 for (int i = 0; i < _count; i++)

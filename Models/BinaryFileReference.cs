@@ -16,9 +16,9 @@
 
         public class Serializer : ASMSerializer
         {
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
-                string path = reader.Read()[1..^1];
+                string path = reader.ReadSymbol()[1..^1];
                 return new BinaryFileReference(file, path);
             }
 

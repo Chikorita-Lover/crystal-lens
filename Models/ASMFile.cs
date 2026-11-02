@@ -50,12 +50,12 @@ namespace CrystalLens.Models
         public static ASMFile ReadFile(Header header, ASMProject project)
         {
             ASMFile file = new(project, project.GetAbsolutePath(header.RelativePath));
-            ASMReader asmReader = new(project, new StreamReader(file.Path));
+            ASMByteReader reader = new(project, new StreamReader(file.Path));
 
             bool isSingleton = header.Labels.Count == 1 && header.Labels[0] == string.Empty;
             if (isSingleton)
             {
-                if (TryReadData(asmReader, file, out IASMData data))
+                if (TryReadData(reader, file, out IASMData data))
                 {
                     file._labelsToData.Add(string.Empty, data);
                 }
@@ -64,20 +64,20 @@ namespace CrystalLens.Models
             {
                 foreach (string label in header.Labels)
                 {
-                    asmReader.JumpTo(label);
+                    reader.JumpTo(label);
 
-                    if (TryReadData(asmReader, file, out IASMData data))
+                    if (TryReadData(reader, file, out IASMData data))
                     {
                         file._labelsToData.Add(label, data);
                     }
                 }
             }
-            asmReader.Close();
+            reader.Close();
 
             return file;
         }
 
-        private static bool TryReadData(ASMReader reader, ASMFile file, out IASMData data)
+        private static bool TryReadData(ASMByteReader reader, ASMFile file, out IASMData data)
         {
             ASMDataType? type = InferDataType(file);
 

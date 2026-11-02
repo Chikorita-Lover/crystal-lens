@@ -31,14 +31,14 @@
             private const string DefCommand = "def_water_wildmons";
             private const string EndCommand = "end_water_wildmons";
 
-            internal override IASMData ReadAssembly(ASMReader reader, ASMFile file)
+            internal override IASMData ReadAssembly(ASMByteReader reader, ASMFile file)
             {
                 string mapName;
                 Dictionary<string, EncounterSet> encounterSets = [];
                 Dictionary<string, byte> encounterRates = [];
-                while ((mapName = reader.Read()) != "-1")
+                while ((mapName = reader.ReadSymbol()) != "-1")
                 {
-                    string encounterRate = reader.Read();
+                    string encounterRate = reader.ReadSymbol();
                     encounterRates.Add(mapName, byte.Parse(encounterRate.Split(" percent")[0]));
 
                     EncounterSet encounterSet = (EncounterSet)ASMSerializers.EncounterSet.ReadAssembly(reader, file);
