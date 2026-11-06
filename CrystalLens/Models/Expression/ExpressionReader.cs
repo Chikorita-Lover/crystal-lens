@@ -153,7 +153,7 @@ namespace CrystalLens.Models.Expression
 
         private string ReadSymbol(char start)
         {
-            StringBuilder builder = new(start);
+            StringBuilder builder = new(start.ToString());
             int i;
             char c;
             while ((i = _reader.Peek()) >= 0 && IsSymbolLetter(c = (char)i))

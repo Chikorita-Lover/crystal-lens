@@ -78,12 +78,13 @@
             {
                 int endIndex = IndexOfClosing(tokens, index);
                 List<string> slice = tokens[(index + 1)..endIndex];
-                tokens.RemoveRange(index, slice.Count + 2);
+                tokens.RemoveRange(index + 1, slice.Count + 1);
                 int evaluation = Evaluate(slice);
 
                 if (index > 0 && BuiltInFunctions.TryGetValue(tokens[index - 1], out Func<int, int>? operation))
                 {
                     evaluation = operation.Invoke(evaluation);
+                    tokens.RemoveAt(index--);
                 }
 
                 tokens[index] = evaluation.ToString();
