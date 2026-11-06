@@ -1,6 +1,6 @@
 ﻿namespace CrystalLens.Models.Expression
 {
-    internal static class ExpressionHelper
+    public static class ExpressionHelper
     {
         internal static readonly Dictionary<string, Func<int, int>> BuiltInFunctions;
         private static readonly Dictionary<string, Func<int, int>> UnaryOperations;
@@ -59,7 +59,7 @@
             };
         }
 
-        internal static List<string> Tokenize(string expression)
+        public static List<string> Tokenize(string expression)
         {
             ExpressionReader reader = new(expression);
             List<string> tokens = [];
@@ -71,7 +71,7 @@
             return tokens;
         }
 
-        internal static int Evaluate(List<string> tokens)
+        public static int Evaluate(List<string> tokens)
         {
             int index;
             if ((index = tokens.IndexOf("(")) >= 0)

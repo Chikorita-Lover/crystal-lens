@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="CrystalLens/CrystalLens.csproj" />
+  <Project Path="CrystalLensTests/CrystalLensTests.csproj" Id="9191c13a-eaca-4863-8e2a-9dc4d1acf610" />
 </Solution>
