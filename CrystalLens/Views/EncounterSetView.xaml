@@ -31,9 +31,9 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridComboBoxColumn Header="Species" Width="2*" SelectedValueBinding="{Binding Species}" ItemsSource="{Binding Data.Model.File.Project,Source={StaticResource Proxy},Converter={StaticResource ProjectToConstantsConverter},ConverterParameter=Species}"
-                                        ElementStyle="{StaticResource ComboBoxColumnElementStyle}" EditingElementStyle="{StaticResource ComboBoxColumnEditingElementStyle}">
-                </DataGridComboBoxColumn>
+                <DataGridTextColumn Header="Species" Width="2*" Binding="{Binding Species}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
+                <!-- <DataGridComboBoxColumn Header="Species" Width="2*" SelectedValueBinding="{Binding Species}" ItemsSource="{Binding Data.Model.File.Project,Source={StaticResource Proxy},Converter={StaticResource ProjectToConstantsConverter},ConverterParameter=Species}"
+                                        ElementStyle="{StaticResource ComboBoxColumnElementStyle}" EditingElementStyle="{StaticResource ComboBoxColumnEditingElementStyle}"/> -->
                 <DataGridTextColumn Header="Level" Width="2*" IsReadOnly="{Binding Data.IsCombiningEntries,Source={StaticResource Proxy}}" Visibility="{Binding Data.IsShowingMinMaxLevels,Converter={StaticResource InvertedBoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                 <DataGridTextColumn Header="Min. Level" Width="*" IsReadOnly="{Binding Data.IsCombiningEntries,Source={StaticResource Proxy}}" Visibility="{Binding Data.IsShowingMinMaxLevels,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MinLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>
                 <DataGridTextColumn Header="Max. Level" Width="*" IsReadOnly="{Binding Data.IsCombiningEntries,Source={StaticResource Proxy}}" Visibility="{Binding Data.IsShowingMinMaxLevels,Converter={StaticResource BoolToVisibilityConverter},Source={StaticResource Proxy}}" Binding="{Binding MaxLevel}" ElementStyle="{StaticResource TextColumnElementStyle}"/>

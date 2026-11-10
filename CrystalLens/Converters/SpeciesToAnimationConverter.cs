@@ -12,9 +12,15 @@ namespace CrystalLens.Converters
         {
             ASMProject project = (ASMProject)values[0];
             string species = (string)values[1];
-            SpriteAnimation anim = project.GetAnimation(species);
-
-            return CreateAnimationTimeline(anim);
+            try
+            {
+                SpriteAnimation anim = project.GetAnimation(species);
+                return CreateAnimationTimeline(anim);
+            }
+            catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
+            {
+                return DependencyProperty.UnsetValue;
+            }
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

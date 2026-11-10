@@ -25,8 +25,11 @@ namespace CrystalLens.Models
 
         public static ASMCommand FromLine(string line)
         {
-            string[] codeCommentSplit = line.Trim().Split(";", 2);
-            string[] commandParamSplit = codeCommentSplit[0].Split(" ", 2);
+            int commentIndex = IndexOfComment(line);
+            string instruction = commentIndex >= 0 ? line[0..commentIndex].Trim() : line.Trim();
+            string comment = commentIndex >= 0 && (commentIndex + 1) < line.Length ? line[(commentIndex + 1)..] : string.Empty;
+            
+            string[] commandParamSplit = instruction.Split(" ", 2);
             string command = commandParamSplit[0];
             string[] parameters;
 
@@ -43,8 +46,26 @@ namespace CrystalLens.Models
                 parameters = [];
             }
 
-            string comment = codeCommentSplit.Length > 1 ? codeCommentSplit[1] : string.Empty;
             return new(command, parameters, comment);
+        }
+
+        private static int IndexOfComment(string line)
+        {
+            int i;
+            char c;
+            bool inQuotes = false;
+            for (i = 0; i < line.Length && ((c = line[i]) != ';' || inQuotes); i++)
+            {
+                if (c == '"')
+                {
+                    inQuotes ^= true;
+                }
+                else if (c == '\\')
+                {
+                    i++;
+                }
+            }
+            return i < line.Length ? i : -1;
         }
 
         public string Get(int index)
@@ -65,6 +86,11 @@ namespace CrystalLens.Models
         public bool IsComment()
         {
             return Command.IsWhiteSpace();
+        }
+
+        internal ASMCommand WithComment(string comment)
+        {
+            return new(Command, Parameters, comment);
         }
 
         public void VerifyOrThrow(string expected)

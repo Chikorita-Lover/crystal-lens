@@ -1,11 +1,17 @@
-﻿using System.IO;
+﻿using CrystalLens.Models.Expression;
+using System.Diagnostics;
+using System.IO;
 
 namespace CrystalLens.Models
 {
     public class ASMProject
     {
+        [Obsolete]
         public static readonly Dictionary<string, byte> GenderRatioDefinitions = GenerateGenderRatioDefinitions();
         private static readonly ICollection<string> LabelsToCache = ["AnimationPointers", "UnownAnimationPointers", "PokemonPicPointers", "UnownPicPointers", "PokemonPalettes"];
+        private static readonly string[] ObjectFiles = ["includes.asm", "audio.asm", "main.asm", @"data\pokemon\evos_attacks.asm", @"gfx\pics.asm"];
+        public readonly Dictionary<string, string> Definitions = [];
+        [Obsolete]
         public readonly Dictionary<ASMConstantGroup, Dictionary<string, byte>> Constants = [];
         public readonly Dictionary<string, ASMFile.Header> FileHeaders = [];
         private readonly Dictionary<string, ASMFile> _cachedFiles = [];
@@ -18,12 +24,17 @@ namespace CrystalLens.Models
         {
             Path = path;
             Name = System.IO.Path.GetFileName(path);
+
+            foreach (ASMConstantGroup constantGroup in Enum.GetValues<ASMConstantGroup>())
+            {
+                Constants.Add(constantGroup, []);
+            }
         }
 
         public string GetPicPath(string species, bool isBackpic = false)
         {
             PicPointerTable selectedPicPointers;
-            int index;
+            byte index;
             if (species == "UNOWN")
             {
                 index = 1;
@@ -31,7 +42,7 @@ namespace CrystalLens.Models
             }
             else
             {
-                index = Constants[ASMConstantGroup.Species][species];
+                index = (byte)Evaluate(species);
                 selectedPicPointers = GetCachedData<PicPointerTable>("PokemonPicPointers");
             }
             string? label = isBackpic ? selectedPicPointers.GetBackpicPointer(index) : selectedPicPointers.GetFrontpicPointer(index);
@@ -41,14 +52,14 @@ namespace CrystalLens.Models
 
         public GBCPalette GetShinyPalette(string species)
         {
-            int index = Constants[ASMConstantGroup.Species][species];
+            byte index = (byte)Evaluate(species);
             PaletteTable palettes = GetCachedData<PaletteTable>("PokemonPalettes");
             return palettes.GetShinyPalette(index);
         }
 
         public SpriteAnimation GetAnimation(string species)
         {
-            int index;
+            byte index;
             AnimationPointerTable animPointers;
             if (species == "UNOWN")
             {
@@ -57,7 +68,7 @@ namespace CrystalLens.Models
             }
             else
             {
-                index = Constants[ASMConstantGroup.Species][species] - 1;
+                index = (byte)(Evaluate(species) - 1);
                 animPointers = GetCachedData<AnimationPointerTable>("AnimationPointers");
             }
             string animPointer = animPointers[index];
@@ -92,9 +103,16 @@ namespace CrystalLens.Models
         public static ASMProject OpenProject(string path)
         {
             ASMProject project = new(path);
+            project.Definitions.Add("_RS", "0");
             project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "constants"));
             project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "data"));
             project.LoadFileHeadersFromDirectory(System.IO.Path.Combine(path, "gfx"));
+
+            foreach (string filePath in ObjectFiles)
+            {
+                StreamReader reader = new(project.GetAbsolutePath(filePath));
+                new ASMHeaderReader(project, reader).LoadDefinitions();
+            }
 
             project.LoadPicPaths(project.FileHeaders[@"gfx\pics.asm"]);
 
@@ -114,7 +132,6 @@ namespace CrystalLens.Models
             {
                 try
                 {
-                    TryReadConstants(filePath);
                     string relativePath = GetRelativePath(filePath);
                     if (ASMDataType.ValidPath.Invoke(relativePath))
                     {
@@ -153,30 +170,39 @@ namespace CrystalLens.Models
             }
         }
 
-        private void TryReadConstants(string path)
+        internal int Evaluate(string expression)
         {
-            List<Dictionary<string, byte>> constants;
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
-            switch (fileName)
+            List<string> expanded;
+            try
             {
-                case "item_constants":
-                    constants = ASMFile.ReadGroupedConstants(path);
-                    Constants.Add(ASMConstantGroup.Item, constants[0]);
-                    break;
-                case "pokemon_constants":
-                    constants = ASMFile.ReadGroupedConstants(path);
-                    Constants.Add(ASMConstantGroup.Species, constants[0]);
-                    break;
-                case "pokemon_data_constants":
-                    constants = ASMFile.ReadGroupedConstants(path);
-                    Constants.Add(ASMConstantGroup.GrowthRate, constants[0]);
-                    Constants.Add(ASMConstantGroup.EggGroup, constants[1]);
-                    break;
-                case "type_constants":
-                    constants = ASMFile.ReadGroupedConstants(path);
-                    Constants.Add(ASMConstantGroup.Type, constants[0]);
-                    break;
+                List<string> tokens = ExpressionHelper.Tokenize(expression);
+                expanded = ExpandSymbols(tokens);
             }
+            catch (FormatException)
+            {
+                expanded = ["0"];
+                Trace.WriteLine($"Failed to tokenize expression: {expression}");
+            }
+            return ExpressionHelper.Evaluate(expanded);
+        }
+
+        internal List<string> ExpandSymbols(List<string> tokens)
+        {
+            List<string> result = [];
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                string token = tokens[i];
+                if (Definitions.TryGetValue(token, out string? expression))
+                {
+                    List<string> subtokens = ExpressionHelper.Tokenize(expression);
+                    result.AddRange(ExpandSymbols(subtokens));
+                }
+                else
+                {
+                    result.Add(token);
+                }
+            }
+            return result;
         }
 
         private static bool ShouldCacheFileByPath(string path)

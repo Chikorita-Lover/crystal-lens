@@ -24,7 +24,7 @@ namespace CrystalLens.ViewModels
                 {
                     FilterValues.Add(o.ToString() ?? string.Empty);
                 }
-                FilterValue = FilterValues.First();
+                FilterValue = FilterValues.FirstOrDefault(string.Empty);
                 OnPropertyChanged();
             }
         }

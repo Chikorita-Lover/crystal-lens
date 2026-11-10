@@ -13,7 +13,16 @@ namespace CrystalLens.Converters
         {
             ASMProject project = (ASMProject)values[0];
             string species = (string)values[1];
-            GBCPalette gbcpal = project.GetShinyPalette(species);
+            GBCPalette gbcpal;
+
+            try
+            {
+                gbcpal = project.GetShinyPalette(species);
+            }
+            catch (Exception e) when (e is KeyNotFoundException || e is FormatException)
+            {
+                return DependencyProperty.UnsetValue;
+            }
 
             List<Color> colors = [Colors.White];
             colors.AddRange(gbcpal.Colors.Select(color =>
