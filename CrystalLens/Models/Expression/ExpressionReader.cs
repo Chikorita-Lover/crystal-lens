@@ -146,7 +146,10 @@ namespace CrystalLens.Models.Expression
             while ((i = _reader.Peek()) >= 0 && IsBaseDigit(c = (char)i, fromBase))
             {
                 _reader.Read();
-                start += c;
+                if (c != '_')
+                {
+                    start += c;
+                }
             }
             return Convert.ToInt32(start, fromBase);
         }
