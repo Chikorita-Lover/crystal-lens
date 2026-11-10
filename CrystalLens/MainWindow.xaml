@@ -80,6 +80,8 @@
                 </MenuItem>
                 <MenuItem Header="_Tools">
                     <MenuItem Header="Pokémon Search..." Click="PokemonSearch_Click" IsEnabled="{Binding OpenProject,Converter={StaticResource ObjectNotNullConverter}}"/>
+                    <Separator/>
+                    <MenuItem Header="Definitions..." Click="Definitions_Click" IsEnabled="{Binding OpenProject,Converter={StaticResource ObjectNotNullConverter}}"/>
                 </MenuItem>
             </Menu>
             <Grid Name="ContentGrid" Margin="5">

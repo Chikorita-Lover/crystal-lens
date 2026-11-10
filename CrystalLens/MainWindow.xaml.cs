@@ -225,6 +225,16 @@ namespace CrystalLens
             }
         }
 
+        private void Definitions_Click(object sender, RoutedEventArgs e)
+        {
+            DefinitionsWindow windows = new()
+            {
+                Owner = this,
+                DataContext = ViewModel.OpenProject.Model.Definitions
+            };
+            windows.ShowDialog();
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             IEnumerable<DataTabViewModel> unsavedTabs = ViewModel.OpenTabs.Where(tab => tab.HasUnsavedChanges);
